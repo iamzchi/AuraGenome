@@ -1,0 +1,38 @@
+Read name,Rearrangement type,Size,Chromosome,Position,Strand,Chromosome.1,Position.1,Strand.1,Microhomology length,Microhomology sequence,Non-templated length,Non-templated sequence,Gene effect,Breakpoint 1,Breakpoint 2
+EAS188_73:1:18:732:1559/2,Tandem Duplication,127233.0,7,104272303,-,7,104399536,-,2.0,cc,,,,Intergenic,Intergenic
+EAS188_73:1:95:948:1878/1,Inversion,68950.0,7,125885727,-,7,125954677,+,3.0,tat,,,GRM8 intronic deletion,Intronic,Intronic
+EAS188_73:1:17:320:1593/2,Deletion,100410.0,7,77819775,+,7,77920185,+,,,1.0,a,MAGI2 exon 7 deletion,Intronic,Intronic
+EAS188_73:2:44:285:1733/2,Deletion,67480.0,7,78028143,+,7,78095623,+,2.0,gc,,,MAGI2 exon 3 deletion,Intronic,Intronic
+EAS188_73:1:18:919:1378/1,Deletion,363538.0,2,61955582,+,2,62319120,+,,,4.0,caag,CCT4 partial deletion,Intronic,Intergenic
+EAS188_73:2:18:1607:218/1,Deletion,79150.0,22,32089249,+,22,32168399,+,,,7.0,aactact,LARGE exon 7-9 deletion,Intronic,Intronic
+EAS188_73:1:96:738:1233/2,Tandem Duplication,153517.0,1,222713226,-,1,222866743,-,,,37.0,gctagagcagctcacagaactgctatagtaagttttg,,Intergenic,Intergenic
+EAS188_73:1:12:1225:230/2,Deletion,33589.0,1,206047856,+,1,206081445,+,4.0,gagg,,,C1orf132 partial deletion,Intergenic,Intronic
+EAS188_73:1:54:1114:1747/1,Translocation,,1,87109599,+,10,36159133,-,0.0,-,,,SEP15 interruption,Intronic,Intergenic
+EAS188_73:1:75:628:502/1,Deletion,38786.0,16,57182046,+,16,57220832,+,,,4.0,ccag,Homozygous CNOT1 exon 1-2 deletion,Intronic,Intronic
+EAS188_73:1:59:343:850/2,Deletion,166368.0,16,77486140,+,16,77652508,+,6.0,attggg,,,WWOX intronic deletion,Intronic,Intronic
+EAS188_73:1:59:402:1202/1,Translocation,,6,27964292,+,11,83494028,+,,,3.0,tta,DLG2 interruption,Intergenic,Intronic
+EAS188_73:4:57:1727:682/2,Inversion,6174.0,6,27962492,+,6,27968666,-,3.0,atc,,,HIST1H2B exon 1 partial deletion,Intergenic,Exon
+EAS188_73:1:27:497:716/1,Inversion,1076.0,3,24540110,-,3,24541186,+,3.0,tga,0.0,0,,Intergenic,Intergenic
+EAS188_73:1:36:1042:211/2,Deletion,71789.0,3,60107794,+,3,60179583,+,,,32.0,tacatacatacatacatacatacatacataca,FHIT intronic deletion,Intronic,Intronic
+EAS188_73:1:29:1210:2047/2,Deletion,141090.0,3,60847165,+,3,60988255,+,2.0,gc,,,,Intergenic,Intergenic
+EAS188_73:1:77:1519:428/2,Deletion,215242.0,X,31987776,+,X,32203018,+,,,3.0,ggc,DMD exon 44 deletion,Intronic,Intronic
+EAS188_73:1:17:460:420/1,Deletion,2927.0,X,33969699,+,X,33972626,+,,,10.0,attatagtat,,Intergenic,Intergenic
+EAS188_73:1:10:1523:1930/1,Deletion,19268.0,X,31106864,+,X,31126132,+,,,8.0,atgtagtg,DMD exon 67-69 deletion,Intronic,Intronic
+EAS188_73:1:44:59:803/2,Inversion,2604.0,9,28021863,-,9,28024467,+,,,11.0,aattccgaa aa,LINGO2 intronic deletion,Intronic,Intronic
+EAS188_73:2:59:1155:1626/2,Inversion,27305.0,9,28021835,+,9,28049140,-,,,6.0,aatagt,LINGO2 intronic deletion,Intronic,Intronic
+EAS188_73:2:26:353:256/2,Deletion,123393.0,9,28024299,+,9,28147692,+,1.0,t,,,LINGO2 intronic deletion,Intronic,Intronic
+EAS188_73:1:81:922:452/2,Deletion,3373.0,20,13108730,+,20,13112103,+,3.0,gtc,,,,Intergenic,Intergenic
+EAS188_73:1:54:1414:1527/1,Deletion,13220.0,20,14948624,+,20,14961844,+,2.0,at,,,MACROD2 intronic deletion,Intronic,Intronic
+EAS188_73:1:74:75:1953/2,Deletion,50993.0,20,14910958,+,20,14961951,+,3.0,tgc,,,MACROD2 intronic deletion,Intronic,Intronic
+EAS188_73:2:31:172:1101/1,Inversion,161039.0,15,21382754,+,15,21543793,-,3.0,caa,,,,Intergenic,Intergenic
+EAS188_73:1:58:1781:1097/1,Deletion,11466.0,14,65803522,+,14,65814988,+,4.0,aatg,,,,Intergenic,Intergenic
+EAS188_73:3:76:314:1319/2,Translocation,,10,7099517,-,19,17257810,-,1.0,a,,,ANKRD41 interruption,Intergenic,Intronic
+EAS188_73:1:66:433:1494/2,Deletion,12042.0,10,89690279,+,10,89702321,+,18.0,gagattatactttgtgta,,,Homozygous PTEN exon 6 deletion,Intronic,Intronic
+IL6_787:6:261:646:344,Deletion,651.0,6,51307435,+,6,51308086,+,4.0,tttc,,,,Intergenic,Intergenic
+IL6_787:6:32:275:413,Deletion,2570.0,14,48401118,+,14,48403688,+,3.0,gct,,,,Intergenic,Intergenic
+IL6_787:8:60:362:44,Deletion,811.0,14,33583777,+,14,33584588,+,,,2.0,ga,,Intergenic,Intergenic
+IL6_787:1:198:541:277,Deletion,3366.0,18,64530442,+,18,64533808,+,2.0,ag,,,TXNDC10 partial deletion,Intronic,Intergenic
+IL20_1065:3:58:360:23,Other Intrachromosomal,129059049.0,1,16797227,+,1,145856276,+,,,25.0,agaaaaaattagaagccgtcatctg ,,Intergenic,Intergenic
+IL20_1065:1:192:918:608,Deletion,42658.0,4,131181342,+,4,131224000,+,,,3.0,cct,,Intergenic,Intergenic
+IL20_1065:6:121:138:324,Deletion,1191.0,10,85512695,+,10,85513886,+,0.0,-,,,,Intergenic,Intergenic
+IL20_1065:2:234:469:698,Deletion,1295.0,17,7277162,+,17,7278457,+,29.0,agaccagcctggccaacatggtgaaaccc,,,,Intergenic,Intergenic

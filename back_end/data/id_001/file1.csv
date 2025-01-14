@@ -1,4 +1,4 @@
-﻿Chromosome,Position,Reference,Mutant,Zygosity,Effect,Validation_status,Validation_zygosity,Validation_comment
+﻿id,Position,Reference,Mutant,Zygosity,Effect,Validation_status,Validation_zygosity,Validation_comment
 1,582180,C,T,het,Intergenic,N/A,,
 1,873379,G,A,hom,Silent,N/A,,
 1,1102487,C,T,het,Intronic,N/A,,

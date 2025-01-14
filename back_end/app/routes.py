@@ -12,10 +12,15 @@ def transform_json(csv_file):
     """
     try:
         csv_reader = csv.DictReader(csv_file)
-        json_data = [row for row in csv_reader]
+        json_data = [] 
+        for row in csv_reader:
+            # 清理列名中的特殊字符（比如 BOM）
+            clean_row = {key.strip().lstrip("\ufeff"): value.strip() for key, value in row.items()}
+            json_data.append(clean_row)
         return json_data
     except Exception as e:
         raise ValueError(f"Error transforming CSV to JSON: {str(e)}")
+
 
 @bp.route('/read-file', methods=['POST'])
 def read_file():
