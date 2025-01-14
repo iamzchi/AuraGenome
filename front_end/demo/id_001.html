@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Circos Chart with Environment Config</title>
+    <script src="https://cdn.jsdelivr.net/npm/circos/dist/circos.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3/dist/d3.min.js"></script>
+</head>
+
+<body>
+    <div id="chart" style="width: 600px; height: 600px;"></div>
+
+    <script>
+        // Fetch environment configuration
+        fetch('../env.json')
+            .then(response => response.json())
+            .then(env => {
+                const dataBasePath = env.DATA_BASE; // Get the base path from env.json
+                console.log('Data Base Path:', dataBasePath);
+
+                // Use this path to load the CSV
+                const csvPath = `${dataBasePath}/id_001/file1.xls`;
+                console.log(csvPath);
+                
+                // Load the CSV file
+                d3.csv(csvPath).then(data => {
+                    console.log('CSV Data:', data);
+
+                    // Normalize level1 values for color mapping
+                    const maxLevel1 = d3.max(data, d => +d.level1);
+                    const minLevel1 = d3.min(data, d => +d.level1);
+
+                    const colorScale = d3.scaleLinear()
+                        .domain([minLevel1, maxLevel1]) // Map level1 values
+                        .range(['#FFFFFF', '#000000']); // Map from white to black
+
+                    // Initialize Circos instance
+                    const circos = new Circos({
+                        container: '#chart',
+                        width: 600,
+                        height: 600
+                    });
+
+                    // Generate donut chart layout data
+                    function generateClassStatistics(data) {
+                        const result = [];
+                        const classCounts = data.reduce((counts, item) => {
+                            if (item.class) {
+                                counts[item.class] = (counts[item.class] || 0) + 1;
+                            }
+                            return counts;
+                        }, {});
+                        const colors = [
+                            "#8dd3c7", "#ffffb3", "#bebada", "#fb8072",
+                            "#80b1d3", "#fdb462", "#b3de69", "#fccde5",
+                            "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"
+                        ];
+                        let i = 0;
+                        for (const [block_id, value] of Object.entries(classCounts)) {
+                            result.push({
+                                id: block_id,
+                                len: value,
+                                color: colors[i % colors.length],
+                                label: block_id
+                            });
+                            i++;
+                        }
+                        console.log(result);
+                        return result;
+                    }
+
+                    // Add layout for donut chart
+                    circos.layout(
+                        generateClassStatistics(data),
+                        {
+                            innerRadius: 160,
+                            outerRadius: 200,
+                            gap: 0.1,
+                            labels: {
+                                display: true
+                            },
+                            ticks: {
+                                display: false
+                            }
+                        }
+                    );
+
+                    // Generate heatmap data
+                    let classCounter = {};
+                    const heatmapData = data.map((d) => {
+                        if (!classCounter[d.class]) {
+                            classCounter[d.class] = 0;
+                        }
+                        const currentIndex = classCounter[d.class];
+                        classCounter[d.class]++;
+                        return {
+                            block_id: d.class,
+                            value: d.level1,
+                            start: currentIndex,
+                            end: currentIndex + 1
+                        };
+                    });
+
+                    // Add heatmap
+                    circos.heatmap('heatmap', heatmapData, {
+                        color: 'OrRd',
+                        innerRadius: 0.8,
+                        outerRadius: 1
+                    });
+
+                    // Render Circos chart
+                    circos.render();
+
+                }).catch(err => {
+                    console.error('Error loading CSV data:', err);
+                });
+            })
+            .catch(err => {
+                console.error('Error loading environment configuration:', err);
+            });
+    </script>
+</body>
+
+</html>
