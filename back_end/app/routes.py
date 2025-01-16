@@ -48,3 +48,7 @@ def read_file():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+## 给出文件详情
+# 使用  modelRequest中的接口 请求大模型 组合成答案发给前端

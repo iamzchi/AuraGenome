@@ -1,4 +1,4 @@
-Chromosome,Start,End,Bins,Copy number
+id,Start,End,Bins,Copy number
 1,764788,87109267,79633,2.5
 1,87109268,120217058,30632,2.0
 1,144101324,222713034,71255,4.0

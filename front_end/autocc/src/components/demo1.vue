@@ -79,8 +79,8 @@ function delete_overflow(data, data_column, data_number, reference, reference_co
 function reduceData(rawData, karyotype, range) {
   console.log('RawData:', rawData);
 
-  rawData.forEach(d => console.log('RawData ID:', d.id, typeof d.id));
-  karyotype.forEach(chr => console.log('Karyotype ID:', chr.id, typeof chr.id));
+  // rawData.forEach(d => console.log('RawData ID:', d.id, typeof d.id));
+  // karyotype.forEach(chr => console.log('Karyotype ID:', chr.id, typeof chr.id));
 
   const binLength = range || 10000000;
   const data = [];
@@ -92,7 +92,7 @@ function reduceData(rawData, karyotype, range) {
   karyotype.forEach(chr => {
     const raw = rawDataByChr.get(chr.id) || []; // 获取染色体数据
 
-    console.log('Processing Chr:', chr.id, 'Data Count:', raw.length);
+    // console.log('Processing Chr:', chr.id, 'Data Count:', raw.length);
 
     // 遍历每个区间
     for (let position = 0; position < chr.len; position += binLength) {
@@ -120,6 +120,88 @@ function reduceData(rawData, karyotype, range) {
 
   return data;
 }
+/**
+ * 
+ * @param rawData 参数不是Start/End,而是Position
+ * @param karyotype 同上
+ * @param range 同上
+ */
+function reduceData_Position(rawData, karyotype, range) {
+  console.log('RawData:', rawData);
+
+  // rawData.forEach(d => console.log('RawData ID:', d.id, typeof d.id));
+  // karyotype.forEach(chr => console.log('Karyotype ID:', chr.id, typeof chr.id));
+
+  const binLength = range || 10000000;
+  const data = [];
+
+  // 确保分组使用字符串类型的 id
+  const rawDataByChr = d3.group(rawData, d => String(d.id));
+
+  // 遍历每个染色体
+  karyotype.forEach(chr => {
+    const raw = rawDataByChr.get(chr.id) || []; // 获取染色体数据
+
+    // console.log('Processing Chr:', chr.id, 'Data Count:', raw.length);
+
+    // 遍历每个区间
+    for (let position = 0; position < chr.len; position += binLength) {
+      let counter = 0;
+
+      // 遍历染色体数据，统计当前区间的数据数量
+      raw.forEach(datum => {
+        const pos = parseInt(datum.Position, 10);
+
+        // 检查数据是否落在当前区间内
+        if (pos >= position && pos < position + binLength) {
+          counter++;
+        }
+      });
+
+      data.push({
+        block_id: chr.id,
+        start: position,
+        end: Math.min(position + binLength - 1, chr.len),
+        value: counter
+      });
+    }
+  });
+
+  return data;
+}
+/**
+ * 把输入json中的start/end 变成position
+ * @param inputData json数组，必须包含id\Start\End
+ */
+function transform_startend_position(inputData, number_column) {
+  // Initialize the output array
+  const outputData = [];
+
+  // Iterate over each record in the input array
+  inputData.forEach(record => {
+    // Parse required values from the input record
+    const blockId = record.id;
+    const copyNumber = number_column ? parseFloat(record[number_column]) : 1;
+    const start = parseInt(record.Start, 10);
+    const end = parseInt(record.End, 10);
+
+    // Add two entries: one for Start position and one for End position
+    outputData.push({
+      block_id: blockId,
+      position: start,
+      value: copyNumber
+    });
+
+    outputData.push({
+      block_id: blockId,
+      position: end,
+      value: copyNumber
+    });
+  });
+
+  return outputData;
+}
+
 
 
 
@@ -141,13 +223,10 @@ var gieStainColor = {
 onMounted(async () => {
   try {
     //拿到文件
-    const filepath = 'id_001/file1.csv';
-    let data = await readFile(filepath);
     // console.log('Parsed CSV data:', data);
 
     let hg19 = await d3.json('/data/hg19.json')
 
-    data = delete_overflow(data, 'id', "Position", hg19, "id", "len");
     // console.log("处理后的",data);
 
     let cytobands = await d3.csv('/data/cytobands.csv');
@@ -157,19 +236,33 @@ onMounted(async () => {
       width: 600,
       height: 600,
     });
-    console.log('h19', hg19);
+    // console.log('h19', hg19);
 
     circos.layout(
       hg19,
       {
         innerRadius: 200,
         outerRadius: 250,
-        labels: { display: false },
-        ticks: { display: false },
+        labels: {
+          display: true,
+          radialOffset: 60,
+          color: "black",
+          size: 10
+        },
+        ticks: {
+          display: true,
+          color: 'grey',
+          labels: false,
+          labelSuffix: 'Mb',//百万级别
+          labelDenominator: 5000000,
+          spacing: 5000000,
+          labelSize: 5,
+          labelColor: 'grey',
+
+        },
+        color:"white"
       }
     );
-    // let highlightData = generate_data_with_range(data);
-    // console.log(highlightData);
     let highlightData = cytobands.map(function (d) {
       return {
         block_id: d.id,
@@ -182,12 +275,11 @@ onMounted(async () => {
     let highlightConfig = {
       innerRadius: width / 2 - 100,
       outerRadius: width / 2 - 50,
-      opacity: 0.5,
+      opacity: .7,
       color: function (d) {
         return gieStainColor[d.gieStain]
       }
     }
-    console.log(highlightData);
 
     circos.highlight('highlight', highlightData, highlightConfig)
 
@@ -201,21 +293,20 @@ onMounted(async () => {
     let level2 = await readFile('id_001/file2.csv');
     //第一步：条件过滤
     let level2_1 = level2.filter((item) => {
-      if (item["Type"] == "Insertion"&&item["Validation_status"]!="") {
+      if (item["Type"] == "Insertion" && item["Validation_status"] != "") {
         return true;
       } else {
         return false;
       }
     })
     let level2_2 = level2.filter((item) => {
-      if (item["Type"] == "Deletion"&&item["Validation_status"]!="") {
+      if (item["Type"] == "Deletion" && item["Validation_status"] != "") {
         return true;
       } else {
         return false;
       }
     })
-    console.log("过来看", level2_2);
-    
+
     //第二步：组合成绘图需要的格式
     level2_1 = reduceData(level2_1, hg19, 10000000)
     level2_2 = reduceData(level2_2, hg19, 10000000)
@@ -234,6 +325,271 @@ onMounted(async () => {
       opacity: 1.0
     })
 
+    /**
+     * 橙色柱状图
+     * 体细胞突变的密度（橙色条）：
+        浅橙色条：异型合子的单核苷酸变异（heterozygous）。
+        深橙色条：纯合子的单核苷酸变异（homozygous）。
+        每10 Mb的密度计算来自附表1。
+     */
+    //第0步：拿文件
+    let level3 = await readFile('id_001/file1.csv');
+    level3 = delete_overflow(level3, 'id', "Position", hg19, "id", "len"); //这一步没想好怎么告诉大模型
+
+    //第一步：条件过滤
+    let level3_1 = level3.filter((item) => {
+      if (item["Zygosity"] == "het") {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    let level3_2 = level3.filter((item) => {
+      if (item["Zygosity"] == "hom") {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    //第二步：组合成绘图需要的格式
+    level3_1 = reduceData_Position(level3_1, hg19, 10000000)
+    level3_2 = reduceData_Position(level3_2, hg19, 10000000)
+
+    //画图
+    circos.histogram('level3_1', level3_1, {
+      innerRadius: 0.88,
+      outerRadius: 0.93,
+      color: "#faa95d",
+      opacity: 1.0
+    })
+    circos.histogram('level3_2', level3_2, {
+      innerRadius: 0.80,
+      outerRadius: 0.85,
+      color: "#f0761e",
+      opacity: 1.0
+    })
+
+    /**
+     * 编码突变（彩色方块）：
+        不同颜色表示不同类型的突变：
+          灰色：沉默突变（Silent）。
+          紫色：错义突变（Missense）。
+          红色：无义突变（Nonsense）。
+          黑色：剪接位点突变（Splice site）。
+        数据来源为附表4。
+     */
+    let level4 = await readFile('id_001/file4.csv');
+    //第一步：条件过滤
+    let level4_1 = level4.filter((item) => {
+      if (item["Effect"] == "Silent") {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    let level4_2 = level4.filter((item) => {
+      if (item["Effect"] == "Missense") {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    let level4_3 = level4.filter((item) => {
+      if (item["Effect"] == "Nonsense") {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    let level4_4 = level4.filter((item) => {
+      if (item["Effect"] == "Splice") {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    //第二步：组合成绘图需要的格式
+    level4_1 = level4_1.map((item) => {
+      return {
+        block_id: item["Chromosome"],
+        position: item["Position"],
+        value: 1
+      }
+    })
+    level4_2 = level4_2.map((item) => {
+      return {
+        block_id: item["Chromosome"],
+        position: item["Position"],
+        value: 1
+      }
+    })
+    level4_3 = level4_3.map((item) => {
+      return {
+        block_id: item["Chromosome"],
+        position: item["Position"],
+        value: 1
+      }
+    })
+    level4_4 = level4_4.map((item) => {
+      return {
+        block_id: item["Chromosome"],
+        position: item["Position"],
+        value: 1
+      }
+    })
+    circos.scatter('level4_1', level4_1, {
+      innerRadius: 0.77,
+      outerRadius: 0.80,
+      color: "gray",
+      // opacity: 1.0,
+      fill: "gray",
+      size: 3,
+      strokeColor: "none"
+    })
+    circos.scatter('level4_2', level4_2, {
+      innerRadius: 0.74,
+      outerRadius: 0.77,
+      color: "purple",
+      // opacity: 1.0,
+      fill: "purple",
+      size: 3,
+      strokeColor: "none"
+    })
+    circos.scatter('level4_3', level4_3, {
+      innerRadius: 0.71,
+      outerRadius: 0.74,
+      color: "red",
+      // opacity: 1.0,
+      fill: "red",
+      size: 3,
+      strokeColor: "none"
+    })
+    circos.scatter('level4_4', level4_4, {
+      innerRadius: 0.68,
+      outerRadius: 0.71,
+      color: "black",
+      // opacity: 1.0,
+      fill: "black",
+      size: 3,
+      strokeColor: "none"
+    })
+
+    /**
+     * 蓝色折线图
+     * 拷贝数变化（蓝色线条）：
+        表示在基因组中的拷贝数变化。
+        数据来自附表5。
+     * 
+     */
+    //第0步：获取文件
+    let level5 = await readFile('id_001/file5.csv');
+    //第一步：组合成绘图需要的格式
+    level5 = transform_startend_position(level5, "Copy number")
+    //第二步：画图
+    circos.line('level5', level5, {
+      innerRadius: 0.50,
+      outerRadius: 0.68,
+      color: "#5979ae",
+      axes: [
+        {
+          spacing: 2,
+          color: "gray",
+          thickness: .3,
+          opacity: .5
+        }
+      ],
+      backgrounds: [
+        {
+          color: "#d6d6d6"
+        }
+      ]
+    })
+
+    /**
+     * 红色线
+     * 杂合性丢失区域（LOH）（红色线条）：
+          显示了在基因组中出现的杂合性丢失区域。
+          数据来源于附表6。
+     */
+    let level6 = await readFile('id_001/file6.csv');
+    //第一步：组合成绘图需要的格式
+    level6 = level6.map((item) => {
+      return {
+        'block_id': item["id"],
+        'start': Number(item["Start"]),
+        'end': Number(item["End"]),
+        'value': 1
+      }
+    })
+    // console.log("6666666666", level6);
+
+    //第二步：画图
+    circos.heatmap('level6', level6, {
+      innerRadius: 0.49,
+      outerRadius: 0.50,
+      color: "red",
+      opacity: 1.0,
+    })
+
+    /**
+     * 连线
+     * 重排（绿色和紫色线条）：
+        绿色线条：验证的染色体内重排（intrachromosomal rearrangements）。
+        紫色线条：验证的染色体间重排（interchromosomal rearrangements）。
+        数据来源为附表3。
+     */
+    let level7 = await readFile('id_001/file3.csv');
+    let level7_1 = level7.filter((item) => {
+      if (item["Chromosome"] == item["Chromosome.1"]) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    let level7_2 = level7.filter((item) => {
+      if (item["Chromosome"] != item["Chromosome.1"]) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    level7_1 = level7_1.map((item) => {
+      return {
+        source: {
+          id: item["Chromosome"],
+          start: Number(item["Position"]),
+          end: Number(item["Position"]) + 10000000
+        },
+        target: {
+          id: item["Chromosome.1"],
+          start: Number(item["Position.1"]),
+          end: Number(item["Position.1"]) + 10000000
+        }
+      }
+    })
+    level7_2 = level7_2.map((item) => {
+      return {
+        source: {
+          id: item["Chromosome"],
+          start: Number(item["Position"]),
+          end: Number(item["Position"]) + 10000000
+        },
+        target: {
+          id: item["Chromosome.1"],
+          start: Number(item["Position.1"]),
+          end: Number(item["Position.1"]) + 10000000
+        }
+      }
+    })
+    circos.chords('level7_1', level7_1, {
+      color: "green",
+      radius: 0.48,
+    })
+    circos.chords('level7_2', level7_2, {
+      color: "purple",
+      radius: 0.48,
+    })
+    console.log(level7_2);
 
 
     circos.render();
