@@ -1,0 +1,62 @@
+[
+    {
+        "file_name": "file1",
+        "tags": ["Genetic Variants", "Mutations", "Zygosity", "Intergenic", "Intronic"],
+        "description": "This file contains information about genetic variants, their positions, effects, and zygosity.",
+        "recommends": [
+            {
+                "chart_type": "Highlight",
+                "chart_description": "A track that highlights the positions of mutations across the genome. The 'Position' column is used to locate mutations, and 'Effect' can be categorized to differentiate between mutation types."
+            },
+            {
+                "chart_type": "Heatmap",
+                "chart_description": "A heatmap showing the density of different mutation effects across the genome, where the 'Position' column is used to plot and 'Effect' can be grouped for different mutation types."
+            }
+        ]
+    },
+    {
+        "file_name": "file2",
+        "tags": ["Genetic Variants", "Insertions", "Deletions", "Intronic", "Intergenic"],
+        "description": "This file contains information about insertion and deletion variants, including their sequence, size, and genomic location.",
+        "recommends": [
+            {
+                "chart_type": "Highlight",
+                "chart_description": "A track that highlights insertion and deletion positions along the genome, where the 'Start' and 'End' columns indicate the location of the variants, and 'Effect' can be used to differentiate the variant types."
+            },
+            {
+                "chart_type": "Stack",
+                "chart_description": "A stacked track displaying the density of insertions and deletions at different genomic positions, with 'Start' and 'End' columns to determine the variant locations, and 'Type' used to stack the insertions and deletions."
+            }
+        ]
+    },
+    {
+        "file_name": "file3",
+        "tags": ["Genetic Rearrangements", "Duplications", "Deletions", "Inversions", "Translocations"],
+        "description": "This file contains information about various genetic rearrangements, including duplications, deletions, inversions, and translocations, along with associated genomic locations and effects.",
+        "recommends": [
+            {
+                "chart_type": "Chords",
+                "chart_description": "A chord diagram that illustrates the relationships between rearranged genomic regions, using 'Chromosome' and 'Chromosome.1' to show the connection, and 'Rearrangement type' to categorize the types of rearrangements."
+            },
+            {
+                "chart_type": "Heatmap",
+                "chart_description": "A heatmap showing the frequency and distribution of different rearrangement types across the genome. The 'Position' and 'Position.1' columns can be used to locate the rearrangement sites, with 'Rearrangement type' for categorization."
+            }
+        ]
+    },
+    {
+        "file_name": "file4",
+        "tags": ["Genetic Variants", "Single Nucleotide Polymorphisms", "Missense", "Silent", "Nonsense"],
+        "description": "This file contains information about single nucleotide polymorphisms (SNPs), their effects on genes, and the resulting amino acid changes.",
+        "recommends": [
+            {
+                "chart_type": "Heatmap",
+                "chart_description": "A heatmap showing the distribution and types of mutations, where 'Position' is used for locating mutations across the genome, and 'Effect' or 'Zygosity' can be used for categorization."
+            },
+            {
+                "chart_type": "Stack",
+                "chart_description": "A stacked track representing the occurrence of different mutation types (e.g., 'Missense', 'Silent', 'Nonsense') across the genome, with 'Position' used for genomic location and 'Effect' used for categorizing mutation types."
+            }
+        ]
+    }
+]

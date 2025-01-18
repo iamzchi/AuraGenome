@@ -1,6 +1,9 @@
 from flask import Blueprint, request, jsonify, send_file
-from .utils import get_file_path, file_exists
+from .utils import get_file_path, file_exists,get_discrete_file_path
 import csv
+import pandas as pd
+import json
+import os
 
 bp = Blueprint('main', __name__)
 
@@ -49,6 +52,65 @@ def read_file():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# 将csv文件转换为json，用于前端表格的展示
+def convert_csv_to_json(csv_file_path):
+    # 读取csv文件的前20行
+    df = pd.read_csv(csv_file_path,nrows=20)
+    columns = [{"colKey": col, "title": col} for col in df.columns]
+    data = df.to_dict(orient='records')
+    result = {
+        "columns": columns,
+        "data": data
+    }
+    return result
 
 ## 给出文件详情
-# 使用  modelRequest中的接口 请求大模型 组合成答案发给前端
+# 使用  modelRequest中的接口 组合成答案发给前端
+# 参数：project_name,file_name(文件名需要包含后缀！)
+# 示例：
+# 输入：
+    # {
+    #     "project_name": "id_001",
+    #     "file_name": "file1.csv"
+    # }
+@bp.route('/get-single-file-detail', methods=['POST'])
+def get_single_file_detail():
+    data = request.get_json()
+    project_name = data.get('project_name')
+    file_name = data.get('file_name')
+    # 构建文件路径
+    full_path = get_file_path(f'{project_name}/{file_name}')
+    # 检查文件是否存在
+    if not file_exists(full_path):
+        return jsonify({"error": f"File not found:{project_name}/{file_name}"}), 404
+
+    # 获取文件的前20行并转换为json
+    data_for_table = convert_csv_to_json(full_path)
+
+    # 获取离散值的统计值用于画柱状图,把filename中的.csv换成.json
+    discrete_file_path = get_discrete_file_path(project_name,file_name.replace('.csv',''))
+    # 读取离散值的统计值
+    with open(discrete_file_path, 'r', encoding='utf-8') as discrete_file:
+        discrete_data = json.load(discrete_file) 
+
+    # 获取文件详情
+    file_info_path = get_file_path(f'{project_name}/file_info.json')
+    with open(file_info_path, 'r', encoding='utf-8') as file_info_file:
+        data_info = json.load(file_info_file)
+
+    data_to_return = {"data_for_table": data_for_table, "discrete_data": discrete_data
+    ,"data_info":data_info
+    }
+    # 打印data_to_return
+    # print(data_to_return)
+    # 返回数据给前端
+    return jsonify(data_to_return)
+
+
+
+
+
+
+
+
+

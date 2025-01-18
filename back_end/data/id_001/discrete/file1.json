@@ -1,0 +1,104 @@
+[
+    {
+        "name": "Zygosity: het",
+        "value": 26515,
+        "color": "#ff2918",
+        "class": "het"
+    },
+    {
+        "name": "Zygosity: hom",
+        "value": 6830,
+        "color": "#ff4652",
+        "class": "hom"
+    },
+    {
+        "name": "Effect: Intergenic",
+        "value": 23191,
+        "color": "#ff2918",
+        "class": "Intergenic"
+    },
+    {
+        "name": "Effect: Intronic",
+        "value": 9543,
+        "color": "#ff4652",
+        "class": "Intronic"
+    },
+    {
+        "name": "Effect: UTR",
+        "value": 198,
+        "color": "#ff0f4b",
+        "class": "UTR"
+    },
+    {
+        "name": "Effect: Missense",
+        "value": 168,
+        "color": "#d4334f",
+        "class": "Missense"
+    },
+    {
+        "name": "Effect: Noncoding_RNA",
+        "value": 114,
+        "color": "#d53c25",
+        "class": "Noncoding_RNA"
+    },
+    {
+        "name": "Effect: Silent",
+        "value": 104,
+        "color": "#9b0000",
+        "class": "Silent"
+    },
+    {
+        "name": "Effect: Nonsense",
+        "value": 14,
+        "color": "#ff354a",
+        "class": "Nonsense"
+    },
+    {
+        "name": "Effect: Splice",
+        "value": 13,
+        "color": "#ff2f2d",
+        "class": "Splice"
+    },
+    {
+        "name": "Validation_status: SOMATIC",
+        "value": 454,
+        "color": "#ff2918",
+        "class": "SOMATIC"
+    },
+    {
+        "name": "Validation_status: COSMIC",
+        "value": 43,
+        "color": "#ff4652",
+        "class": "COSMIC"
+    },
+    {
+        "name": "Validation_status: REAL, STATUS UNKNOWN",
+        "value": 25,
+        "color": "#ff0f4b",
+        "class": "REAL, STATUS UNKNOWN"
+    },
+    {
+        "name": "Validation_status: UNCONFIRMED",
+        "value": 16,
+        "color": "#d4334f",
+        "class": "UNCONFIRMED"
+    },
+    {
+        "name": "Validation_zygosity: Het",
+        "value": 322,
+        "color": "#ff2918",
+        "class": "Het"
+    },
+    {
+        "name": "Validation_zygosity: Hom",
+        "value": 171,
+        "color": "#ff4652",
+        "class": "Hom"
+    },
+    {
+        "name": "Validation_zygosity: het",
+        "value": 4,
+        "color": "#ff0f4b",
+        "class": "het"
+    }
+]

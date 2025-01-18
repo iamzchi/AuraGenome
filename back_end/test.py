@@ -16,7 +16,7 @@ client = OpenAI(
 )
 
 # 调用 API 的方法
-def call_openai_api(prompt, model="gpt-4", max_tokens=100):
+def call_openai_api(prompt, model="gpt-4"):
     try:
         # 调用 Chat Completion 接口
         chat_completion = client.chat.completions.create(
@@ -25,7 +25,7 @@ def call_openai_api(prompt, model="gpt-4", max_tokens=100):
                 {"role": "user", "content": prompt},
             ],
             model=model,
-            max_tokens=max_tokens,
+            
             temperature=0.7,
         )
 
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     user_prompt = "请解释一下机器学习的基本概念。"
     
     # 调用 OpenAI 接口
-    response = call_openai_api(user_prompt, model="gpt-4", max_tokens=150)
+    response = call_openai_api(user_prompt, model="gpt-4",)
 
     # 输出结果
     print("AI 的回复：")

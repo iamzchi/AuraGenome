@@ -13,3 +13,10 @@ export const readFile = async (filepath) => {
         throw error;
     }
 };
+
+// 获取单个文件详情，调用/get-single-file-detail方法
+export const getSingleFileDetail = async (project_name,file_name) => {
+    const response = await axios.post('/get-single-file-detail', { project_name,file_name });
+    return response.data;
+};
+

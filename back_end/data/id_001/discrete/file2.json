@@ -1,0 +1,80 @@
+[
+    {
+        "name": "Type: Deletion",
+        "value": 643,
+        "color": "#ff2918",
+        "class": "Deletion"
+    },
+    {
+        "name": "Type: Insertion",
+        "value": 288,
+        "color": "#ff4652",
+        "class": "Insertion"
+    },
+    {
+        "name": "Validation_status: SOMATIC",
+        "value": 65,
+        "color": "#ff2918",
+        "class": "SOMATIC"
+    },
+    {
+        "name": "Validation_status: POLYMERASE_SLIP",
+        "value": 48,
+        "color": "#ff4652",
+        "class": "POLYMERASE_SLIP"
+    },
+    {
+        "name": "Validation_status: FALSE POS",
+        "value": 34,
+        "color": "#ff0f4b",
+        "class": "FALSE POS"
+    },
+    {
+        "name": "Validation_status: GERMLINE",
+        "value": 27,
+        "color": "#d4334f",
+        "class": "GERMLINE"
+    },
+    {
+        "name": "Validation_status: REAL SOMATIC UNKNOWN",
+        "value": 8,
+        "color": "#d53c25",
+        "class": "REAL SOMATIC UNKNOWN"
+    },
+    {
+        "name": "In_polynuc: Yes",
+        "value": 768,
+        "color": "#ff2918",
+        "class": "Yes"
+    },
+    {
+        "name": "In_polynuc: No",
+        "value": 163,
+        "color": "#ff4652",
+        "class": "No"
+    },
+    {
+        "name": "Effect: Intergenic",
+        "value": 602,
+        "color": "#ff2918",
+        "class": "Intergenic"
+    },
+    {
+        "name": "Effect: Intronic",
+        "value": 323,
+        "color": "#ff4652",
+        "class": "Intronic"
+    },
+    {
+        "name": "Effect: Coding",
+        "value": 3,
+        "color": "#ff0f4b",
+        "class": "Coding"
+    },
+    {
+        "name": "Effect: UTR",
+        "value": 3,
+        "color": "#d4334f",
+        "class": "UTR"
+    }
+]

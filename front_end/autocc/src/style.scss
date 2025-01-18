@@ -2,10 +2,17 @@ div{
   box-sizing: border-box;
 }
 .blockTitle{
-  font-size: .9rem;
+  font-size: 1rem;
   font-weight: bold;
   color: rgb(48, 48, 48);
   margin-bottom: .4rem;
+  display: flex;
+  align-items: center;
+  span{
+    margin-left: .3rem;
+    width: fit-content;
+    display: inline-block;
+  }
 }
 .radius20{
   border-radius: 10px;
@@ -15,4 +22,7 @@ div{
   flex-direction: row;
   align-items: center;
   justify-content: center
+}
+html{
+  height: 100vh;
 }

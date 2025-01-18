@@ -62,45 +62,90 @@ const options = [
   }
 ];
 
-import { ref } from 'vue';
+import { ref, watch, watchEffect, nextTick, onMounted } from 'vue';
 const refVersion = ref('');
+//监听改变 refVersion的值，console出来
+watch(refVersion, (newVal) => {
+  console.log(newVal);
+  addNewMessage('ai', 'Got it! I will use ' + newVal + ' as the reference genome version.');
+  addNewMessage('ai', 'Now, you can upload your files.');
+  updateRecommendations(['make it rainbow!', 'make it more beautiful!'])
+});
 
 const messages = ref([
   {
     role: 'ai',
-    content: '你好!我是AI助手,很高兴为您服务。'
-  },
-  {
-    role: 'user',
-    content: '请问你能帮我分析一下基因组数据吗?'
-  },
-  {
-    role: 'ai',
-    content: '当然可以,请问您想分析哪个物种的基因组数据呢?'
+    content: "Initializing..."
   }
 ]);
 const inputText = ref(''); // 新增输入框绑定值
 
 const sendMessage = () => {
   if (!inputText.value.trim()) return;
-
-  messages.value.push({
-    role: 'user',
-    content: inputText.value
-  });
-
-  inputText.value = ''; // 清空输入框
+  addNewMessage('user', inputText.value);
+  inputText.value = '';
 };
-import fileDetail from './fileDetail.vue'
+import fileDetail from './Left/fileDetail.vue'
+
+const inputRecommendItems = ref([])
+
+const uploadFile = () => {
+  console.log('uploadFile')
+}
+import { useChatStore } from '@/stores/useChatStore'
+const chatStore = useChatStore()
+function addNewMessage(role, content) {
+  chatStore.addMessage(role, content)
+}
+
+function updateRecommendations(newArray) {
+  chatStore.updateInputRecommendItems(newArray)
+}
+messages.value = chatStore.messages
+inputRecommendItems.value = chatStore.inputRecommendItems
+
+//watch messages 每次一发生变化，对话框就滚动到最底部，添加动画效果
+// 使用 watch 来监听 chatStore.messages 的变化
+
+function scrollToBottom() {
+  const messagesDom = document.getElementById('messages');
+    if (messagesDom) {
+      console.log(messagesDom);
+      messagesDom.scrollTop = messagesDom.scrollHeight;
+      messagesDom.style.transition = 'all 0.3s ease';
+      messagesDom.style.scrollBehavior = 'smooth';
+    }
+}
+
+
+watch(chatStore.messages, (newMessages) => {
+  console.log("messages changed");
+  nextTick(() => {
+    scrollToBottom()
+  }, {
+    immediate: true,
+    deep: true
+  })
+});
+onMounted(() => {
+  scrollToBottom()
+
+})
 </script>
 <template>
-  <div class="blockTitle">Reference Genome Ver</div>
+  <div class="blockTitle">
+    <t-icon name="attach"></t-icon>
+    <span>Reference Genome Ver</span>
+  </div>
   <t-select width="60%" v-model="refVersion" :options="options" placeholder="请选择" filterable />
 
   <t-divider />
   <div class="row" style="justify-content: space-between;">
-    <div class="blockTitle">Data Store</div>
-    <t-button size="small">
+    <div class="blockTitle">
+      <t-icon name="app"></t-icon>
+      <span>Data Store</span>
+    </div>
+    <t-button @click="uploadFile" size="small">
       <template #icon>
         <t-icon name="upload" />
       </template>
@@ -115,13 +160,16 @@ import fileDetail from './fileDetail.vue'
         file{{ i }}
       </t-menu-item>
     </t-menu>
-    <fileDetail style="width: 70%;"/>
+    <fileDetail style="width: 70%;" />
   </div>
   <t-divider />
-  <div class="blockTitle">Chat with GPT4o</div>
+  <div class="blockTitle">
+    <t-icon name="chat-bubble-smile"></t-icon>
+    <span>Chat with GPT4o</span>
+  </div>
 
   <div id="chat" class="radius20">
-    <div class="messages">
+    <div id="messages">
       <div v-for="(msg, index) in messages" :key="index"
         :class="['message', msg.role === 'ai' ? 'ai-message' : 'user-message']">
         <div class="bubble">{{ msg.content }}</div>
@@ -130,8 +178,15 @@ import fileDetail from './fileDetail.vue'
 
     <div id="inputPanel">
       <div class="row">
-        <t-input v-model="inputText"></t-input>
-        <t-button @click="sendMessage">send</t-button>
+        <t-input v-model="inputText" @enter="sendMessage"></t-input>
+        <t-button @click="sendMessage">
+          send
+        </t-button>
+      </div>
+      <div id="inputRecommend">
+        <div class="inputRecommendItems" v-for="item in inputRecommendItems" :key="item.id">
+          {{ item }} <t-icon name="enter" />
+        </div>
       </div>
     </div>
   </div>
@@ -139,9 +194,34 @@ import fileDetail from './fileDetail.vue'
 
 </template>
 <style scoped lang="scss">
+#inputRecommend {
+  margin-top: .5rem;
+
+  .inputRecommendItems {
+    font-size: .7rem;
+    background-color: var(--td-brand-color-7);
+    padding: .2rem .6rem;
+    border-radius: 40px;
+    width: fit-content;
+    color: white;
+    display: inline-block;
+    margin: .2rem .1rem;
+    transition: all 0.3s ease;
+    align-items: center;
+    text-align: center;
+    //文字上下居中
+    line-height: 1rem;
+  }
+
+  .inputRecommendItems:hover {
+    background-color: var(--td-brand-color-6);
+    cursor: pointer;
+  }
+}
+
 #chat {
   background-color: palevioletred;
-  height: 40vh;
+  height: 36vh;
   padding: 10px;
   position: relative;
 
@@ -163,11 +243,23 @@ import fileDetail from './fileDetail.vue'
   flex-direction: row;
 }
 
-.messages {
+#messages {
   display: flex;
   flex-direction: column;
   gap: 12px;
   padding: 10px;
+  height: 80%;
+  overflow: scroll;
+  //hide scrollbar
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  padding-bottom: 40px;
+
 }
 
 .message {

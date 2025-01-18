@@ -34,7 +34,7 @@ const props = defineProps({
 .custom-table {
   width: 100%;
   border-collapse: collapse;
-  margin: 5px 0;
+  // margin: 5px 0;
 
   th, td {
     // padding: 8px 12px;
