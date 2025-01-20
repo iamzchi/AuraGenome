@@ -34,7 +34,8 @@ const props = defineProps({
 .custom-table {
   width: 100%;
   border-collapse: collapse;
-  // margin: 5px 0;
+  max-width: 100%; /* 设置最大宽度 */
+  overflow-x: auto; /* 水平溢出时显示滚动条 */
 
   th, td {
     // padding: 8px 12px;

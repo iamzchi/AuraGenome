@@ -152,15 +152,15 @@ onMounted(() => {
       upload</t-button>
   </div>
   <div id="dataStore" class="radius20">
-    <t-menu width="30%">
-      <t-menu-item v-for="i in 10" :value="i">
+    <t-menu width="15%">
+      <t-menu-item v-for="i in 8" :value="i">
         <template #icon>
           <t-icon name="file" />
         </template>
         file{{ i }}
       </t-menu-item>
     </t-menu>
-    <fileDetail style="width: 70%;" />
+    <fileDetail style="width: 85%;" />
   </div>
   <t-divider />
   <div class="blockTitle">
@@ -220,7 +220,7 @@ onMounted(() => {
 }
 
 #chat {
-  background-color: palevioletred;
+  background-color: rgb(255, 255, 255);
   height: 36vh;
   padding: 10px;
   position: relative;
@@ -237,6 +237,7 @@ onMounted(() => {
 
 #dataStore {
   background-color: rgb(255, 255, 255);
+  border: 1px solid #ddd;
   height: 40vh;
   padding: 10px;
   display: flex;

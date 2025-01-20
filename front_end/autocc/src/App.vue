@@ -56,12 +56,12 @@ const modelOptions = [
 
 <style scoped lang="scss">
 #body {
-  max-width: 2000px;
+  max-width: 2500px;
   margin: 0 auto;
-  background-color: rgb(238, 238, 238);
+  // background-color: rgb(238, 238, 238);
 
   #head {
-    background-color: pink;
+    background-color: rgb(235, 235, 235);
     height: 40px;
     width: 100%;
     display: flex;
@@ -76,8 +76,8 @@ const modelOptions = [
     overflow: hidden;
 
     #left {
-      background-color: rgb(255, 247, 204);
-      width: 30%;
+      // background-color: rgb(255, 247, 204);
+      width: 35%;
       height: 100%;
       padding: 20px;
     }
@@ -91,9 +91,9 @@ const modelOptions = [
     }
 
     #right {
-      background-color: rgb(245, 255, 230);
+      // background-color: rgb(245, 255, 230);
       height: 100%;
-      width: 20%;
+      width: 15%;
       padding: 20px;
 
     }

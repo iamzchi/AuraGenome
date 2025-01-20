@@ -16,103 +16,162 @@ const innerRadius = ref(3);
 import enConfig from 'tdesign-vue-next/es/locale/en_US';
 </script>
 <template>
-      <t-config-provider :global-config="enConfig">
-    <div id="console_container">
-        <div id="trackName">
-            {{ track.trackName }}
-        </div>
-        <div class="trackDetail">
-            <div class="detailTitle">Display Content</div>
-            <div class="detailContent">{{ track.content }}</div>
-        </div>
-        <div class="trackDetail">
-            <div class="detailTitle">Associated Data</div>
-            <div class="detailContent">{{ track.associatedData }}</div>
-        </div>
-        <div class="trackDetail">
-            <div class="detailTitle">Explanation</div>
-            <div class="detailContent">{{ track.explanation }}</div>
-        </div>
-        <div class="trackDetail">
-            <div class="detailTitle">Elements</div>
-            <div class="detailContent">{{ track.elements }}</div>
-        </div>
-        <div class="trackDetail">
-            <div class="detailTitle">Color Palette</div>
-            <div class="detailContent">
-                <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="color"
-                    :show-primary-color-preview="true" />
-                <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="color"
-                    :show-primary-color-preview="true" />
+    <t-config-provider :global-config="enConfig">
+        <div class="action_container">
+            <t-tooltip content="Grab" trigger="hover">
+                <t-button class="btns" shape="circle" theme="primary" variant="outline">
+                    <t-icon name="wave-left" />
+                </t-button>
+            </t-tooltip>
+            <t-tooltip content="Cursor" trigger="hover">
+                <t-button class="btns" shape="circle" theme="primary" variant="outline">
+                    <t-icon name="cursor" />
+                </t-button>
+            </t-tooltip>
+            <t-space />
+            <t-tooltip content="Download Everything..." trigger="hover">
+                <t-button class="btns" shape="circle" theme="primary" variant="outline">
+                    <t-icon name="download" />
+                </t-button>
+            </t-tooltip>
 
+            <t-tooltip content="Annotation focus area" trigger="hover">
+                <t-button class="btns" shape="circle" theme="primary" variant="outline">
+                    <t-icon name="transform " />
+                </t-button>
+            </t-tooltip>
+            <t-tooltip content="Add Tips" trigger="hover">
+                <t-button class="btns" shape="circle" theme="primary" variant="outline">
+                    <t-icon name="tips" />
+                </t-button>
+            </t-tooltip>
+            <t-tooltip content="Need Help?" trigger="hover">
+                <t-button class="btns" shape="circle" theme="primary" variant="outline">
+                    <t-icon name="help" />
+                </t-button>
+            </t-tooltip>
+        </div>
+        <div class="console_container">
+            <div id="trackName">
+                {{ track.trackName }}
             </div>
-        </div>
-        <div class="trackDetail_row">
-            <div class="detailTitle">Inner Radius</div>
-            <div class="detailContent">
-                <t-input-number style="color:red" theme="column" width="100px" v-model="innerRadius" size="small"
-                    :max="15" :min="-2" :format="numberFormat1" auto-width></t-input-number>
+            <div class="trackDetail">
+                <div class="detailTitle">Display Content</div>
+                <div class="detailContent">{{ track.content }}</div>
             </div>
-        </div>
-        <div class="trackDetail_row">
-            <div class="detailTitle">Outer Radius</div>
-            <div class="detailContent">
-                <t-input-number style="color:red" theme="column" width="100px" v-model="innerRadius" size="small"
-                    :max="15" :min="-2" :format="numberFormat1" auto-width></t-input-number>
+            <div class="trackDetail">
+                <div class="detailTitle">Associated Data</div>
+                <div class="detailContent">{{ track.associatedData }}</div>
             </div>
-        </div>
-        <div class="trackDetail_row">
-            <div class="detailTitle">Gap</div>
-            <div class="detailContent">
-                <t-input-number style="color:red" theme="column" width="100px" v-model="innerRadius" size="small"
-                    :max="15" :min="-2" :format="numberFormat1" auto-width></t-input-number>
+            <div class="trackDetail">
+                <div class="detailTitle">Explanation</div>
+                <div class="detailContent">{{ track.explanation }}</div>
             </div>
-        </div>
-        <div class="trackDetail_row">
-            <div class="detailTitle">Fill Color</div>
-            <div class="detailContent">
-                <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="color"
-                    :show-primary-color-preview="true" />
+            <div class="trackDetail">
+                <div class="detailTitle">Elements</div>
+                <div class="detailContent">{{ track.elements }}</div>
             </div>
-        </div>
-        <div class="trackDetail_row">
-            <div class="detailTitle">Stroke Color</div>
-            <div class="detailContent">
-                <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="color"
-                    :show-primary-color-preview="true" />
-            </div>
-        </div>
-        <div id="btns">
-            <t-button theme="primary" variant="text" size="small">
-                <template #icon>
-                    <t-icon name="lightbulb-circle" />
-                </template>
-                Regenerate this track</t-button>
-                <t-button theme="primary" variant="text" size="small">
-                <template #icon>
-                    <t-icon name="delete" />
-                </template>
-                Delete this track</t-button>
-                <t-button theme="primary" variant="text" size="small">
-                <template #icon>
-                    <t-icon name="file-export" />
-                </template>
-                Export Configuration File</t-button>
-        </div>
-    </div>
+            <div class="trackDetail">
+                <div class="detailTitle">Color Palette</div>
+                <div class="detailContent">
+                    <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="color"
+                        :show-primary-color-preview="true" />
+                    <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="color"
+                        :show-primary-color-preview="true" />
 
-</t-config-provider>
+                </div>
+            </div>
+            <div class="trackDetail_row">
+                <div class="detailTitle">Inner Radius</div>
+                <div class="detailContent">
+                    <t-input-number style="color:red" theme="column" width="100px" v-model="innerRadius" size="small"
+                        :max="15" :min="-2" :format="numberFormat1" auto-width></t-input-number>
+                </div>
+            </div>
+            <div class="trackDetail_row">
+                <div class="detailTitle">Outer Radius</div>
+                <div class="detailContent">
+                    <t-input-number style="color:red" theme="column" width="100px" v-model="innerRadius" size="small"
+                        :max="15" :min="-2" :format="numberFormat1" auto-width></t-input-number>
+                </div>
+            </div>
+            <div class="trackDetail_row">
+                <div class="detailTitle">Gap</div>
+                <div class="detailContent">
+                    <t-input-number style="color:red" theme="column" width="100px" v-model="innerRadius" size="small"
+                        :max="15" :min="-2" :format="numberFormat1" auto-width></t-input-number>
+                </div>
+            </div>
+            <div class="trackDetail_row">
+                <div class="detailTitle">Fill Color</div>
+                <div class="detailContent">
+                    <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="color"
+                        :show-primary-color-preview="true" />
+                </div>
+            </div>
+            <div class="trackDetail_row">
+                <div class="detailTitle">Stroke Color</div>
+                <div class="detailContent">
+                    <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="color"
+                        :show-primary-color-preview="true" />
+                </div>
+            </div>
+            <div id="btns">
+                <t-button theme="primary" variant="text" size="small">
+                    <template #icon>
+                        <t-icon name="lightbulb-circle" />
+                    </template>
+                    Regenerate this track</t-button>
+                <t-button theme="primary" variant="text" size="small">
+                    <template #icon>
+                        <t-icon name="delete" />
+                    </template>
+                    Delete this track</t-button>
+                <t-button theme="primary" variant="text" size="small">
+                    <template #icon>
+                        <t-icon name="file-export" />
+                    </template>
+                    Export Configuration File</t-button>
+            </div>
+        </div>
+
+
+    </t-config-provider>
 </template>
 <style scoped lang="scss">
-#console_container {
+.action_container {
+    display: flex;
+    flex-direction: column;
+    // justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 20px;
+    padding: 10px;
+    border: 1px solid #d6d6d6;
+    width: 50px;
+    margin-right: 10px;
+    height: fit-content;
+
+    .btns {
+        margin-bottom: 10px;
+    }
+
+    .btns:last-child {
+        margin-bottom: 0;
+    }
+
+
+}
+
+.console_container {
     position: relative;
     display: flex;
     flex-direction: column;
     background-color: white;
     border-radius: 20px;
     padding: 1.3rem;
-    border: 1px solid #f1f1f1;
-    max-width: 30%;
+    border: 1px solid #d6d6d6;
+    // width: 100%;
     height: 100%;
 
     #trackName {
@@ -164,7 +223,8 @@ import enConfig from 'tdesign-vue-next/es/locale/en_US';
         }
     }
 }
-#btns{
+
+#btns {
     position: absolute;
     bottom: 20px;
 }

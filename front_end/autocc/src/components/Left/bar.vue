@@ -20,27 +20,27 @@ const setChartOption = () => {
         type: 'shadow'
       }
     },
-    xAxis: {
+    yAxis: {
       type: 'category',
       data: props.data.map(item => item.name),
       axisLabel: {
-        show: false,  // Hide the original X-axis labels
+        show: true,  // Display the Y-axis labels
       },
       axisTick: {
         alignWithLabel: true,
       }
     },
-    yAxis: {
+    xAxis: {
       type: 'value',
-      show: false,  // Hide Y-axis (as per your previous request)
+      show: false,  // Hide X-axis (as per your previous request)
       axisLine: {
-        show: false,  // Hide the Y-axis line
+        show: false,  // Hide the X-axis line
       },
       axisTick: {
-        show: false,  // Hide the Y-axis ticks
+        show: false,  // Hide the X-axis ticks
       },
       axisLabel: {
-        show: false,  // Hide the Y-axis labels
+        show: false,  // Hide the X-axis labels
       },
       splitLine: {
         show: false,  // Hide the grid lines
@@ -57,7 +57,6 @@ const setChartOption = () => {
       {
         data: props.data.map(item => item.value),
         type: 'bar',
-        barWidth: '80%', // Make bars wider to fill the space
         itemStyle: {
           color: function (params) {
             return props.data[params.dataIndex].color;
@@ -65,9 +64,9 @@ const setChartOption = () => {
         },
         label: {
           show: true, // Show the labels on top of the bars
-          position: 'insideTop', // Position the labels at the top of the bars
+          position: 'Right', // Position the labels at the right of the bars
           formatter: function (params) {
-            return props.data[params.dataIndex].class; // Display the 'name' on top of the bars
+            return props.data[params.dataIndex].class; // Display the 'name' on the right side of the bars
           }
         }
       }

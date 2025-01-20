@@ -198,7 +198,8 @@ svg {
     cursor: grab;
     border: 1px solid #ccc;
     border-radius: 20px;
-    background-color: rgb(216, 255, 229);
+    // background-color: rgb(216, 255, 229);
+    background-color: #f4f4f4;
 
 }
 

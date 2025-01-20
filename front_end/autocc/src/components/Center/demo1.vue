@@ -4,45 +4,33 @@ import * as d3 from 'd3';
 import Circos from 'circos';
 import { readFile } from '@/utils/server'; // 引入封装的 readFile API 调用
 
-const chartId = ref('chart');
-
-function generate_data_with_range(data) {
-  return data.map((item) => {
-    return {
-      block_id: item["id"],
-      start: item["Position"],
-      end: String(Number(item["Position"]) + 100),
-    }
-  })
-}
-function generate_data_with_position(data) {
-  return data.map((item) => {
-    return {
-      block_id: item["id"],
-      position: item["Position"],
-      value: 1,
-    }
-  })
-}
-function delete_overflow(data, data_column, data_number, reference, reference_column, reference_number) {
-  // 遍历data，将data中每一行的data_column和data_number与reference的进行比较
+/**
+ * 根据与参考数组的比较条件过滤数据数组中的行。
+ * 保留那些在指定的data_number列中的值小于对应参考数组中reference_number列值的行。
+ *
+ * @param {Array} data - 要过滤的数据对象数组。
+ * @param {string} data_column - 在数据对象中用于匹配参考值的列的键名。
+ * @param {string} data_number - 要与参考数组中数据进行比较的列的键名。
+ * @param {Array} reference - 用于比较的参考数组，包含参考值。
+ * @param {string} reference_column - 参考数组中用于匹配data_column的列的键名。
+ * @param {string} reference_number - 参考数组中用于比较的列的键名。
+ * @returns {Array} - 返回一个包含符合条件的行的新数组。
+ */
+ function delete_overflow(data, data_column, data_number, reference, reference_column, reference_number) {
   return data.filter(row => {
-    // 获取data中的当前行对应的列值
-    const dataColumnValue = row[data_column];
-    const dataNumberValue = row[data_number];
+    const dataColumnValue = row[data_column];  // 获取当前行对应data_column的值
+    const dataNumberValue = row[data_number];  // 获取当前行对应data_number的值
 
-    // 查找reference中，符合条件的行（参考值的column值与data_column匹配）
-    const referenceRow = reference.find(ref => ref[reference_column] === dataColumnValue);
+    const referenceRow = reference.find(ref => ref[reference_column] === dataColumnValue);  // 查找参考数组中与data_column匹配的行
 
-    // 如果找到了匹配的reference行且data_number小于reference_number，则保留该行
-    if (referenceRow && dataNumberValue < referenceRow[reference_number]) {
-      return true; // 保留该行
+    if (referenceRow && dataNumberValue < referenceRow[reference_number]) {  // 如果找到了匹配的参考行且data_number小于参考值
+      return true;  // 保留该行
     }
 
-    // 否则，删除该行
-    return false;
+    return false;  // 否则，删除该行
   });
 }
+
 
 /**
  * 函数说明：reduceData
@@ -202,9 +190,6 @@ function transform_startend_position(inputData, number_column) {
   return outputData;
 }
 
-
-
-
 var gieStainColor = {
   gpos100: 'rgb(0,0,0)',
   gpos: 'rgb(0,0,0)',
@@ -219,30 +204,29 @@ var gieStainColor = {
   stalk: 'rgb(100,127,164)',
   select: 'rgb(135,177,255)'
 }
-
 onMounted(async () => {
   try {
-    //拿到文件
-    // console.log('Parsed CSV data:', data);
-
+    //获取参考基因组文件
     let hg19 = await d3.json('/data/hg19.json')
-
-    // console.log("处理后的",data);
-
     let cytobands = await d3.csv('/data/cytobands.csv');
-    let width = 600;
-    const circos = new Circos({
-      container: `#${chartId.value}`,
-      width: 600,
-      height: 600,
-    });
-    // console.log('h19', hg19);
 
+    //设置画布
+    let chartWidth = document.getElementById('chart').clientWidth;
+    let width = chartWidth;
+    let innerRadius = chartWidth/2-100;
+    let outerRadius = chartWidth/2-100+50;
+
+    //初始化circos
+    const circos = new Circos({
+      container: `#chart`,
+      width: width,
+      height: width,
+    });
     circos.layout(
       hg19,
       {
-        innerRadius: 200,
-        outerRadius: 250,
+        innerRadius: innerRadius,
+        outerRadius: outerRadius,
         labels: {
           display: true,
           radialOffset: 60,
@@ -260,9 +244,9 @@ onMounted(async () => {
           labelColor: 'grey',
 
         },
-        color:"white"
       }
     );
+    //绘制参考基因组染色体
     let highlightData = cytobands.map(function (d) {
       return {
         block_id: d.id,
@@ -273,8 +257,8 @@ onMounted(async () => {
     })
 
     let highlightConfig = {
-      innerRadius: width / 2 - 100,
-      outerRadius: width / 2 - 50,
+      innerRadius: innerRadius,
+      outerRadius: outerRadius,
       opacity: .7,
       color: function (d) {
         return gieStainColor[d.gieStain]
@@ -282,7 +266,8 @@ onMounted(async () => {
     }
 
     circos.highlight('highlight', highlightData, highlightConfig)
-
+    // 以上都是一些基本配置
+    // 下面才是真正需要llm生成的图表
 
     /**
      * 绿色柱状图
@@ -313,14 +298,14 @@ onMounted(async () => {
 
     //第三步：绘图
     circos.histogram('level2_1', level2_1, {
-      innerRadius: width / 2 - 112,
-      outerRadius: width / 2 - 108,
+      innerRadius: .95,
+      outerRadius: .96,
       color: "red",
       opacity: 1.0
     })
     circos.histogram('level2_2', level2_2, {
-      innerRadius: width / 2 - 107,
-      outerRadius: width / 2 - 102,
+      innerRadius: .96,
+      outerRadius: .97,
       color: "green",
       opacity: 1.0
     })
@@ -600,7 +585,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div :id="chartId" style="width: 600px; height: 600px;"></div>
+  <div id="chart"></div>
 </template>
 
 <style scoped>
@@ -608,5 +593,9 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%; 
+  height: 100%;
+  /* background-color: rgb(239, 239, 239); */
+
 }
 </style>
