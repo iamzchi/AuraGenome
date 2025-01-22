@@ -274,6 +274,13 @@ onMounted(async () => {
      * 插入和缺失（绿色矩形）：
         浅绿色矩形：验证的插入（来自附表2）。
         深绿色矩形：验证的缺失（来自附表2）。
+        prompt: 
+        用file2，Insertion类型画一个环形柱状图的track，深绿色，Validation_status类型画一个环形柱状图的track，浅绿色
+        
+        ai：环形柱状图需要对染色体数据聚合，您想按照什么样的聚合距离？（回复a默认按照10Mb的距离进行聚合）
+        user：a
+        ai：好的，正在绘图马上就好！
+        
      */
     let level2 = await readFile('id_001/file2.csv');
     //第一步：条件过滤
