@@ -140,6 +140,12 @@ var data = [
 
 ### Highlight
 
+<p align="center">
+  <img src="doc/highlight.png" width="60%" alt="highlight">
+  <br/>
+  <i>Human karyotype with cytobands highlighted (<a href="demo/highlight.js">source</a>)</i>
+</p>
+
 To add a highlight to your circos instance:
 
 ```javascript
@@ -231,6 +237,13 @@ The available configuration fields are:
 **Note**: The tooltip option is not available for line track. To display a tooltip, you should superimpose an invisble `scatter` track (`fill: false` and `strokeWidth: 0`) and set a tooltip for this track.
 
 ### Scatter
+
+<p align="center">
+  <img src="doc/scatter.png" width="60%" alt="scatter">
+  <br/>
+  <i><a href="demo/line.js">source</a></i>
+</p>
+
 ```javascript
 myCircos.scatter('scatter1', data, configuration);
 ```
@@ -258,6 +271,13 @@ The available configuration fields are:
 - [events](#events)
 
 ### Stack
+
+<p align="center">
+  <img src="doc/stack.png" width="60%" alt="stack">
+  <br/>
+  <i><a href="demo/stack.js">source</a></i>
+</p>
+
 ```javascript
 myCircos.stack('stack', data, configuration);
 ```
@@ -287,6 +307,13 @@ Configuration:
 ```
 
 ### Text
+
+<p align="center">
+  <img src="doc/text.png" width="60%" alt="text">
+  <br/>
+  <i><a href="demo/text.js">source</a></i>
+</p>
+
 ```javascript
 myCircos.text('text', data, configuration);
 ```
@@ -676,142 +703,16 @@ This should be an integer. The higher it is the more above the track will appear
 
 
 ----
----
-
-Above is the usage documentation for this function library.  
-Next, I will guide you on how to load data, process it, and use it to generate charts. Below are the detailed steps.
-
-1. **Loading Data**  
-You can load data from a specified path using the `readFile` function. This is commonly used to load CSV or JSON files. The loaded data will be used for subsequent chart generation.  
-For example:  
-```js
+上面是关于这个函数库的使用文档
+接下来我将指导如何加载数据、处理数据以及如何使用这些数据绘制图表。以下是详细的步骤。
+1. 读取数据
+你可以通过 readFile 函数从指定路径加载数据。这通常用于加载 CSV 或 JSON 格式的文件。读取的数据将用于后续的图表生成。
+例如：
 let level2 = await readFile('id_001/file2.csv'); 
-```
 
-2. **Processing Data**  
-After loading the data, some preprocessing is needed according to the requirements of the target chart.  
-For instance, you may need to aggregate data by chromosome intervals, filter based on certain conditions, or transform data formats. These operations are performed by the following utility functions:  
-- **Aggregate Data**  
-  - When creating Heatmap, Highlight, or Histogram charts, you need to use `reduceData` and `reduceData_Position` to aggregate data based on chromosome or position intervals.  
-- **Transform Data**  
-   If the file contains columns named `Start` and `End`, but the chart requires `Position`, you need to use `transform_startend_position`. This function automatically converts `Start` and `End` to `Position` and returns the new data.
+2. 处理数据
+加载数据后，需要按照目标图表的要求对数据进行一些预处理。
+比如
 
-3. **Generate Charts**  
-Charts are generated using the format `circos.{chartType}('track-id', data, configuration)`.  
-The `track-id` is defined by you, but it must be a unique value.
 
----
-
-### Below is a detailed explanation of the utility functions for data processing:
-
-# Function Documentation
-
-This document describes in detail the functionality, parameters, and return values of three functions. These functions are primarily used for processing genomic data, performing data aggregation, and conversion operations. The details are as follows:
-
----
-
-## 1. `reduceData`
-
-### Functionality  
-This function divides the data based on the chromosome information and counts the number of data points in each interval. It is suitable for data represented by `Start` and `End` positions.
-
-### Parameters  
-
-- **rawData**  
-  - **Type**: Array  
-  - **Description**: The genomic data array, where each object contains the following fields:  
-    - `id`: Chromosome ID (string).  
-    - `Start`: Starting position (number).  
-    - `End`: Ending position (number).  
-
-- **karyotype**  
-  - **Type**: Array  
-  - **Description**: The chromosome information array, where each object contains the following fields:  
-    - `id`: Chromosome ID (string).  
-    - `len`: Chromosome length (number).  
-
-- **range**  
-  - **Type**: Number (optional)  
-  - **Description**: Interval length, default is `10,000,000`.  
-
-### Return Value  
-- **Type**: Array  
-- **Description**: The aggregated result array, where each object contains the following fields:  
-  - `block_id`: Chromosome ID.  
-  - `start`: Interval start position.  
-  - `end`: Interval end position.  
-  - `value`: The number of data points in the interval.
-
-### Example Code  
-```js
-const result = reduceData(rawData, karyotype, 5000000);
-```
-
----
-
-## 2. `reduceData_Position`
-
-### Functionality  
-This function is similar to `reduceData`, but the input data uses a single `Position` field instead of `Start` and `End`. This function is suitable for data that only includes `Position`.
-
-### Parameters  
-
-- **rawData**  
-  - **Type**: Array  
-  - **Description**: The genomic data array, where each object contains the following fields:  
-    - `id`: Chromosome ID (string).  
-    - `Position`: Position of the data (number).  
-
-- **karyotype**  
-  - **Type**: Array  
-  - **Description**: The chromosome information array, where each object contains the following fields:  
-    - `id`: Chromosome ID (string).  
-    - `len`: Chromosome length (number).  
-
-- **range**  
-  - **Type**: Number (optional)  
-  - **Description**: Interval length, default is `10,000,000`.  
-
-### Return Value  
-- **Type**: Array  
-- **Description**: The aggregated result array, where each object contains the following fields:  
-  - `block_id`: Chromosome ID.  
-  - `start`: Interval start position.  
-  - `end`: Interval end position.  
-  - `value`: The number of data points in the interval.
-
-### Example Code  
-```js
-const result = reduceData_Position(rawData, karyotype, 5000000);
-```
-
----
-
-## 3. `transform_startend_position`
-
-### Functionality  
-This function converts the `Start` and `End` positions in the input genomic data into the corresponding `Position`, generating data entries for each position. It is used for converting interval data into specific position data.
-
-### Parameters  
-
-- **inputData**  
-  - **Type**: Array (JSON format)  
-  - **Description**: The genomic data array containing `id`, `Start`, and `End` fields.  
-
-- **number_column**  
-  - **Type**: String (optional)  
-  - **Description**: Specifies the column name to be converted into the `value` field. If this parameter is provided, the values from this column will be parsed as floating-point numbers; otherwise, `value` will default to 1.  
-
-### Return Value  
-- **Type**: Array  
-- **Description**: The transformed data array, where each object contains the following fields:  
-  - `block_id`: Chromosome ID.  
-  - `position`: Converted position (from `Start` or `End`).  
-  - `value`: The corresponding data value at that position (if `number_column` is provided, it uses that column’s value; otherwise, it defaults to 1).
-
-### Example Code  
-```js
-const result = transform_startend_position(inputData, "ValueColumn");
-```
-
----
+比如按染色体区间聚合数据、过滤某些条件、或者转换数据格式。这些操作由以下的函数完成：

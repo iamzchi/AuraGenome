@@ -79,12 +79,85 @@ const messages = ref([
   }
 ]);
 const inputText = ref(''); // 新增输入框绑定值
+function sendVueFileToBackend() {
+  // 读取 Vue 文件的内容
+  const filePath = '@/components/Center/demo1.vue';
 
-const sendMessage = () => {
+  // 你需要将文件的内容读取到 JavaScript 中
+  // 假设文件内容已经存在于变量 `fileContent` 中
+  const fileContent = getVueFileContent(filePath);  // 获取 Vue 文件的内容，这个函数你需要实现
+
+  // 后端接口 URL
+  const backendUrl = 'https://your-backend-api.com/upload';
+
+  // 创建请求的负载
+  const payload = {
+    filename: 'demo1.vue',
+    content: fileContent
+  };
+
+  // 使用 Fetch API 将文件内容发送给后端
+  fetch(backendUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log('成功上传文件内容:', data);
+    })
+    .catch(error => {
+      console.error('上传文件失败:', error);
+    });
+}
+
+// 这个函数只是一个示例，实际开发中你需要实现一个方法来获取 Vue 文件的内容
+function getVueFileContent(filePath) {
+}
+
+import { getQueryResult } from '@/utils/server';
+const lastQuery = ref('');
+const sendMessage = async () => {
   if (!inputText.value.trim()) return;
   addNewMessage('user', inputText.value);
+  let query = inputText.value;
   inputText.value = '';
+
+  console.log("将目前有的前端文件内容传给后端");
+  if (query == 'd' || query == 'D') {
+    setTimeout(() => {
+      addNewMessage('ai', "OK, I will use the default aggregation distance of 10Mb.");
+    }, 1000);
+    setTimeout(() => {
+      addNewMessage('ai', "Generating, please wait a moment...");
+    }, 2000);
+    generateCode(lastQuery.value);
+    lastQuery.value = '';
+  } else if (lastQuery.value == '') {
+    let queryResult = await getQueryResult(query);
+    queryResult = queryResult.query_info;
+    console.log(queryResult);
+    console.log(queryResult.query_type);
+    if (queryResult.query_type == "a") {
+      // 添加新的代码
+      if (queryResult.chart_type == "histogram" || queryResult.chart_type == "highlight" || queryResult.chart_type == "heatmap") {
+        addNewMessage('ai', `Generating a ${queryResult.chart_type} requires aggregating the chromosome data ${queryResult.file_name} you uploaded. What aggregation distance do you want? (Reply "d" to aggregate according to the distance of 10Mb by default)`);
+        lastQuery.value = query;
+      } else if (queryResult.chart_type == "line" || queryResult.chart_type == "scatter") {
+        addNewMessage('ai', `Generating ${queryResult.chart_type} using ${queryResult.file_name}, please wait a moment...`);
+        generateCode(query);
+      }
+    } else if (queryResult.query_type == "b") {
+      // 修改现有的文件
+      console.log("修改现有的文件");
+    }
+  }
 };
+function generateCode(query){
+  console.log("生成代码,lastQuery:",lastQuery.value);
+}
 import fileDetail from './Left/fileDetail.vue'
 
 const inputRecommendItems = ref([])
@@ -109,12 +182,12 @@ inputRecommendItems.value = chatStore.inputRecommendItems
 
 function scrollToBottom() {
   const messagesDom = document.getElementById('messages');
-    if (messagesDom) {
-      console.log(messagesDom);
-      messagesDom.scrollTop = messagesDom.scrollHeight;
-      messagesDom.style.transition = 'all 0.3s ease';
-      messagesDom.style.scrollBehavior = 'smooth';
-    }
+  if (messagesDom) {
+    console.log(messagesDom);
+    messagesDom.scrollTop = messagesDom.scrollHeight;
+    messagesDom.style.transition = 'all 0.3s ease';
+    messagesDom.style.scrollBehavior = 'smooth';
+  }
 }
 
 
@@ -131,6 +204,8 @@ onMounted(() => {
   scrollToBottom()
 
 })
+
+
 </script>
 <template>
   <div class="blockTitle">

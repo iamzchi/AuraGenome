@@ -20,3 +20,7 @@ export const getSingleFileDetail = async (project_name,file_name) => {
     return response.data;
 };
 
+export const getQueryResult = async (query) => {
+    const response = await axios.post('/get-query-result', { query });
+    return response.data;
+};

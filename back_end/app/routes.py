@@ -4,6 +4,8 @@ import csv
 import pandas as pd
 import json
 import os
+from .agents.Judge import use_judge
+from .agents.Generator import use_generator
 
 bp = Blueprint('main', __name__)
 
@@ -107,6 +109,25 @@ def get_single_file_detail():
     return jsonify(data_to_return)
 
 
+# 给出用户query的解析结果
+@bp.route('/get-query-result', methods=['POST'])
+def get_query_result():
+    data = request.get_json()
+    query = data.get('query')
+    query_info = use_judge(query)
+    return jsonify({"query_info": query_info})
+
+
+# 生成代码
+@bp.route('/generate-code', methods=['POST'])
+def generate_code():
+    data = request.get_json()
+    query = data.get('query')
+    queryInfo = data.get('queryInfo')
+    basecode = data.get('basecode')
+    status = use_generator(query,queryInfo,basecode)
+
+    return jsonify({"status": status})
 
 
 
