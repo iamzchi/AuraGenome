@@ -119,6 +119,7 @@ function getVueFileContent(filePath) {
 
 import { getQueryResult } from '@/utils/server';
 const lastQuery = ref('');
+const queryInfo = ref('');
 const sendMessage = async () => {
   if (!inputText.value.trim()) return;
   addNewMessage('user', inputText.value);
@@ -133,12 +134,15 @@ const sendMessage = async () => {
     setTimeout(() => {
       addNewMessage('ai', "Generating, please wait a moment...");
     }, 2000);
-    generateCode(lastQuery.value);
+    generateCode(lastQuery.value, queryInfo.value);
     lastQuery.value = '';
   } else if (lastQuery.value == '') {
     let queryResult = await getQueryResult(query);
     queryResult = queryResult.query_info;
-    console.log(queryResult);
+    console.log("queryResult:", queryResult);
+    queryInfo.value = queryResult;
+    console.log("queryInfo.value:", queryInfo.value);
+
     console.log(queryResult.query_type);
     if (queryResult.query_type == "a") {
       // 添加新的代码
@@ -147,7 +151,7 @@ const sendMessage = async () => {
         lastQuery.value = query;
       } else if (queryResult.chart_type == "line" || queryResult.chart_type == "scatter") {
         addNewMessage('ai', `Generating ${queryResult.chart_type} using ${queryResult.file_name}, please wait a moment...`);
-        generateCode(query);
+        generateCode(query, queryInfo.value);
       }
     } else if (queryResult.query_type == "b") {
       // 修改现有的文件
@@ -155,8 +159,42 @@ const sendMessage = async () => {
     }
   }
 };
-function generateCode(query){
-  console.log("生成代码,lastQuery:",lastQuery.value);
+import { getGenerateCode } from '@/utils/server';
+import { useStepStore } from '@/stores/useStepStore.js';
+const stepStore = useStepStore();
+const updateStep = stepStore.updateStep;
+async function generateCode(query, queryInfojson) {
+  let current_step = stepStore.step;
+  console.log(`发送的内容：${query},${queryInfojson}`);
+  let project_id = "id_001";
+  // { query,queryInfo,project_id,current_step })
+  const res = await getGenerateCode(query, queryInfojson, project_id, current_step);
+  console.log(`generatecode返回的内容：${res.status},string:${res.status.toString()}`);
+  if (res.status == 200) {
+    console.log("成功拿到返回后（本次生成图表成功）");
+    //成功拿到返回后（本次生成图表成功）
+    if (current_step == "root") {
+      updateStep("step1");
+      addNewMessage('ai', "Done! and I will update the step to step1");
+    } else {
+      //获取current_step中的数字
+      const stepNumber = current_step.match(/\d+/); // 使用正则表达式提取数字
+      if (stepNumber) {
+        const nextStep = `step${parseInt(stepNumber[0]) + 1}`;
+        updateStep(nextStep); // 更新为下一步
+        console.log(`更新到步骤：${nextStep}`);
+        addNewMessage('ai', "Done! and I will update the step to " + nextStep);
+      } else {
+        console.log("当前步骤中没有数字，无法更新步骤");
+      }
+    }
+  }else{
+    console.log("本次生成图表失败");
+  }
+  
+  console.log("本次生成图表全部结束");
+  
+
 }
 import fileDetail from './Left/fileDetail.vue'
 

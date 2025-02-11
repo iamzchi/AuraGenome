@@ -13,6 +13,8 @@ export const useChatStore = defineStore('chat', () => {
     { role: 'ai', content: 'Here it is!' },
     { role: 'user', content: 'Change the color into Reds' },
     { role: 'ai', content: 'No problem! anything else?' },
+    { role: 'user', content: 'generate a dark blue bar chart using file1.csv' },
+    { role: 'user', content: 'using file2.csv to generate a dark-green bar chart, and use the "Insertion" type column and Validation column should not be empty.' },
   ])
 
   const inputRecommendItems = ref([

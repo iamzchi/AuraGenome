@@ -1,0 +1,10 @@
+接下来的计划
+先实现图表001.
+对每一层进行试错。
+找出问题，总结出来，保证下次不要再犯。
+
+
+第一层
+using file2.csv to generate a dark-green bar chart, and use the "Insertion" type column and Validation column should not be empty.
+
+第二层

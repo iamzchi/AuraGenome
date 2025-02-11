@@ -16,7 +16,7 @@ client = OpenAI(
 )
 
 # 调用 API 的方法
-def call_openai_api(prompt, model="gpt-4"):
+def call_openai_api(prompt, model="gpt-4o"):
     try:
         # 调用 Chat Completion 接口
         chat_completion = client.chat.completions.create(

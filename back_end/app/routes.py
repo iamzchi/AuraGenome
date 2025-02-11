@@ -124,8 +124,12 @@ def generate_code():
     data = request.get_json()
     query = data.get('query')
     queryInfo = data.get('queryInfo')
-    basecode = data.get('basecode')
-    status = use_generator(query,queryInfo,basecode)
+    #只需要两个参数
+    current_step = data.get('current_step')
+    project_id = data.get('project_id')
+    print(f"generate_code的参数：{query,current_step,project_id,queryInfo}")
+    status = use_generator(query,current_step,project_id,queryInfo)
+    print(f"generate_code返回的内容：{status}")
 
     return jsonify({"status": status})
 

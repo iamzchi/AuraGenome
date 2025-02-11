@@ -711,6 +711,9 @@ This document describes in detail the functionality, parameters, and return valu
 ---
 
 ## 1. `reduceData`
+### What type of chart will use this function?
+- Histogram
+- Heatmap
 
 ### Functionality  
 This function divides the data based on the chromosome information and counts the number of data points in each interval. It is suitable for data represented by `Start` and `End` positions.
@@ -750,6 +753,9 @@ const result = reduceData(rawData, karyotype, 5000000);
 ---
 
 ## 2. `reduceData_Position`
+### What type of chart will use this function?
+- Histogram
+- Heatmap
 
 ### Functionality  
 This function is similar to `reduceData`, but the input data uses a single `Position` field instead of `Start` and `End`. This function is suitable for data that only includes `Position`.
@@ -788,6 +794,9 @@ const result = reduceData_Position(rawData, karyotype, 5000000);
 ---
 
 ## 3. `transform_startend_position`
+### What type of chart will use this function?
+- Line
+- Scatter
 
 ### Functionality  
 This function converts the `Start` and `End` positions in the input genomic data into the corresponding `Position`, generating data entries for each position. It is used for converting interval data into specific position data.
