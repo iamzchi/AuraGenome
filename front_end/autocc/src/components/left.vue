@@ -114,12 +114,10 @@ function sendVueFileToBackend() {
 }
 
 // 这个函数只是一个示例，实际开发中你需要实现一个方法来获取 Vue 文件的内容
-function getVueFileContent() {
-  //获取@/components/Center/demo1.vue的内容
-  const filePath = '@/components/Center/demo1.vue';
+function getVueFileContent(filePath) {
 }
 
-import { getQueryResult,generateCode } from '@/utils/server';
+import { getQueryResult } from '@/utils/server';
 const lastQuery = ref('');
 const queryInfo = ref('');
 const sendMessage = async () => {
@@ -136,13 +134,15 @@ const sendMessage = async () => {
     setTimeout(() => {
       addNewMessage('ai', "Generating, please wait a moment...");
     }, 2000);
-    handleGenerateCode(lastQuery.value,queryInfo.value);
+    generateCode(lastQuery.value, queryInfo.value);
     lastQuery.value = '';
   } else if (lastQuery.value == '') {
     let queryResult = await getQueryResult(query);
     queryResult = queryResult.query_info;
+    console.log("queryResult:", queryResult);
     queryInfo.value = queryResult;
-    console.log(queryResult);
+    console.log("queryInfo.value:", queryInfo.value);
+
     console.log(queryResult.query_type);
     if (queryResult.query_type == "a") {
       // 添加新的代码
@@ -151,7 +151,7 @@ const sendMessage = async () => {
         lastQuery.value = query;
       } else if (queryResult.chart_type == "line" || queryResult.chart_type == "scatter") {
         addNewMessage('ai', `Generating ${queryResult.chart_type} using ${queryResult.file_name}, please wait a moment...`);
-        handleGenerateCode(query,queryInfo.value);
+        generateCode(query, queryInfo.value);
       }
     } else if (queryResult.query_type == "b") {
       // 修改现有的文件
@@ -159,11 +159,42 @@ const sendMessage = async () => {
     }
   }
 };
+import { getGenerateCode } from '@/utils/server';
+import { useStepStore } from '@/stores/useStepStore.js';
+const stepStore = useStepStore();
+const updateStep = stepStore.updateStep;
+async function generateCode(query, queryInfojson) {
+  let current_step = stepStore.step;
+  console.log(`发送的内容：${query},${queryInfojson}`);
+  let project_id = "id_001";
+  // { query,queryInfo,project_id,current_step })
+  const res = await getGenerateCode(query, queryInfojson, project_id, current_step);
+  console.log(`generatecode返回的内容：${res.status},string:${res.status.toString()}`);
+  if (res.status == 200) {
+    console.log("成功拿到返回后（本次生成图表成功）");
+    //成功拿到返回后（本次生成图表成功）
+    if (current_step == "root") {
+      updateStep("step1");
+      addNewMessage('ai', "Done! and I will update the step to step1");
+    } else {
+      //获取current_step中的数字
+      const stepNumber = current_step.match(/\d+/); // 使用正则表达式提取数字
+      if (stepNumber) {
+        const nextStep = `step${parseInt(stepNumber[0]) + 1}`;
+        updateStep(nextStep); // 更新为下一步
+        console.log(`更新到步骤：${nextStep}`);
+        addNewMessage('ai', "Done! and I will update the step to " + nextStep);
+      } else {
+        console.log("当前步骤中没有数字，无法更新步骤");
+      }
+    }
+  }else{
+    console.log("本次生成图表失败");
+  }
+  
+  console.log("本次生成图表全部结束");
+  
 
-function handleGenerateCode(query,queryInfo){
-  console.log("生成代码,lastQuery:",lastQuery.value);
-  let basecode = getVueFileContent();
-  generateCode(query,queryInfo,basecode);
 }
 import fileDetail from './Left/fileDetail.vue'
 
@@ -302,7 +333,8 @@ onMounted(() => {
 }
 
 #chat {
-  background-color: #f4f4f4;
+  // background-color: #f4f4f4;
+  border: 1px solid #ddd;
   height: 36vh;
   padding: 10px;
   position: relative;
@@ -368,6 +400,7 @@ onMounted(() => {
 
 .ai-message .bubble {
   background-color: #f0f0f0;
+  // background-color: #ffffff;
   color: #000;
   max-width: 90%; // 修改为90%
 }
