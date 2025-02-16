@@ -18,6 +18,11 @@ const setChartOption = () => {
       trigger: 'axis',
       axisPointer: {
         type: 'shadow'
+      },
+      position: (point) => {
+        // point is an array [x, y] of the mouse coordinates
+        // This will set the tooltip to the right of the mouse cursor
+        return [point[0] + 10, point[1]];
       }
     },
     yAxis: {

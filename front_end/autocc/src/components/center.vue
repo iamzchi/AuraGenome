@@ -17,12 +17,12 @@ import sequenceLog from './Center/sequenceLog.vue'
 <style scoped lang="scss">
 #panel{
     width: 100%;
-    height: 60vh;
+    height: 75vh;
     // background-color: aliceblue;
 }
 #sequenceLog{
     width: 100%;
-    height: 30vh;
+    height: 15vh;
     // background-color: greenyellow;
 }
 </style>

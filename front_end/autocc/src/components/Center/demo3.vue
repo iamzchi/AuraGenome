@@ -13,8 +13,8 @@ onMounted(async () => {
     //设置画布
     let chartWidth = document.getElementById('chart').clientWidth;
     let width = chartWidth;
-    let innerRadius = chartWidth/2-100;
-    let outerRadius = chartWidth/2-100+50;
+    let innerRadius = chartWidth / 2 - 100;
+    let outerRadius = chartWidth / 2 - 100 + 50;
 
     //初始化circos
     const circos = new Circos({
@@ -179,7 +179,7 @@ onMounted(async () => {
         return false;
       }
     })
- 
+
     //第二步：组合成绘图需要的格式
     level4_1 = level4_1.map((item) => {
       return {
@@ -212,7 +212,7 @@ onMounted(async () => {
       size: 3,
       strokeColor: "none"
     })
-    
+
     /**
      * 蓝紫色线
      * 杂合性丢失区域（LOH）（蓝紫色线条）：
@@ -252,7 +252,7 @@ onMounted(async () => {
         return false;
       }
     })
-    
+
     level7_1 = level7_1.map((item) => {
       return {
         source: {
@@ -274,10 +274,67 @@ onMounted(async () => {
     })
 
     circos.render();
+
+    console.log("渲染完成！");
+    let allDom = document.querySelectorAll('.all')[0]
+    console.log(allDom);
+    // 获取所有第一层子div
+    let children = allDom.children;
+    console.log("children", children);
+    // 遍历每个子div并添加hover事件监听
+
+    for (let child of children) {
+      child.addEventListener('mouseenter', () => {
+        child.style.cursor = 'pointer';
+        // 获取 g 元素的边界信息
+        let rect = child.getBoundingClientRect();
+
+        // 获取宽度和高度
+        let width = rect.width;
+        let height = rect.height;
+
+        console.log(`g元素的宽度：${width}`);
+        console.log(`g元素的高度：${height}`);
+        // 创建一个SVG圆圈元素
+        let circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", 0);
+        circle.setAttribute("cy", 0);
+        circle.setAttribute("r", width/2);
+        circle.setAttribute("stroke", "#d9d9d9");
+        circle.setAttribute("fill", "none"); 
+        circle.setAttribute("stroke-width", "1");
+        circle.classList.add("circle-hover");
+        
+        // 将圆圈插入到child元素的第一个位置
+        child.insertBefore(circle, child.firstChild);
+
+        child.style.transform = 'scale(1.01)';
+        child.style.stroke = '#ffff00';
+        child.style.strokeWidth = '2';
+        child.style.filter = 'drop-shadow(0 0 5px #ffff00)';
+        child.style.transition = 'all 0.3s ease';
+      });
+
+      child.addEventListener('mouseleave', () => {
+        // 获取所有circle-hover元素
+        let circles = child.getElementsByClassName('circle-hover');
+        // 删除所有circle-hover元素
+        while(circles.length > 0) {
+            circles[0].remove();
+        }
+        child.style.transform = 'scale(1)';
+        child.style.stroke = 'none';
+        child.style.strokeWidth = '0';
+        child.style.filter = 'none';
+      });
+    }
+
+
   } catch (err) {
     console.error('Error fetching or processing data:', err);
   }
 });
+
 </script>
 
 <!-- The following code should not be changed -->
@@ -290,7 +347,7 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%; 
+  width: 100%;
   height: 100%;
 }
 </style>
