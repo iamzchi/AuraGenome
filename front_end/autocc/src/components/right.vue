@@ -99,11 +99,11 @@ onMounted(()=>{
     justify-content: space-between;
     border-radius: 20px;
     background-color: rgb(244, 244, 244);
-    padding: 20px;
+    padding: 10px;
 
     .project {
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
         background-color: rgb(217, 217, 217);
         border-radius: 50%;
         transition: all 0.3s ease;
@@ -112,7 +112,26 @@ onMounted(()=>{
     .project:hover {
         background-color: rgb(207, 207, 207);
         cursor: pointer;
+        transform: scale(1.1);
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
     }
+    .project:nth-child(1){
+        //add background image
+        background-image: url('@/assets/projects/project1.png');
+        background-size: cover;
+        background-position: center;
+    }
+    .project:nth-child(2){
+        background-image: url('@/assets/projects/project2.png');
+        background-size: cover;
+        background-position: center;
+    }
+    .project:nth-child(3){
+        background-image: url('@/assets/projects/project3.png');
+        background-size: cover;
+        background-position: center;
+    }
+    
 }
 
 #steps {

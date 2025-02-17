@@ -59,32 +59,35 @@ const isloading = ref(false);
             <div id="loading" style="z-index: 1000;" v-show="isloading">
                 <loading></loading>
             </div>
+            <div id="circos_chart">
+                <!-- <demo1></demo1> -->
+                <!-- <demo2></demo2> -->
+                <demo3></demo3>
+                <!-- <demo_show></demo_show> -->
+                <!-- <root v-show="step == 'root'"></root> -->
+                <step1 v-show="step == 'step1'"></step1>
+                <step2 v-show="step == 'step2'"></step2>
+                <step3 v-show="step == 'step3'"></step3>
+                <step4 v-show="step == 'step4'"></step4>
+                <step5 v-show="step == 'step5'"></step5>
+                <step6 v-show="step == 'step6'"></step6>
+                <step7 v-show="step == 'step7'"></step7>
+                <step8 v-show="step == 'step8'"></step8>
+                <step9 v-show="step == 'step9'"></step9>
+                <step10 v-show="step == 'step10'"></step10>
+                <step11 v-show="step == 'step11'"></step11>
+                <step12 v-show="step == 'step12'"></step12>
+                <step13 v-show="step == 'step13'"></step13>
+                <step14 v-show="step == 'step14'"></step14>
+                <step15 v-show="step == 'step15'"></step15>
+                <step16 v-show="step == 'step16'"></step16>
+                <step17 v-show="step == 'step17'"></step17>
+                <step18 v-show="step == 'step18'"></step18>
+                <step19 v-show="step == 'step19'"></step19>
+                <step20 v-show="step == 'step20'"></step20>
+            </div>
 
-            <!-- <demo1></demo1> -->
-             <!-- <demo2></demo2> -->
-            <demo3></demo3>
-            <!-- <demo_show></demo_show> -->
-            <!-- <root v-show="step == 'root'"></root> -->
-            <step1 v-show="step == 'step1'"></step1>
-            <step2 v-show="step == 'step2'"></step2>
-            <step3 v-show="step == 'step3'"></step3>
-            <step4 v-show="step == 'step4'"></step4>
-            <step5 v-show="step == 'step5'"></step5>
-            <step6 v-show="step == 'step6'"></step6>
-            <step7 v-show="step == 'step7'"></step7>
-            <step8 v-show="step == 'step8'"></step8>
-            <step9 v-show="step == 'step9'"></step9>
-            <step10 v-show="step == 'step10'"></step10>
-            <step11 v-show="step == 'step11'"></step11>
-            <step12 v-show="step == 'step12'"></step12>
-            <step13 v-show="step == 'step13'"></step13>
-            <step14 v-show="step == 'step14'"></step14>
-            <step15 v-show="step == 'step15'"></step15>
-            <step16 v-show="step == 'step16'"></step16>
-            <step17 v-show="step == 'step17'"></step17>
-            <step18 v-show="step == 'step18'"></step18>
-            <step19 v-show="step == 'step19'"></step19>
-            <step20 v-show="step == 'step20'"></step20>
+
         </div>
 
         <consolePanel id="console"></consolePanel>
@@ -99,17 +102,22 @@ const isloading = ref(false);
     justify-content: space-between;
     height: 100%;
     position: relative;
+
     #circos {
         width: 80%;
         position: relative;
+
         #loading {
-        width: 100%;
-        height: 100%;
-        // background-color: salmon;
-        position: absolute;
-        top:-20px;
-        left: 0;
-    }
+            width: 100%;
+            height: 100%;
+            // background-color: salmon;
+            position: absolute;
+            top: -20px;
+            left: 0;
+        }
+        #circos_chart{
+            background-color: pink;
+        }
     }
 
     #console {

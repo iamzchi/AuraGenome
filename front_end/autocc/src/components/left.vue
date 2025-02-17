@@ -278,7 +278,7 @@ onMounted(() => {
   <t-divider />
   <div class="blockTitle">
     <t-icon name="chat-bubble-smile"></t-icon>
-    <span>Chat with GPT4o</span>
+    <span>Chat with<span class="gradientText">Aura</span></span>
   </div>
 
   <div id="chat" class="radius20">
@@ -307,6 +307,12 @@ onMounted(() => {
 
 </template>
 <style scoped lang="scss">
+.gradientText {
+  background: linear-gradient(to right, #007AFF, #89c2ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 #inputRecommend {
   margin-top: .5rem;
 
@@ -351,6 +357,7 @@ onMounted(() => {
 
 #dataStore {
   background-color: rgb(255, 255, 255);
+  // background-color: #f4f4f4;
   border: 1px solid #ddd;
   height: 40vh;
   padding: 10px;
