@@ -1,86 +1,96 @@
-[
-    {
-        "name": "Rearrangement type: Deletion",
-        "value": 25,
-        "color": "#ff2918",
-        "class": "Deletion"
-    },
-    {
-        "name": "Rearrangement type: Inversion",
-        "value": 6,
-        "color": "#ff4652",
-        "class": "Inversion"
-    },
-    {
-        "name": "Rearrangement type: Translocation",
-        "value": 3,
-        "color": "#ff0f4b",
-        "class": "Translocation"
-    },
-    {
-        "name": "Rearrangement type: Tandem Duplication",
-        "value": 2,
-        "color": "#d4334f",
-        "class": "Tandem Duplication"
-    },
-    {
-        "name": "Rearrangement type: Other Intrachromosomal",
-        "value": 1,
-        "color": "#d53c25",
-        "class": "Other Intrachromosomal"
-    },
-    {
-        "name": "Strand: +",
-        "value": 31,
-        "color": "#ff2918",
-        "class": "+"
-    },
-    {
-        "name": "Strand: -",
-        "value": 6,
-        "color": "#ff4652",
-        "class": "-"
-    },
-    {
-        "name": "Strand.1: +",
-        "value": 30,
-        "color": "#ff2918",
-        "class": "+"
-    },
-    {
-        "name": "Strand.1: -",
-        "value": 7,
-        "color": "#ff4652",
-        "class": "-"
-    },
-    {
-        "name": "Breakpoint 1: Intergenic",
-        "value": 19,
-        "color": "#ff2918",
-        "class": "Intergenic"
-    },
-    {
-        "name": "Breakpoint 1: Intronic",
-        "value": 18,
-        "color": "#ff4652",
-        "class": "Intronic"
-    },
-    {
-        "name": "Breakpoint 2: Intergenic",
-        "value": 18,
-        "color": "#ff2918",
-        "class": "Intergenic"
-    },
-    {
-        "name": "Breakpoint 2: Intronic",
-        "value": 18,
-        "color": "#ff4652",
-        "class": "Intronic"
-    },
-    {
-        "name": "Breakpoint 2: Exon",
-        "value": 1,
-        "color": "#ff0f4b",
-        "class": "Exon"
-    }
-]
+{
+    "Rearrangement type": [
+        {
+            "name": "Deletion",
+            "value": 25,
+            "color": "#ff2918",
+            "class": ""
+        },
+        {
+            "name": "Inversion",
+            "value": 6,
+            "color": "#ff4652",
+            "class": ""
+        },
+        {
+            "name": "Translocation",
+            "value": 3,
+            "color": "#ff0f4b",
+            "class": ""
+        },
+        {
+            "name": "Tandem Duplication",
+            "value": 2,
+            "color": "#d4334f",
+            "class": ""
+        },
+        {
+            "name": "Other Intrachromosomal",
+            "value": 1,
+            "color": "#d53c25",
+            "class": ""
+        }
+    ],
+    "Strand": [
+        {
+            "name": "+",
+            "value": 31,
+            "color": "#ff2918",
+            "class": ""
+        },
+        {
+            "name": "-",
+            "value": 6,
+            "color": "#ff4652",
+            "class": ""
+        }
+    ],
+    "Strand.1": [
+        {
+            "name": "+",
+            "value": 30,
+            "color": "#ff2918",
+            "class": ""
+        },
+        {
+            "name": "-",
+            "value": 7,
+            "color": "#ff4652",
+            "class": ""
+        }
+    ],
+    "Breakpoint 1": [
+        {
+            "name": "Intergenic",
+            "value": 19,
+            "color": "#ff2918",
+            "class": ""
+        },
+        {
+            "name": "Intronic",
+            "value": 18,
+            "color": "#ff4652",
+            "class": ""
+        }
+    ],
+    "Breakpoint 2": [
+        {
+            "name": "Intergenic",
+            "value": 18,
+            "color": "#ff2918",
+            "class": ""
+        },
+        {
+            "name": "Intronic",
+            "value": 18,
+            "color": "#ff4652",
+            "class": ""
+        },
+        {
+            "name": "Exon",
+            "value": 1,
+            "color": "#ff0f4b",
+            "class": ""
+        }
+    ]
+}

@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue';
 import * as d3 from 'd3';
 import Circos from 'circos';
 import { readFile } from '@/utils/server'; // 引入封装的 readFile API 调用
-import {reduceData, reduceData_Position, gieStainColor,transform_startend_position } from './utils_circos.js';
+import {reduceData, reduceData_Position, gieStainColor,transform_startend_position,add_hover_effect} from './utils_circos.js';
 onMounted(async () => {
   try {
     //获取参考基因组文件
@@ -383,6 +383,7 @@ onMounted(async () => {
 
 
     circos.render();
+    add_hover_effect();
   } catch (err) {
     console.error('Error fetching or processing data:', err);
   }

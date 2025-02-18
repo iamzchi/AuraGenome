@@ -252,110 +252,222 @@ const data = ref([
 import myTable from "./table.vue";
 import myBar from "./bar.vue";
 import { ref } from "vue";
-const chartData = ref([
-    {
-        "name": "Zygosity: het",
-        "value": 26515,
-        "color": "#ff2918",
-        "class": "het"
-    },
-    {
-        "name": "Zygosity: hom",
-        "value": 6830,
-        "color": "#ff4652",
-        "class": "hom"
-    },
-    {
-        "name": "Effect: Intergenic",
-        "value": 23191,
-        "color": "#ff2918",
-        "class": "Intergenic"
-    },
-    {
-        "name": "Effect: Intronic",
-        "value": 9543,
-        "color": "#ff4652",
-        "class": "Intronic"
-    },
-    {
-        "name": "Effect: UTR",
-        "value": 198,
-        "color": "#ff0f4b",
-        "class": "UTR"
-    },
-    {
-        "name": "Effect: Missense",
-        "value": 168,
-        "color": "#d4334f",
-        "class": "Missense"
-    },
-    {
-        "name": "Effect: Noncoding_RNA",
-        "value": 114,
-        "color": "#d53c25",
-        "class": "Noncoding_RNA"
-    },
-    {
-        "name": "Effect: Silent",
-        "value": 104,
-        "color": "#9b0000",
-        "class": "Silent"
-    },
-    {
-        "name": "Effect: Nonsense",
-        "value": 14,
-        "color": "#ff354a",
-        "class": "Nonsense"
-    },
-    {
-        "name": "Effect: Splice",
-        "value": 13,
-        "color": "#ff2f2d",
-        "class": "Splice"
-    },
-    {
-        "name": "Validation_status: SOMATIC",
-        "value": 454,
-        "color": "#ff2918",
-        "class": "SOMATIC"
-    },
-    {
-        "name": "Validation_status: COSMIC",
-        "value": 43,
-        "color": "#ff4652",
-        "class": "COSMIC"
-    },
-    {
-        "name": "Validation_status: REAL, STATUS UNKNOWN",
-        "value": 25,
-        "color": "#ff0f4b",
-        "class": "REAL, STATUS UNKNOWN"
-    },
-    {
-        "name": "Validation_status: UNCONFIRMED",
-        "value": 16,
-        "color": "#d4334f",
-        "class": "UNCONFIRMED"
-    },
-    {
-        "name": "Validation_zygosity: Het",
-        "value": 322,
-        "color": "#ff2918",
-        "class": "Het"
-    },
-    {
-        "name": "Validation_zygosity: Hom",
-        "value": 171,
-        "color": "#ff4652",
-        "class": "Hom"
-    },
-    {
-        "name": "Validation_zygosity: het",
-        "value": 4,
-        "color": "#ff0f4b",
-        "class": "het"
-    }
-]);
+// const chartData = ref([
+//     {
+//         "name": "Zygosity: het",
+//         "value": 26515,
+//         "color": "#ff2918",
+//         "class": "het"
+//     },
+//     {
+//         "name": "Zygosity: hom",
+//         "value": 6830,
+//         "color": "#ff4652",
+//         "class": "hom"
+//     },
+//     {
+//         "name": "Effect: Intergenic",
+//         "value": 23191,
+//         "color": "#ff2918",
+//         "class": "Intergenic"
+//     },
+//     {
+//         "name": "Effect: Intronic",
+//         "value": 9543,
+//         "color": "#ff4652",
+//         "class": "Intronic"
+//     },
+//     {
+//         "name": "Effect: UTR",
+//         "value": 198,
+//         "color": "#ff0f4b",
+//         "class": "UTR"
+//     },
+//     {
+//         "name": "Effect: Missense",
+//         "value": 168,
+//         "color": "#d4334f",
+//         "class": "Missense"
+//     },
+//     {
+//         "name": "Effect: Noncoding_RNA",
+//         "value": 114,
+//         "color": "#d53c25",
+//         "class": "Noncoding_RNA"
+//     },
+//     {
+//         "name": "Effect: Silent",
+//         "value": 104,
+//         "color": "#9b0000",
+//         "class": "Silent"
+//     },
+//     {
+//         "name": "Effect: Nonsense",
+//         "value": 14,
+//         "color": "#ff354a",
+//         "class": "Nonsense"
+//     },
+//     {
+//         "name": "Effect: Splice",
+//         "value": 13,
+//         "color": "#ff2f2d",
+//         "class": "Splice"
+//     },
+//     {
+//         "name": "Validation_status: SOMATIC",
+//         "value": 454,
+//         "color": "#ff2918",
+//         "class": "SOMATIC"
+//     },
+//     {
+//         "name": "Validation_status: COSMIC",
+//         "value": 43,
+//         "color": "#ff4652",
+//         "class": "COSMIC"
+//     },
+//     {
+//         "name": "Validation_status: REAL, STATUS UNKNOWN",
+//         "value": 25,
+//         "color": "#ff0f4b",
+//         "class": "REAL, STATUS UNKNOWN"
+//     },
+//     {
+//         "name": "Validation_status: UNCONFIRMED",
+//         "value": 16,
+//         "color": "#d4334f",
+//         "class": "UNCONFIRMED"
+//     },
+//     {
+//         "name": "Validation_zygosity: Het",
+//         "value": 322,
+//         "color": "#ff2918",
+//         "class": "Het"
+//     },
+//     {
+//         "name": "Validation_zygosity: Hom",
+//         "value": 171,
+//         "color": "#ff4652",
+//         "class": "Hom"
+//     },
+//     {
+//         "name": "Validation_zygosity: het",
+//         "value": 4,
+//         "color": "#ff0f4b",
+//         "class": "het"
+//     }
+// ]);
+const chartData = ref({
+    "Zygosity": [
+        {
+            "name": "het",
+            "value": 26515,
+            "color": "#ff2918",
+            "class": ""
+        },
+        {
+            "name": "hom",
+            "value": 6830,
+            "color": "#ff4652",
+            "class": ""
+        }
+    ],
+    "Effect": [
+        {
+            "name": "Intergenic",
+            "value": 23191,
+            "color": "#ff2918",
+            "class": ""
+        },
+        {
+            "name": "Intronic",
+            "value": 9543,
+            "color": "#ff4652",
+            "class": ""
+        },
+        {
+            "name": "UTR",
+            "value": 198,
+            "color": "#ff0f4b",
+            "class": ""
+        },
+        {
+            "name": "Missense",
+            "value": 168,
+            "color": "#d4334f",
+            "class": ""
+        },
+        {
+            "name": "Noncoding_RNA",
+            "value": 114,
+            "color": "#d53c25",
+            "class": ""
+        },
+        {
+            "name": "Silent",
+            "value": 104,
+            "color": "#9b0000",
+            "class": ""
+        },
+        {
+            "name": "Nonsense",
+            "value": 14,
+            "color": "#ff354a",
+            "class": ""
+        },
+        {
+            "name": "Splice",
+            "value": 13,
+            "color": "#ff2f2d",
+            "class": ""
+        }
+    ],
+    "Validation_status": [
+        {
+            "name": "SOMATIC",
+            "value": 454,
+            "color": "#ff2918",
+            "class": ""
+        },
+        {
+            "name": "COSMIC",
+            "value": 43,
+            "color": "#ff4652",
+            "class": ""
+        },
+        {
+            "name": "REAL, STATUS UNKNOWN",
+            "value": 25,
+            "color": "#ff0f4b",
+            "class": ""
+        },
+        {
+            "name": "UNCONFIRMED",
+            "value": 16,
+            "color": "#d4334f",
+            "class": ""
+        }
+    ],
+    "Validation_zygosity": [
+        {
+            "name": "Het",
+            "value": 322,
+            "color": "#ff2918",
+            "class": ""
+        },
+        {
+            "name": "Hom",
+            "value": 171,
+            "color": "#ff4652",
+            "class": ""
+        },
+        {
+            "name": "het",
+            "value": 4,
+            "color": "#ff0f4b",
+            "class": ""
+        }
+    ]
+})
 import { getSingleFileDetail } from "@/utils/server";
 const fileInfoObj = ref({});
 function getFileDetail(project_name_param, file_name_param) {
@@ -397,16 +509,16 @@ onMounted(() => {
                         tag
                     }}</span>
                 </div>
-                <p id="fileDescription">
+                <div id="fileDescription">
                     {{ file_description }}
-                </p>
+                </div>
             </div>
             <div class="subtitle">File Preview</div>
             <div id="filePreview">
                 <myTable :data="data" :columns="columns"></myTable>
             </div>
 
-            <div class="subtitle">recommend the following visualization solutions</div>
+            <!-- <div class="subtitle">recommend the following visualization solutions</div>
             <div class="fileRecommendItem" v-for="(item, index) in fileRecommendItems" :key="item.id">
                 <p class="fileRecommendItemTitle">{{
                     item.chart_type
@@ -415,7 +527,7 @@ onMounted(() => {
                 <p class="itemNumber">
                     Recommend No.{{ index + 1 }}
                 </p>
-            </div>
+            </div> -->
         </div>
 
         <div id="fileRecommend">
@@ -429,10 +541,11 @@ onMounted(() => {
 <style scoped lang="scss">
 .subtitle {
     color: gray;
-    font-size: 0.5rem;
+    font-size: .9rem;
     width: 100%;
     text-align: left;
-    font-weight: bold;
+    // font-weight: bold;
+    // font-family: 'Times New Roman', Times, serif;
     margin-top: 10px;
     border-top: 1px solid rgb(214, 214, 214);
     padding-top: 5px;
@@ -447,7 +560,9 @@ onMounted(() => {
 }
 
 #fileRecommend {
-    width: 35%;
+    width: 38.5%;
+    // margin-left: 12px;
+    box-sizing: border-box;
 
 
 }
@@ -457,7 +572,7 @@ onMounted(() => {
     color: white;
     padding: 0.3rem;
     font-size: 0.8rem;
-    border-radius: 5px;
+    border-radius: 10px;
     margin: 2px;
     transition: all 0.3s ease;
     position: relative;
@@ -465,7 +580,7 @@ onMounted(() => {
     .fileRecommendItemTitle {
         position: absolute;
         background-color: var(--td-brand-color-7);
-        border-radius: 5px;
+        border-radius: 5px 5px 0px 0;
         padding: 0.3rem;
         top: -30px;
         left: 0px;
@@ -498,11 +613,14 @@ onMounted(() => {
     #filePreview {
         margin-top: 10px;
         width: 100%;
-        height: 200px;
+        height: 100%;
         overflow: scroll;
         //隐藏滚动条
         scrollbar-width: none;
         -ms-overflow-style: none;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        box-sizing: border-box;
 
         ::-webkit-scrollbar {
             display: none;
@@ -531,7 +649,8 @@ onMounted(() => {
         }
 
         #fileDescription {
-            font-size: 0.8rem;
+            margin-top: 5px;
+            font-size: 0.7rem;
             color: var(--td-text-color-secondary);
         }
     }

@@ -14,6 +14,16 @@ const numberFormat1 = (value) => `${value} px`;
 const innerRadius = ref(3);
 
 import enConfig from 'tdesign-vue-next/es/locale/en_US';
+
+//透明度
+const marks1 = {
+  0: '0%',
+  20: '20%',
+  50: '50%',
+  70: '70%',
+  100: '100%',
+};
+const value1 = ref(30);
 </script>
 <template>
     <t-config-provider :global-config="enConfig">
@@ -116,6 +126,14 @@ import enConfig from 'tdesign-vue-next/es/locale/en_US';
                         :show-primary-color-preview="true" />
                 </div>
             </div>
+            <div class="trackDetail">
+                <div class="detailTitle">Polar coordinate transparency</div>
+                <div class="detailContent" style="margin-top: .6rem;">
+                    <t-slider v-model="value1" :show-tooltip="true" :marks="marks1"
+                        :input-number-props="false" @change="change" />
+                </div>
+            </div>
+
             <div id="btns">
                 <t-button theme="primary" variant="text" size="small">
                     <template #icon>
@@ -164,6 +182,8 @@ import enConfig from 'tdesign-vue-next/es/locale/en_US';
 }
 
 .console_container {
+    background: rgb(2, 0, 36);
+    background: linear-gradient(164deg, rgba(2, 0, 36, 1) 0%, #deefff 0%, rgba(255, 255, 255, 1) 10%);
     position: relative;
     display: flex;
     flex-direction: column;

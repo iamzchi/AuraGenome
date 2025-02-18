@@ -40,8 +40,9 @@ const props = defineProps({
   th, td {
     // padding: 8px 12px;
     border: 1px solid #ddd;
-    text-align: left;
-    font-size: .5rem;
+    text-align: center;
+    font-size: .6rem;
+    line-height: 1rem;
   }
 
   th {

@@ -14,8 +14,8 @@ const modelOptions = [
 <template>
   <!-- <demo1></demo1> -->
   <div id="body">
-    <div id="head">
-      <h1>AuraGenome</h1>
+    <div id="head_gradient"></div>
+    <!-- <div id="head">
       <div id="project_name">Breast Cancer Genetic Analysis <t-icon name="pen-ball" /> </div>
       <div class="other">
         <t-dropdown :options="modelOptions">
@@ -39,7 +39,7 @@ const modelOptions = [
           </t-button>
         </t-dropdown>
       </div>
-    </div>
+    </div> -->
     <div id="content">
       <div id="left">
         <Left />
@@ -58,11 +58,17 @@ const modelOptions = [
 #body {
   max-width: 2500px;
   margin: 0 auto;
-  // background-color: rgb(238, 238, 238);
+  // background-color: rgb(245, 245, 245);
+  #head_gradient {
+    background-image: linear-gradient( 135deg, #6da9ff 10%, #92e4c0 100%);
+    height: 20px;
+    width: 100%;
+  }
 
   #head {
-    background-color: rgb(235, 235, 235);
-    height: 40px;
+    // background-color: rgb(235, 235, 235);
+    border-bottom: 1px solid #e0e0e0;
+    height: 30px;
     width: 100%;
     display: flex;
     justify-content: space-between;

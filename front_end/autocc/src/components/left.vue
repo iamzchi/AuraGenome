@@ -188,12 +188,12 @@ async function generateCode(query, queryInfojson) {
         console.log("当前步骤中没有数字，无法更新步骤");
       }
     }
-  }else{
+  } else {
     console.log("本次生成图表失败");
   }
-  
+
   console.log("本次生成图表全部结束");
-  
+
 
 }
 import fileDetail from './Left/fileDetail.vue'
@@ -243,20 +243,38 @@ onMounted(() => {
 
 })
 
+//推荐内容
+const fileRecommendItems = ref([
+  {
+    "chart_type": "Highlight",
+    "chart_description": "A track that highlights the positions of mutations across the genome. The 'Position' column is used to locate mutations, and 'Effect' can be categorized to differentiate between mutation types."
+  },
+  {
+    "chart_type": "Heatmap",
+    "chart_description": "A heatmap showing the density of different mutation effects across the genome, where the 'Position' column is used to plot and 'Effect' can be grouped for different mutation types."
+  },
+])
+import svgIcon from './Left/svgIcon.vue'
 
 </script>
 <template>
-  <div class="blockTitle">
-    <t-icon name="attach"></t-icon>
-    <span>Reference Genome Ver</span>
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <img src="/aura_logo.png" height="48" alt="logo" class="logo">
+    <div id="select_genome">
+      <div class="blockTitle">
+        <t-icon name="attach"></t-icon>
+        <span>Reference Genome Ver</span>
+      </div>
+      <t-select v-model="refVersion" :options="options" placeholder="请选择" filterable />
+
+    </div>
   </div>
-  <t-select width="60%" v-model="refVersion" :options="options" placeholder="请选择" filterable />
 
   <t-divider />
   <div class="row" style="justify-content: space-between;">
     <div class="blockTitle">
       <t-icon name="app"></t-icon>
-      <span>Data Store</span>
+      <span>DATA STORE</span>
     </div>
     <t-button @click="uploadFile" size="small">
       <template #icon>
@@ -275,35 +293,69 @@ onMounted(() => {
     </t-menu>
     <fileDetail style="width: 85%;" />
   </div>
-  <t-divider />
-  <div class="blockTitle">
-    <t-icon name="chat-bubble-smile"></t-icon>
-    <span>Chat with<span class="gradientText">Aura</span></span>
-  </div>
-
-  <div id="chat" class="radius20">
-    <div id="messages">
-      <div v-for="(msg, index) in messages" :key="index"
-        :class="['message', msg.role === 'ai' ? 'ai-message' : 'user-message']">
-        <div class="bubble">{{ msg.content }}</div>
+  <!-- <t-divider /> -->
+  <t-space></t-space>
+  <div id="chatContainer">
+    <div id="recommendPanel" style="position: relative;">
+      <div class="blockTitle">
+        <t-icon name="filter-3"></t-icon>
+        <span>Vis. SOLUTIONS</span>
       </div>
+      <div class="fileRecommendItem" v-for="(item, index) in fileRecommendItems" :key="item.id">
+        <p class="fileRecommendItemTitle">
+          <svgIcon :chartType="item.chart_type" />  {{
+            item.chart_type
+          }}
+        </p>
+
+        {{ item.chart_description }}
+        <p class="itemNumber">
+          Recommend No.{{ index + 1 }}
+        </p>
+        <t-button style="margin-top: 10px;" size="small" variant="outline" shape="round" block>
+          <template #icon>
+            <t-icon name="check-double" />
+          </template>
+          Apply</t-button>
+      </div>
+      <t-button style="position: absolute; bottom:0" block shape="round" variant="outline">
+        <template #icon>
+          <t-icon name="chat-bubble-add" />
+        </template>
+        Start a new Chat</t-button>
     </div>
 
-    <div id="inputPanel">
-      <div class="row">
-        <t-input v-model="inputText" @enter="sendMessage"></t-input>
-        <t-button @click="sendMessage">
-          send
-        </t-button>
+    <div id="chatPanel">
+      <div class="blockTitle">
+        <t-icon name="chat-bubble-smile"></t-icon>
+        <span>CHAT WITH<span class="gradientText">Aura</span></span>
       </div>
-      <div id="inputRecommend">
-        <div class="inputRecommendItems" v-for="item in inputRecommendItems" :key="item.id">
-          {{ item }} <t-icon name="enter" />
+
+      <div id="chat" class="radius20">
+        <div id="messages">
+          <div v-for="(msg, index) in messages" :key="index"
+            :class="['message', msg.role === 'ai' ? 'ai-message' : 'user-message']">
+            <img src="/aura.png" v-if="msg.role === 'ai'" height="35px">
+            <div class="bubble">{{ msg.content }}</div>
+          </div>
+        </div>
+
+        <div id="inputPanel">
+          <div class="row">
+            <t-input v-model="inputText" @enter="sendMessage"></t-input>
+            <t-button @click="sendMessage">
+              send
+            </t-button>
+          </div>
+          <div id="inputRecommend">
+            <div class="inputRecommendItems" v-for="item in inputRecommendItems" :key="item.id">
+              {{ item }} <t-icon name="enter" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-
 
 </template>
 <style scoped lang="scss">
@@ -338,10 +390,79 @@ onMounted(() => {
   }
 }
 
+#chatContainer {
+  width: 100%;
+  // background-color: pink;
+  display: flex;
+  justify-content: space-between;
+  // align-items: center;
+  gap: 20px;
+
+  #chatPanel {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: center;
+  }
+
+  #recommendPanel {
+    width: 40%;
+    // background-color: red;
+  }
+
+  .fileRecommendItem {
+    // background-color: var(--td-brand-color-7);
+    // color: white;
+    border: 1px solid var(--td-brand-color-7);
+    color: var(--td-brand-color-7);
+    padding: 0.3rem;
+    font-size: 0.8rem;
+    border-radius: 10px;
+    margin: 2px;
+    transition: all 0.3s ease;
+    position: relative;
+    margin-top: 30px;
+
+    .fileRecommendItemTitle {
+      // position: absolute;
+      // background-color: var(--td-brand-color-7);
+      // border-radius: 5px 5px 0px 0;
+      // padding: 0.3rem;
+      // top: -30px;
+      // left: 0px;
+      font-weight: bold;
+      color: var(--td-brand-color-7);
+      display: flex;
+      align-items: center;
+      // justify-content: center;
+      font-size: 1rem;
+      gap: 5px;
+    }
+
+    .itemNumber {
+      position: absolute;
+      top: -5px;
+      right: 10px;
+      font-size: 0.7rem;
+      color: var(--td-brand-color-7);
+    }
+  }
+
+  .fileRecommendItem:hover {
+    // background-color: var(--td-brand-color-8);
+    //放大
+    transform: scale(1.03);
+    box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
+    cursor: pointer;
+  }
+}
+
 #chat {
   // background-color: #f4f4f4;
   border: 1px solid #ddd;
-  height: 36vh;
+  height: 38.5vh;
+  // width: 60%;
   padding: 10px;
   position: relative;
 
@@ -387,6 +508,11 @@ onMounted(() => {
 .message {
   display: flex;
   width: 100%;
+  align-items: center;
+
+  img {
+    margin-right: 10px;
+  }
 }
 
 .ai-message {
@@ -406,6 +532,9 @@ onMounted(() => {
 }
 
 .ai-message .bubble {
+
+  background: rgb(2, 0, 36);
+  background: linear-gradient(164deg, rgba(2, 0, 36, 1) 0%, #deefff 0%, #f0f0f0 30%);
   background-color: #f0f0f0;
   // background-color: #ffffff;
   color: #000;

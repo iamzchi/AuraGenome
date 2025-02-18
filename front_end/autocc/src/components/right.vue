@@ -5,49 +5,57 @@ const steps = ref([
         step: 1,
         title: 'Upload Files',
         description: 'Upload your files to get started.',
-        note: "nothing to show"
+        note: "Add your note",
+        time: "2024-01-01 12:00:00"
     },
     {
         step: 2,
         title: 'Upload Files',
         description: 'Upload your files to get started.',
-        note: "nothing to show"
+        note: "Add your note",
+        time: "2024-01-01 12:00:00"
     },
     {
         step: 3,
-        title: 'Upload Files',
-        description: 'Upload your files to get started.',
-        note: "nothing to show"
+        title: 'Upload Files', 
+        description: 'Upload your files to get started.dwhuqidhwuiqhduihquihduiwhqdhuuuuuuuuuuuuuuuuuuuuuuuuushuiwdhuwidhuiwhudihwuihui',
+        note: "Add your note",
+        time: "2024-01-01 12:00:00"
     },
     {
         step: 4,
         title: 'Upload Files',
         description: 'Upload your files to get started.',
-        note: "nothing to show"
+        note: "Add your note",
+        time: "2024-01-01 12:00:00"
     },
     {
         step: 5,
         title: 'Upload Files',
         description: 'Upload your files to get started.',
-        note: "nothing to show"
+        note: "Add your note",
+        time: "2024-01-01 12:00:00"
     },
     {
         step: 6,
         title: 'Upload Files',
         description: 'Upload your files to get started.',
-        note: "nothing to show"
+        note: "Add your note",
+        time: "2024-01-01 12:00:00"
     },
     {
         step: 7,
         title: 'Upload Files',
         description: 'Upload your files to get started.',
-        note: "nothing to show"
+        note: "Use for Figure 3.2",
+        time: "2024-01-01 12:00:00"
     },
     {
         step: 8,
-        title: 'Upload Files',
-        description: 'Upload your files to get started.',
-        note: "nothing to show"
+        title: 'Upload 11Files',
+        description: 'lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+        note: "Add your note",
+        time: "2024-01-01 12:00:00"
     },
 ])
 onMounted(()=>{
@@ -58,7 +66,7 @@ onMounted(()=>{
 <template>
     <div class="blockTitle">
         <t-icon name="work-history"> </t-icon>
-        <span>Projects</span>
+        <span>PROJECTS</span>
     </div>
     <div id="projects">
         <div class="project" v-for="i in 3" :key="i"></div>
@@ -66,18 +74,21 @@ onMounted(()=>{
     <t-space />
     <div class="blockTitle">
         <t-icon name="animation"> </t-icon>
-        <span>Step Snapshot</span>
+        <span>STEP SNAPSHOT</span>
     </div>
     <div id="steps">
         <div class="step" v-for="(item, index) of steps" :key="index">
-            <div class="line" v-show="index != steps.length - 1"></div>
-            <div class="row">
+            <!-- <div class="line" v-show="index != steps.length - 1"></div> -->
+            <div class="title">Step {{ item.step }}: {{ item.title }}
+                <p class="time">{{ item.time }}</p>
+            </div>
+            <div class="row" style="padding: 10px;">
                 <div class="snapshot">
 
                 </div>
                 <div class="content">
 
-                    <div class="title">Step {{ item.step }}: {{ item.title }}</div>
+                    <!-- <div class="title">Step {{ item.step }}: {{ item.title }}</div> -->
                     <div class="description">{{ item.description }}</div>
                     <div class="note">{{ item.note }}</div>
                 </div>
@@ -98,7 +109,8 @@ onMounted(()=>{
     flex-direction: row;
     justify-content: space-between;
     border-radius: 20px;
-    background-color: rgb(244, 244, 244);
+    // background-color: rgb(244, 244, 244);
+    border: 1px solid rgb(220, 220, 220);
     padding: 10px;
 
     .project {
@@ -113,7 +125,6 @@ onMounted(()=>{
         background-color: rgb(207, 207, 207);
         cursor: pointer;
         transform: scale(1.1);
-        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
     }
     .project:nth-child(1){
         //add background image
@@ -135,8 +146,8 @@ onMounted(()=>{
 }
 
 #steps {
-    display: flex;
-    flex-direction: column;
+    // display: flex;
+    // flex-direction: column;
     border-radius: 20px;
     background-color: rgb(244, 244, 244);
     padding: 20px;
@@ -145,13 +156,33 @@ onMounted(()=>{
 
     .step {
         width: 100%;
-        height: 120px;
-        background-color: rgb(217, 217, 217);
-        border-radius: 20px;
-        margin-bottom: 40px;
+        height:fit-content;
+        border-radius: 10px;
+        margin-bottom: 20px;
         position: relative;
-        padding: 10px;
+        // padding: 10px;
         transition: all 0.3s ease;
+        background-color: rgb(255, 255, 255);
+        overflow: hidden;
+        .title{
+                font-size: .8rem;
+                font-weight: bold;
+                width: 100%;
+                padding: 10px;
+                padding-left: 15px;
+                height: 3rem;
+                text-align: left;
+                // background-color: rgb(217, 217, 217);
+                background-image: linear-gradient( 135deg, #6da9ff 10%, #92e4c0 100%);
+                color: white;
+                .time{
+                    font-size: 0.5rem;
+                    font-weight: normal;
+                    color: rgb(255, 255, 255);
+                    position: relative;
+                    top:-.2rem;
+                }
+            }
 
         .line {
             width: 10px;
@@ -166,9 +197,12 @@ onMounted(()=>{
             width: 100px;
             height: 100px;
             aspect-ratio: 1;
-            background-color: rgb(255, 255, 255);
+            background-color: rgb(131, 131, 131);
             border-radius: 200px;
             z-index: 10;
+            background-image: url('@/assets/projects/project1.png');
+            background-size: cover;
+            background-position: center;
         }
         .content{
             display: flex;
@@ -176,10 +210,8 @@ onMounted(()=>{
             justify-content: space-between;
             width: 60%;
             margin-left: 10px;
-            .title{
-                font-size: .8rem;
-                font-weight: bold;
-            }
+            padding: 10px;
+
             .description{
                 font-size: 0.7rem;
                 color: var(--td-brand-color-6);
@@ -191,7 +223,10 @@ onMounted(()=>{
         }
     }
     .step:hover{
-        background-color: rgb(207, 207, 207);
+        // background-color: rgb(207, 207, 207);
+        transform: scale(1.05);
+        cursor: pointer;
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 60px 40px -7px;
     }
 }
 </style>

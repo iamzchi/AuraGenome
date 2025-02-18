@@ -41,29 +41,22 @@ exclude_columns = ['Sequence', 'Gene', 'Transcript', 'From', 'To', 'Reference',
 
 # 获取颜色方案
 def get_color_for_column(column_name):
-    # 通过字段名选择颜色
     if 'effect' in column_name.lower():
         return colors["reds"]  # 如果列名包含 "effect"，使用 reds 色系
-    # 可以根据其他字段名称选择不同的色系，例如:
-    # elif 'some_other_field' in column_name.lower():
-    #    return colors["blues"]
     return colors["reds"]  # 默认使用 reds 色系
 
 # 处理单个CSV文件的函数
 def analyze_discrete_values(csv_file):
-    # 读取CSV文件
     df = pd.read_csv(csv_file)
     
     # 存储输出结果
-    result = []
+    result = {}
     
     # 遍历所有列
     for column in df.columns:
-        # 如果该列是需要排除的列或者该列值全为空，则跳过
         if column in exclude_columns or df[column].isnull().all():
             continue
         
-        # 如果该列的值是数字类型，则跳过
         if pd.api.types.is_numeric_dtype(df[column]):
             continue
         
@@ -73,14 +66,18 @@ def analyze_discrete_values(csv_file):
         # 获取颜色色系
         column_colors = get_color_for_column(column)
         
-        # 遍历统计结果并构造json格式
+        # 存储该列的结果
+        column_result = []
         for idx, (value, count) in enumerate(value_counts.items()):
-            result.append({
-                "name": f"{column}: {value}",
+            column_result.append({
+                "name": value,
                 "value": count,
                 "color": column_colors[idx % len(column_colors)],  # 按顺序循环色系
-                "class": value
+                "class": ""  # 留空
             })
+        
+        # 添加该列的结果
+        result[column] = column_result
     
     # 输出JSON格式
     return json.dumps(result, ensure_ascii=False, indent=4)

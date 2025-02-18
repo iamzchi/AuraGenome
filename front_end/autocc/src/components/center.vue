@@ -9,7 +9,7 @@ import sequenceLog from './Center/sequenceLog.vue'
     <div id="sequenceLog">
         <div class="blockTitle">
             <t-icon name="share"></t-icon>
-            <span>Sequence Log</span>
+            <span>SEQUENCE LOG</span>
         </div>
         <sequenceLog></sequenceLog>
     </div>
