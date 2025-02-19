@@ -246,8 +246,8 @@ onMounted(() => {
 //推荐内容
 const fileRecommendItems = ref([
   {
-    "chart_type": "Highlight",
-    "chart_description": "A track that highlights the positions of mutations across the genome. The 'Position' column is used to locate mutations, and 'Effect' can be categorized to differentiate between mutation types."
+    "chart_type": "Histogram",
+    "chart_description": "To display heterozygous (light orange) and homozygous (dark orange) mutations with 10Mb aggregation"
   },
   {
     "chart_type": "Heatmap",

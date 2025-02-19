@@ -1,63 +1,50 @@
 <script setup>
 import { ref,onMounted } from 'vue';
 const steps = ref([
-    {
-        step: 1,
-        title: 'Upload Files',
-        description: 'Upload your files to get started.',
-        note: "Add your note",
-        time: "2024-01-01 12:00:00"
-    },
-    {
-        step: 2,
-        title: 'Upload Files',
-        description: 'Upload your files to get started.',
-        note: "Add your note",
-        time: "2024-01-01 12:00:00"
-    },
-    {
-        step: 3,
-        title: 'Upload Files', 
-        description: 'Upload your files to get started.dwhuqidhwuiqhduihquihduiwhqdhuuuuuuuuuuuuuuuuuuuuuuuuushuiwdhuwidhuiwhudihwuihui',
-        note: "Add your note",
-        time: "2024-01-01 12:00:00"
-    },
-    {
-        step: 4,
-        title: 'Upload Files',
-        description: 'Upload your files to get started.',
-        note: "Add your note",
-        time: "2024-01-01 12:00:00"
-    },
-    {
-        step: 5,
-        title: 'Upload Files',
-        description: 'Upload your files to get started.',
-        note: "Add your note",
-        time: "2024-01-01 12:00:00"
-    },
-    {
-        step: 6,
-        title: 'Upload Files',
-        description: 'Upload your files to get started.',
-        note: "Add your note",
-        time: "2024-01-01 12:00:00"
-    },
-    {
-        step: 7,
-        title: 'Upload Files',
-        description: 'Upload your files to get started.',
-        note: "Use for Figure 3.2",
-        time: "2024-01-01 12:00:00"
-    },
-    {
-        step: 8,
-        title: 'Upload 11Files',
-        description: 'lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-        note: "Add your note",
-        time: "2024-01-01 12:00:00"
-    },
-])
+  {
+    title: "Insertion and Deletion Bar",
+    step: 1,
+    note: "add your note",
+    time:"2025-1-23",
+    description: "Visualizes insertion (dark green) and deletion (light green) events with validation status."
+  },
+  {
+    title: "Zygosity Mutation Bar",
+    step: 2,
+    note: "add your note",
+    time:"2025-1-23",
+    description: "Displays heterozygous (light orange) and homozygous (dark orange) mutations with 10Mb aggregation."
+  },
+  {
+    title: "Mutation Types",
+    step: 3,
+    note: "add your note",
+    time:"2025-1-23",
+    description: "Shows different mutation effects (Silent, Missense, Nonsense, Splice site) using colored scatter plots."
+  },
+  {
+    title: "Copy Number Changes",
+    step: 4,
+    note: "add your note",
+    time:"2025-1-23",
+    description: "Depicts copy number variations across the genome using a blue line chart."
+  },
+  {
+    title: "Loss of Heterozygosity",
+    step: 5,
+    note: "add your note",
+    time:"2025-1-23",
+    description: "Represents LOH (Loss of Heterozygosity) regions in the genome with a red heatmap."
+  },
+  {
+    title: "Rearrangements Links",
+    step: 6,
+    note: "add your note",
+    time:"2025-1-24",
+    description: "Shows chromosomal rearrangements using green (intra) and purple (inter) connection lines."
+  }
+]
+)
 onMounted(()=>{
     console.log(steps.value)
     steps.value = steps.value.reverse()
@@ -74,7 +61,7 @@ onMounted(()=>{
     <t-space />
     <div class="blockTitle">
         <t-icon name="animation"> </t-icon>
-        <span>STEP SNAPSHOT</span>
+        <span>STEP SNAPSHOTS</span>
     </div>
     <div id="steps">
         <div class="step" v-for="(item, index) of steps" :key="index">

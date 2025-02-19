@@ -4,21 +4,27 @@ import * as d3 from 'd3';
 
 // 树结构数据
 const data = [
-    { id: "r", text: "根节点", parent: null, status: 0, type: "chord" },
-    { id: "1", text: "第二步", parent: "r", status: 1, type: "circular" },
-    { id: "2", text: "第三步", parent: "r", status: 2, type: "radial" },
-    { id: "3", text: "第四步", parent: "r", status: 0, type: "chord" },
-    { id: "4", text: "第五步", parent: "1", status: 1, type: "circular" },
-    { id: "5", text: "第三步", parent: "2", status: 2, type: "radial" },
-    { id: "6", text: "第四步", parent: "2", status: 2, type: "chord" },
-    { id: "7", text: "第五步", parent: "3", status: 1, type: "circular" },
-    { id: "8", text: "第四步", parent: "5", status: 2, type: "radial" },
-    { id: "9", text: "第四步", parent: "5", status: 2, type: "radial" },
-    { id: "10", text: "第四步", parent: "9", status: 2, type: "radial" },
-    { id: "11", text: "第四步", parent: "10", status: 2, type: "radial" },
-    { id: "12", text: "第四步", parent: "11", status: 2, type: "radial" },
-    { id: "13", text: "第四步", parent: "12", status: 2, type: "radial" }
-];
+    { id: "0",  text: "", parent: null, status: 0, type: "root" },
+    { id: "1",  text: "", parent: "0", status: 3, type: "radial" },
+    { id: "2",  text: "", parent: "1", status: 2, type: "radial" },
+    { id: "3",  text: "", parent: "0", status: 3, type: "circular" },
+    { id: "4",  text: "", parent: "3", status: 2, type: "circular" },
+    { id: "5",  text: "", parent: "4", status: 1, type: "circular" },
+    { id: "6",  text: "", parent: "5", status: 1, type: "radial" },
+    { id: "7",  text: "", parent: "6", status: 3, type: "circular" },
+    { id: "8",  text: "", parent: "7", status: 2, type: "circular" },
+    { id: "9",  text: "", parent: "8", status: 1, type: "circular" },
+    { id: "10",  text: "", parent: "9", status: 3, type: "radial" },
+    { id: "11",  text: "", parent: "10", status: 2, type: "radial" },
+    { id: "12",  text: "", parent: "11", status: 1, type: "radial" },
+    { id: "13",  text: "", parent: "10", status: 1, type: "circular" },
+    { id: "14",  text: "", parent: "13", status: 1, type: "chord" },
+    { id: "15",  text: "", parent: "14", status: 2, type: "chord" },
+    { id: "18",  text: "", parent: "15", status: 2, type: "chord" },
+    { id: "16",  text: "", parent: "15", status: 2, type: "chord" },
+    { id: "17",  text: "", parent: "16", status: 2, type: "chord" },
+    { id: "19",  text: "", parent: "17", status: 1, type: "chord" }
+  ];
 
 
 onMounted(() => {
@@ -27,9 +33,9 @@ onMounted(() => {
     /***********************************************
      * 全局颜色面板 & 其他全局变量
      ***********************************************/
-    const runColorPanel = ["#66c2a4", "#fc8d62", "#5d5cce"];
+    // const runColorPanel = ["#66c2a4", "#fc8d62", "#5d5cce"];
+    const runColorPanel = ["#ffffff","#66c2a4", "#fc8d62", "#ce5c5d"];
     const colorPanel = ["#ffffff", "#8ea0cb", "#66c2a4", "#fc8d62"];
-    let defaultLinkColor = "gray"; // 所有连线(树形+自定义)的颜色
     const linkColorPanel = ["#2d2736", "#767171", "#afabab", "#d0cece", "#f4f4f4"]
     const circleRadius = 25; // 节点半径
     const defaultMargin = 5;
@@ -291,7 +297,12 @@ onMounted(() => {
 
     // 在 svg 中添加一个 <g> 作为容器
     const container = svg.append("g").attr("class", "container");
+    
+    // 1. 首先添加参考线层
+    const guideLineLayer = container.append("g").attr("class", "guideLineLayer");
+    // 2. 然后是连线层
     const linkLayer = container.append("g").attr("class", "linkLayer");
+    // 3. 最后是节点层
     const nodeLayer = container.append("g").attr("class", "nodeLayer");
 
 
@@ -569,22 +580,27 @@ onMounted(() => {
         .attr("data-id", d => customIdMap.get(d.id)) // 初始化保证规则化id
         .attr("transform", d => `translate(${d.x},${d.y})`)
         .call(drag);
-
+    
     nodes.append("circle")
-        .attr("r", circleRadius * 3 / 4)
-        .attr("fill", d => {
-            if (d.parent === null) {  // 根节点
-                return "none";  // 透明填充
-            }
-            return runColorPanel[d.status];  // 其他节点保持不变
-        })
-        .attr("stroke", d => {
-            if (d.parent === null) {  // 如果是根节点
-                return "#6da9ff";  // 设置蓝色描边
-            }
-            return "none";  // 其他节点无描边
-        })
-        .attr("stroke-width", d => d.parent === null ? 5 : 0); // 根节点描边宽度为5
+        .attr("r", circleRadius * 3/4)
+        .attr("fill", d => runColorPanel[d.status])
+        .attr("stroke", linkColorPanel[0])
+        .attr("stroke-width", 0.5);
+    // nodes.append("circle")
+    //     .attr("r", circleRadius * 3 / 4)
+    //     .attr("fill", d => {
+    //         if (d.parent === null) {  // 根节点
+    //             return "none";  // 透明填充
+    //         }
+    //         return runColorPanel[d.status];  // 其他节点保持不变
+    //     })
+    //     .attr("stroke", d => {
+    //         if (d.parent === null) {  // 如果是根节点
+    //             return "#6da9ff";  // 设置蓝色描边
+    //         }
+    //         return "none";  // 其他节点无描边
+    //     })
+    //     .attr("stroke-width", d => d.parent === null ? 5 : 0); // 根节点描边宽度为5
     nodes.append("circle")
         .attr("id", 'circle-padding')
         .attr("r", circleRadius * 3 / 4 - defaultMargin)
@@ -596,6 +612,11 @@ onMounted(() => {
         .attr("fill", colorPanel[0]);
 
     // **增加 SVG 图形（仅适用于 type === "radial"）**
+    nodes.filter(d => d.type === "root")
+          .append("path")
+          .attr("fill", linkColorPanel[0])
+          .attr("stroke", linkColorPanel[0])
+
     nodes.filter(d => d.type === "circular")
         .append("path")
         .attr("d", arrowClockwisePath)
@@ -788,205 +809,7 @@ onMounted(() => {
         }
     });
 
-    /***********************************************
-     * 按钮点击事件
-     ***********************************************/
-    window.addEventListener('DOMContentLoaded', () => {
-        const btn1 = document.getElementById('btn1');
-        const btn2 = document.getElementById('btn2');
-        const btn3 = document.getElementById('btn3');
-
-        btn1.addEventListener('click', () => {
-            console.log("Btn1 clicked!");
-
-            // 找到当前所有节点的最大 Y 坐标
-            const maxY = d3.max(data, d => d.y || 0);
-            const spacing = 100; // 间距
-            const newY = maxY + spacing; // 新节点放在正下方
-
-            // 计算新 root 的 x 位置
-            const firstRoot = data.find(d => d.parent === null);
-            const newX = firstRoot && firstRoot.x !== undefined ? firstRoot.x : 100;
-
-            // 生成 **唯一的 root ID** (直接基于已有根节点数量)
-            const rootCount = data.filter(d => d.parent === null).length;
-            const newRootId = `root${rootCount + 1}`; // 例如 root1, root2, root3
-
-            // 新增的 root 节点
-            const newRoot = {
-                id: newRootId,
-                parent: null,
-                x: newX,
-                y: newY,
-                status: generateRandomStatus(),
-                type: generateRandomType()
-            };
-
-            // 添加到数据
-            data.push(newRoot);
-
-            // 重新渲染所有节点和连线
-            updateNodes();
-        });
-
-        function updateNodes() {
-            customIdMap = generateCustomDataId(data); // 计算新的 data-id
-            nodeMap.clear();
-            data.forEach(d => nodeMap.set(d.id, d));
-            // 确保每个新节点都有 `x, y`
-            data.forEach(d => {
-                if (d.x === undefined || d.y === undefined) {
-                    d.x = 200; // 默认 x 位置
-                    d.y = 100; // 默认 y 位置
-                }
-            });
-
-            const nodes = nodeLayer.selectAll("g.node").data(data, d => d.id);
-
-            const nodeEnter = nodes.enter()
-                .append("g")
-                .attr("class", "node")
-                .attr("data-id", d => customIdMap.get(d.id)) //
-                .attr("transform", d => `translate(${d.x},${d.y})`)
-                .call(drag)
-                .on("dblclick", function (event, d) {
-                    handleNodeDoubleClick(event, d);
-                });
-
-            nodeEnter.append("circle")
-                .attr("r", circleRadius * 3 / 4)
-                .attr("fill", d => {
-                    if (d.parent === null) {  // 根节点
-                        return "none";  // 透明填充
-                    }
-                    return runColorPanel[d.status];  // 其他节点保持不变
-                })
-                .attr("stroke", d => {
-                    if (d.parent === null) {  // 根节点
-                        return "#5d5cce";  // 深蓝色描边
-                    }
-                    return "none";  // 其他节点无描边
-                })
-                .attr("stroke-width", d => d.parent === null ? 5 : 0); // 根节点描边宽度为5
-
-            nodeEnter.append("circle")
-                .attr("id", 'circle-padding')
-                .attr("r", circleRadius * 3 / 4 - defaultMargin)
-                .attr("fill", colorPanel[0]);
-
-            nodeEnter.append("circle")
-                .attr("r", circleRadius * 3 / 4 - defaultMargin)
-                .attr("stroke", linkColorPanel[1])
-                .attr("fill", colorPanel[0]);
-
-            // **增加 SVG 图形（仅适用于 type === "radial"）**
-            nodeEnter.filter(d => d.type === "circular")
-                .append("path")
-                .attr("d", arrowClockwisePath)
-                .attr("fill", linkColorPanel[0])
-                .attr("stroke", linkColorPanel[0])
-                .attr("stroke-width", 0.5)
-                .attr("stroke-linecap", "round")
-                .attr("stroke-linejoin", "round")
-                .attr("transform", `translate(${-circleRadius / 2}, ${-circleRadius / 2} ) scale(1.3)`);
-            nodeEnter.filter(d => d.type === "radial")
-                .append("path")
-                .attr("d", arrowRadialPath)
-                .attr("fill", linkColorPanel[0])
-                .attr("stroke", linkColorPanel[0])
-                .attr("stroke-width", 0.1)
-                .attr("stroke-linecap", "round")
-                .attr("stroke-linejoin", "round")
-                .attr("transform", `translate(${-circleRadius / 2}, ${-circleRadius / 2}) scale(1.3)`);
-
-            nodeEnter.filter(d => d.type === "chord")
-                .append("path")
-                .attr("d", arrowChordPath)
-                .attr("fill", linkColorPanel[0])
-                .attr("stroke", linkColorPanel[0])
-                .attr("stroke-width", 0.5)
-                .attr("stroke-linecap", "round")
-                .attr("stroke-linejoin", "round")
-                .attr("transform", `translate(${-circleRadius / 2}, ${-circleRadius / 2}) scale(1.2)`);
-
-            nodes.merge(nodeEnter)
-                .transition().duration(200)
-                .attr("transform", d => `translate(${d.x},${d.y})`);
-
-            nodes.exit().remove();
-
-            updateLinks(); // **确保 `updateLinks()` 在节点完全初始化后执行**
-        }
-
-        function handleNodeDoubleClick(event, d) {
-            event.stopPropagation();
-            if (!isLinking) {
-                // 开始连接
-                isLinking = true;
-                linkSource = d;
-                tempLine = linkLayer.append("path")
-                    .attr("class", "tempLink")
-                    .style("stroke-dasharray", "5,2")
-                    .style("stroke", linkColorPanel[0])
-                    .style("fill", "none")
-                    .attr("d", `M${d.x},${d.y} L${d.x},${d.y}`);
-
-                // 监听鼠标移动，实时更新连线
-                svg.on("mousemove.linkMode", (evt) => {
-                    const [sx, sy] = d3.pointer(evt, svg.node());
-                    const tr = d3.zoomTransform(container.node());
-                    const mx = (sx - tr.x) / tr.k, my = (sy - tr.y) / tr.k;
-                    tempLine.attr("d", `M${linkSource.x},${linkSource.y} L${mx},${my}`);
-                });
-            } else {
-                // 结束连接
-                isLinking = false;
-                svg.on("mousemove.linkMode", null);
-
-                if (d === linkSource) {
-                    tempLine.remove(); // 取消连接
-                } else {
-                    const linkId = `L_${linkSource.id}_${d.id}`;
-                    customLinks.push({
-                        id: linkId,
-                        sourceId: linkSource.id,
-                        targetId: d.id
-                    });
-                    tempLine.remove();
-
-                    const customLinkGroups = linkLayer.selectAll("g.customLink").data(customLinks, l => l.id);
-                    const linkEnter = customLinkGroups.enter().append("g")
-                        .attr("class", "customLink");
-
-                    linkEnter.append("path")
-                        .attr("class", "finalLink")
-                        .attr("stroke-dasharray", "5,2")
-                        .attr("fill", "none");
-
-                    linkEnter.append("polygon")
-                        .attr("class", "arrowHead")
-                        .attr("points", "0,-5 10,0 0,5 3,0")
-                        .attr("fill", "url(#linkGradient)"); // 使用相同的渐变
-
-                    updateLinks(); // 更新所有连线
-                }
-                tempLine = null;
-                linkSource = null;
-            }
-        }
-
-
-        btn2.addEventListener('click', () => {
-            console.log("Btn2 clicked!");
-
-        });
-
-        btn3.addEventListener('click', () => {
-            console.log("Btn3 clicked!");
-
-        });
-    });
-    // 添加垂直参考线
+    // 添加垂直参考线的函数移到这里
     const addVerticalGuideLines = () => {
         const xPositions = [...new Set(data.map(d => d.x))].sort((a, b) => a - b);
 
@@ -1006,10 +829,10 @@ onMounted(() => {
             .attr("y2", height * 3)
             .attr("stroke", "#e0e0e0") // 浅灰色
             .attr("stroke-width", 3)
-            .attr("stroke-dasharray", "4,4"); // 虚线效果
+            .attr("stroke-dasharray", "4,4");
     };
 
-    // 在初始化图表后调用
+    // 调用添加参考线函数
     addVerticalGuideLines();
 
 });
@@ -1019,20 +842,13 @@ onMounted(() => {
     <!-- 隐藏测量宽度用的 div -->
     <div id="hiddenMeasure"></div>
 
-    <!-- 外层容器：包含 svg + 按钮面板 -->
+    <!-- 简化后的容器结构 -->
     <div id="graphContainer">
-        <!-- 右上角的三个按钮 -->
-        <div id="buttonPanel">
-            <button class="square-btn" id="btn1"></button>
-            <button class="square-btn" id="btn2"></button>
-            <button class="square-btn" id="btn3"></button>
-        </div>
         <svg id="mySvg"></svg>
     </div>
 </template>
 
 <style scoped lang="scss">
-/* 外层容器，relative 让内部按钮可绝对定位 */
 #graphContainer {
     position: relative;
     width: 100%;
@@ -1042,30 +858,10 @@ onMounted(() => {
     background-color: #fff;
 }
 
-/* SVG 占满 #graphContainer 的宽高 */
 svg {
     width: 100%;
     height: 100%;
     cursor: grab;
-}
-
-/* 在同一个容器内，绝对定位按钮面板到右上角 */
-#buttonPanel {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.square-btn {
-    width: 30px;
-    height: 30px;
-    background-color: #f1f1f1;
-    border: 1px solid #999;
-    border-radius: 4px;
-    cursor: pointer;
 }
 
 #hiddenMeasure {
@@ -1079,6 +875,4 @@ svg {
 .treeLink {
     fill: none;
 }
-
-.treeArrow {}
 </style>

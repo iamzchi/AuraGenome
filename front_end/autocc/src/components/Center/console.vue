@@ -1,11 +1,11 @@
 <script setup>
 import { ref } from 'vue'
 const track = ref({
-    trackName: 'Track 1',
-    content: 'This is the content of the track',
+    trackName: 'Track 3',
+    content: 'Zygosity Mutation Bar',
     associatedData: 'file1.csv',
-    explanation: 'This is the explanation of the track',
-    elements: 'This is the elements of the track'
+    explanation: 'To display heterozygous (light orange) and homozygous (dark orange) mutations with 10Mb aggregation.',
+    elements: 'Histogram'
 })
 
 const color = ref('#0052d9');
@@ -24,6 +24,9 @@ const marks1 = {
   100: '100%',
 };
 const value1 = ref(30);
+
+const fillColor = ref('#FFA500'); // 橙色
+const strokeColor = ref('#808080'); // 灰色
 </script>
 <template>
     <t-config-provider :global-config="enConfig">
@@ -115,14 +118,14 @@ const value1 = ref(30);
             <div class="trackDetail_row">
                 <div class="detailTitle">Fill Color</div>
                 <div class="detailContent">
-                    <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="color"
+                    <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="fillColor"
                         :show-primary-color-preview="true" />
                 </div>
             </div>
             <div class="trackDetail_row">
                 <div class="detailTitle">Stroke Color</div>
                 <div class="detailContent">
-                    <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="color"
+                    <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="strokeColor"
                         :show-primary-color-preview="true" />
                 </div>
             </div>
@@ -132,6 +135,17 @@ const value1 = ref(30);
                     <t-slider v-model="value1" :show-tooltip="true" :marks="marks1"
                         :input-number-props="false" @change="change" />
                 </div>
+            </div>
+            <br />
+            <t-divider />
+            <div class="trackDetail">
+                <div class="detailTitle">Save to SNAPSHOTS</div>
+                <t-button style="margin-top: 5px;">
+                    <template #icon>
+                        <t-icon name="task-checked" />
+                    </template>
+                    Save
+                </t-button>
             </div>
 
             <div id="btns">

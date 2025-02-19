@@ -54,7 +54,7 @@ const isloading = ref(false);
         <div id="circos">
             <div class="blockTitle">
                 <t-icon name="chart-ring-1"></t-icon>
-                <span>PANEL</span>  
+                <span>PANEL</span>
             </div>
             <div id="loading" style="z-index: 1000;" v-show="isloading">
                 <loading></loading>
@@ -134,7 +134,8 @@ const isloading = ref(false);
     position: relative;
 
     #circos {
-        width: 80%;
+        // width: 80%;
+        flex: 0 0 75%; 
         position: relative;
 
         #loading {
@@ -367,7 +368,8 @@ const isloading = ref(false);
                 content: '';
                 position: absolute;
                 background-color: #ccc;
-                width: 141.4%; /* 100% * √2 */
+                width: 141.4%;
+                /* 100% * √2 */
                 height: 1px;
                 left: -20.7%;
                 top: 50%;
@@ -383,7 +385,9 @@ const isloading = ref(false);
 
             /* 添加更多对角线 */
             .diagonal-lines {
-                &::after, &::before {
+
+                &::after,
+                &::before {
                     content: '';
                     position: absolute;
                     background-color: #ccc;
@@ -394,8 +398,13 @@ const isloading = ref(false);
                 }
 
                 /* 15度和165度 */
-                &::after { transform: rotate(15deg); }
-                &::before { transform: rotate(165deg); }
+                &::after {
+                    transform: rotate(15deg);
+                }
+
+                &::before {
+                    transform: rotate(165deg);
+                }
             }
 
             /* 使用额外的元素添加更多线条 */
@@ -408,7 +417,8 @@ const isloading = ref(false);
                 top: 0;
                 left: 0;
 
-                &::after, &::before {
+                &::after,
+                &::before {
                     content: '';
                     position: absolute;
                     background-color: #ccc;
@@ -421,30 +431,46 @@ const isloading = ref(false);
 
             /* 30度和150度 */
             .diagonal-lines-2 {
-                &::after { transform: rotate(30deg); }
-                &::before { transform: rotate(150deg); }
+                &::after {
+                    transform: rotate(30deg);
+                }
+
+                &::before {
+                    transform: rotate(150deg);
+                }
             }
 
             /* 60度和120度 */
             .diagonal-lines-3 {
-                &::after { transform: rotate(60deg); }
-                &::before { transform: rotate(120deg); }
+                &::after {
+                    transform: rotate(60deg);
+                }
+
+                &::before {
+                    transform: rotate(120deg);
+                }
             }
 
             /* 75度和105度 */
             .diagonal-lines-4 {
-                &::after { transform: rotate(75deg); }
-                &::before { transform: rotate(105deg); }
+                &::after {
+                    transform: rotate(75deg);
+                }
+
+                &::before {
+                    transform: rotate(105deg);
+                }
             }
 
         }
     }
 
     #console {
-        width: 20%;
+        // width: 20%;
+        flex: 0 0 20%;
         max-width: 300px;
         height: 100%;
-        background-color: salmon;
+        background-color:salmon;
     }
 
 }
