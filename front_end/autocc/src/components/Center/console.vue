@@ -17,20 +17,37 @@ import enConfig from 'tdesign-vue-next/es/locale/en_US';
 
 //透明度
 const marks1 = {
-  0: '0%',
-  20: '20%',
-  50: '50%',
-  70: '70%',
-  100: '100%',
+    0: '0%',
+    20: '20%',
+    50: '50%',
+    70: '70%',
+    100: '100%',
 };
 const value1 = ref(30);
 
 const fillColor = ref('#FFA500'); // 橙色
 const strokeColor = ref('#808080'); // 灰色
+
+const exchanging = ref(false);
+const exchenge_tracks = (e) => {
+    exchanging.value = true;
+}
+const close_exchenge_tracks = (e) => {
+    exchanging.value = false;
+}
 </script>
 <template>
     <t-config-provider :global-config="enConfig">
-        <div class="action_container">
+        <div class="action_container border">
+            <div id="exchange_track_panel">
+                <div>track1:</div>
+                <div>track2:</div>
+                <br />
+                <br />
+                <br />
+
+                <t-button class="btns" shape="" theme="primary" variant="outline">Exchange</t-button>
+            </div>
             <t-tooltip content="Grab" trigger="hover">
                 <t-button class="btns" shape="circle" theme="primary" variant="outline">
                     <t-icon name="wave-left" />
@@ -48,9 +65,14 @@ const strokeColor = ref('#808080'); // 灰色
                 </t-button>
             </t-tooltip>
 
-            <t-tooltip content="Annotation focus area" trigger="hover">
-                <t-button class="btns" shape="circle" theme="primary" variant="outline">
-                    <t-icon name="transform " />
+            <t-tooltip content="Exchange Tracks" trigger="hover">
+                <t-button v-show="!exchanging" @click="exchenge_tracks" class="btns" shape="circle" theme="primary"
+                    variant="outline">
+                    <t-icon name="swap " />
+                </t-button>
+                <t-button v-show="exchanging" @click="close_exchenge_tracks" style="margin-bottom: 10px;" class="btns"
+                    shape="circle" theme="primary">
+                    <t-icon name="swap " />
                 </t-button>
             </t-tooltip>
             <t-tooltip content="Add Tips" trigger="hover">
@@ -64,7 +86,7 @@ const strokeColor = ref('#808080'); // 灰色
                 </t-button>
             </t-tooltip>
         </div>
-        <div class="console_container">
+        <div class="console_container border">
             <div id="trackName">
                 {{ track.trackName }}
             </div>
@@ -125,15 +147,15 @@ const strokeColor = ref('#808080'); // 灰色
             <div class="trackDetail_row">
                 <div class="detailTitle">Stroke Color</div>
                 <div class="detailContent">
-                    <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="strokeColor"
-                        :show-primary-color-preview="true" />
+                    <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker"
+                        v-model="strokeColor" :show-primary-color-preview="true" />
                 </div>
             </div>
             <div class="trackDetail">
                 <div class="detailTitle">Polar coordinate transparency</div>
                 <div class="detailContent" style="margin-top: .6rem;">
-                    <t-slider v-model="value1" :show-tooltip="true" :marks="marks1"
-                        :input-number-props="false" @change="change" />
+                    <t-slider v-model="value1" :show-tooltip="true" :marks="marks1" :input-number-props="false"
+                        @change="change" />
                 </div>
             </div>
             <br />
@@ -172,6 +194,30 @@ const strokeColor = ref('#808080'); // 灰色
 </template>
 <style scoped lang="scss">
 .action_container {
+    position: relative;
+
+    #exchange_track_panel {
+        position: absolute;
+        top: 0;
+        left: -140px;
+        width: 130px;
+        height: 160px;
+        background-color: var(--td-brand-color-7);
+        border-radius: 10px;
+        border: 1px solid #d6d6d6;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: white;
+
+        div {
+            width: 100%;
+            text-align: left;
+        }
+
+    }
+
     display: flex;
     flex-direction: column;
     // justify-content: center;
@@ -179,7 +225,7 @@ const strokeColor = ref('#808080'); // 灰色
     background-color: white;
     border-radius: 20px;
     padding: 10px;
-    border: 1px solid #d6d6d6;
+    // border: 1px solid #d6d6d6;
     width: 50px;
     margin-right: 10px;
     height: fit-content;
@@ -204,7 +250,7 @@ const strokeColor = ref('#808080'); // 灰色
     background-color: white;
     border-radius: 20px;
     padding: 1.3rem;
-    border: 1px solid #d6d6d6;
+    // border: 1px solid #d6d6d6;
     // width: 100%;
     height: 100%;
 

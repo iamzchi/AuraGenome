@@ -3,9 +3,14 @@ import { ref, onMounted } from 'vue';
 import * as d3 from 'd3';
 import Circos from 'circos';
 import { readFile } from '@/utils/server'; // 引入封装的 readFile API 调用
-import {reduceData, reduceData_Position, gieStainColor,transform_startend_position,add_hover_effect} from './utils_circos.js';
+import { reduceData, reduceData_Position, gieStainColor, transform_startend_position } from './utils_circos.js';
+import { add_hover_effect, addTrack, reverse } from './utils_interact.js';
+
+const tracks = ref({});//所有track的配置
+let circos;
 onMounted(async () => {
   try {
+
     //获取参考基因组文件
     let hg19 = await d3.json('/data/hg19.json')
     let cytobands = await d3.csv('/data/cytobands.csv');
@@ -13,11 +18,10 @@ onMounted(async () => {
     //设置画布
     let chartWidth = document.getElementById('chart').clientWidth;
     let width = chartWidth;
-    let innerRadius = chartWidth/2-100;
-    let outerRadius = chartWidth/2-100+50;
-
+    let innerRadius = chartWidth / 2 - 100;
+    let outerRadius = chartWidth / 2 - 100 + 50;
     //初始化circos
-    const circos = new Circos({
+    circos = new Circos({
       container: `#chart`,
       width: width,
       height: width,
@@ -95,7 +99,7 @@ onMounted(async () => {
         return true;
       } else {
         return false;
-      }   
+      }
     })
 
     //第二步：组合成绘图需要的格式
@@ -103,18 +107,19 @@ onMounted(async () => {
     level2_2 = reduceData(level2_2, hg19, 10000000)
 
     //第三步：绘图
-    circos.histogram('level2_1', level2_1, {
+    addTrack(circos,tracks,'level2_1', level2_1, 'histogram', {
       innerRadius: .95,
       outerRadius: .96,
       color: "red",
       opacity: 1.0
-    })
-    circos.histogram('level2_2', level2_2, {
+    });
+
+    addTrack(circos,tracks,'level2_2', level2_2, 'histogram', {
       innerRadius: .96,
       outerRadius: .97,
       color: "green",
       opacity: 1.0
-    })
+    });
 
     /**
      * 橙色柱状图
@@ -146,18 +151,19 @@ onMounted(async () => {
     level3_2 = reduceData_Position(level3_2, hg19, 10000000)
 
     //画图
-    circos.histogram('level3_1', level3_1, {
+    addTrack(circos,tracks,'level3_1', level3_1, 'histogram', {
       innerRadius: 0.88,
       outerRadius: 0.93,
       color: "#faa95d",
       opacity: 1.0
-    })
-    circos.histogram('level3_2', level3_2, {
+    });
+
+    addTrack(circos,tracks,'level3_2', level3_2, 'histogram', {
       innerRadius: 0.80,
       outerRadius: 0.85,
       color: "#f0761e",
       opacity: 1.0
-    })
+    });
 
     /**
      * 编码突变（彩色方块）：
@@ -227,7 +233,7 @@ onMounted(async () => {
         value: 1
       }
     })
-    circos.scatter('level4_1', level4_1, {
+    addTrack(circos,tracks,'level4_1', level4_1, 'scatter', {
       innerRadius: 0.77,
       outerRadius: 0.80,
       color: "gray",
@@ -236,7 +242,7 @@ onMounted(async () => {
       size: 3,
       strokeColor: "none"
     })
-    circos.scatter('level4_2', level4_2, {
+    addTrack(circos,tracks,'level4_2', level4_2, 'scatter', {
       innerRadius: 0.74,
       outerRadius: 0.77,
       color: "purple",
@@ -245,7 +251,7 @@ onMounted(async () => {
       size: 3,
       strokeColor: "none"
     })
-    circos.scatter('level4_3', level4_3, {
+    addTrack(circos,tracks,'level4_3', level4_3, 'scatter', {
       innerRadius: 0.71,
       outerRadius: 0.74,
       color: "red",
@@ -254,7 +260,7 @@ onMounted(async () => {
       size: 3,
       strokeColor: "none"
     })
-    circos.scatter('level4_4', level4_4, {
+    addTrack(circos,tracks,'level4_4', level4_4, 'scatter', {
       innerRadius: 0.68,
       outerRadius: 0.71,
       color: "black",
@@ -276,24 +282,13 @@ onMounted(async () => {
     //第一步：组合成绘图需要的格式
     level5 = transform_startend_position(level5, "Copy number")
     //第二步：画图
-    circos.line('level5', level5, {
+    addTrack(circos,tracks,'level5', level5, 'line', {
       innerRadius: 0.50,
       outerRadius: 0.68,
       color: "#5979ae",
-      axes: [
-        {
-          spacing: 2,
-          color: "gray",
-          thickness: .3,
-          opacity: .5
-        }
-      ],
-      backgrounds: [
-        {
-          color: "#d6d6d6"
-        }
-      ]
-    })
+      axes: [{ spacing: 2, color: "gray", thickness: .3, opacity: .5 }],
+      backgrounds: [{ color: "#d6d6d6" }]
+    });
 
     /**
      * 红色线
@@ -314,12 +309,12 @@ onMounted(async () => {
     // console.log("6666666666", level6);
 
     //第二步：画图
-    circos.heatmap('level6', level6, {
+    addTrack(circos,tracks,'level6', level6, 'heatmap', {
       innerRadius: 0.49,
       outerRadius: 0.50,
       color: "red",
-      opacity: 1.0,
-    })
+      opacity: 1.0
+    });
 
     /**
      * 连线
@@ -371,26 +366,31 @@ onMounted(async () => {
         }
       }
     })
-    circos.chords('level7_1', level7_1, {
+    addTrack(circos,tracks,'level7_1', level7_1, 'chords', {
       color: "green",
-      radius: 0.48,
-    })
-    circos.chords('level7_2', level7_2, {
+      radius: 0.48
+    });
+
+    addTrack(circos,tracks,'level7_2', level7_2, 'chords', {
       color: "purple",
-      radius: 0.48,
-    })
-    console.log(level7_2);
-
-
+      radius: 0.48
+    });
     circos.render();
     add_hover_effect();
   } catch (err) {
     console.error('Error fetching or processing data:', err);
   }
 });
+const reverse_track = (id1,id2) => {
+  console.log('circos:', circos);
+  console.log('tracks:', tracks);
+  console.log('tracks.value:', tracks.value);
+  reverse(circos,tracks,id1,id2)
+}
 </script>
 
 <template>
+  <!-- <t-button @click="reverse_track('level3_1', 'level5')">reverse</t-button> -->
   <div id="chart"></div>
 </template>
 
@@ -399,7 +399,7 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%; 
+  width: 100%;
   height: 100%;
   /* background-color: rgb(239, 239, 239); */
 

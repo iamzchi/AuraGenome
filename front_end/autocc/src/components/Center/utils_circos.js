@@ -201,62 +201,6 @@ function delete_overflow(data, data_column, data_number, reference, reference_co
     select: 'rgb(135,177,255)'
   }
 
-  //交互功能
-  function add_hover_effect() {
-    console.log("渲染完成！");
-    let allDom = document.querySelectorAll('.all')[0]
-    console.log(allDom);
-    // 获取所有第一层子div
-    let children = allDom.children;
-    console.log("children", children);
-    // 遍历每个子div并添加hover事件监听
-
-    for (let child of children) {
-      child.addEventListener('mouseenter', () => {
-        child.style.cursor = 'pointer';
-        // 获取 g 元素的边界信息
-        let rect = child.getBoundingClientRect();
-
-        // 获取宽度和高度
-        let width = rect.width;
-        let height = rect.height;
-
-        console.log(`g元素的宽度：${width}`);
-        console.log(`g元素的高度：${height}`);
-        // 创建一个SVG圆圈元素
-        let circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circle.setAttribute("cx", 0);
-        circle.setAttribute("cy", 0);
-        circle.setAttribute("r", width/2);
-        circle.setAttribute("stroke", "#d9d9d9");
-        circle.setAttribute("fill", "none"); 
-        circle.setAttribute("stroke-width", "1");
-        circle.classList.add("circle-hover");
-        
-        // 将圆圈插入到child元素的第一个位置
-        child.insertBefore(circle, child.firstChild);
-
-        child.style.transform = 'scale(1.01)';
-        child.style.stroke = '#ffff00';
-        child.style.strokeWidth = '2';
-        child.style.filter = 'drop-shadow(0 0 5px #ffff00)';
-        child.style.transition = 'all 0.3s ease';
-      });
-
-      child.addEventListener('mouseleave', () => {
-        // 获取所有circle-hover元素
-        let circles = child.getElementsByClassName('circle-hover');
-        // 删除所有circle-hover元素
-        while(circles.length > 0) {
-            circles[0].remove();
-        }
-        child.style.transform = 'scale(1)';
-        child.style.stroke = 'none';
-        child.style.strokeWidth = '0';
-        child.style.filter = 'none';
-      });
-    }
-  }
 
   export {
     delete_overflow,
@@ -264,5 +208,4 @@ function delete_overflow(data, data_column, data_number, reference, reference_co
     reduceData_Position,
     transform_startend_position,
     gieStainColor,
-    add_hover_effect
   }

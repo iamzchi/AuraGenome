@@ -20,12 +20,11 @@ const data = [
     { id: "13",  text: "", parent: "10", status: 1, type: "circular" },
     { id: "14",  text: "", parent: "13", status: 1, type: "chord" },
     { id: "15",  text: "", parent: "14", status: 2, type: "chord" },
-    { id: "18",  text: "", parent: "15", status: 2, type: "chord" },
     { id: "16",  text: "", parent: "15", status: 2, type: "chord" },
-    { id: "17",  text: "", parent: "16", status: 2, type: "chord" },
-    { id: "19",  text: "", parent: "17", status: 1, type: "chord" }
+    { id: "17",  text: "", parent: "15", status: 2, type: "chord" },
+    { id: "18",  text: "", parent: "17", status: 2, type: "chord" },
+    { id: "19",  text: "", parent: "18", status: 1, type: "chord" }
   ];
-
 
 onMounted(() => {
 
@@ -305,8 +304,20 @@ onMounted(() => {
     // 3. 最后是节点层
     const nodeLayer = container.append("g").attr("class", "nodeLayer");
 
-
-
+    // 把添加参考线的函数调用移到这里，紧接着层级定义之后
+    // 添加垂直参考线
+    const xPositions = [...new Set(data.map(d => d.x))].sort((a, b) => a - b);
+    // guideLineLayer.selectAll("line")
+    //     .data(xPositions)
+    //     .enter()
+    //     .append("line")
+    //     .attr("x1", d => d)
+    //     .attr("x2", d => d)
+    //     .attr("y1", 0)
+    //     .attr("y2", height * 3)
+    //     .attr("stroke", "#e0e0e0")
+    //     .attr("stroke-width", 3)
+    //     .attr("stroke-dasharray", "4,4");
 
     /***********************************************
      * 用 d3.stratify + d3.tree() 来优化节点布局
@@ -843,7 +854,7 @@ onMounted(() => {
     <div id="hiddenMeasure"></div>
 
     <!-- 简化后的容器结构 -->
-    <div id="graphContainer">
+    <div id="graphContainer" class="border">
         <svg id="mySvg"></svg>
     </div>
 </template>
@@ -854,7 +865,6 @@ onMounted(() => {
     width: 100%;
     height: 100%;
     border-radius: 10px;
-    border: 1px solid #ccc;
     background-color: #fff;
 }
 

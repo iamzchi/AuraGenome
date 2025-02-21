@@ -2,7 +2,6 @@
 import demo1 from './demo1.vue'
 import demo2 from './demo2.vue'
 import demo3 from './demo3.vue'
-import demo_show from './demo_show.vue'
 import consolePanel from './console.vue'
 import root from './charts/id_001/root.vue'
 import step1 from './charts/id_001/step1.vue'
@@ -150,6 +149,7 @@ const isloading = ref(false);
         #circos_chart {
             // background-color: pink;
             position: relative;
+            left: 10px;
 
             #polar_system {
                 // background-color: rgb(237, 237, 237);
@@ -161,6 +161,8 @@ const isloading = ref(false);
                 position: absolute;
                 width: 100%;
                 height: 100%;
+                //shadow
+                box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
 
             }
 
@@ -171,6 +173,8 @@ const isloading = ref(false);
                 position: relative;
                 // margin: 50px auto;
                 border-radius: 50%;
+                //shadow
+                box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
             }
 
             /* 设置环形圆圈 */
@@ -178,6 +182,7 @@ const isloading = ref(false);
                 position: absolute;
                 border: 1px solid #ccc;
                 border-radius: 50%;
+
             }
 
             /* 从外到内的20个圆圈 */

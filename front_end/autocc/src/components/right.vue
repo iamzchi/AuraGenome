@@ -55,7 +55,7 @@ onMounted(()=>{
         <t-icon name="work-history"> </t-icon>
         <span>PROJECTS</span>
     </div>
-    <div id="projects">
+    <div id="projects" class="border">
         <div class="project" v-for="i in 3" :key="i"></div>
     </div>
     <t-space />
@@ -63,7 +63,7 @@ onMounted(()=>{
         <t-icon name="animation"> </t-icon>
         <span>STEP SNAPSHOTS</span>
     </div>
-    <div id="steps">
+    <div id="steps" class="border">
         <div class="step" v-for="(item, index) of steps" :key="index">
             <!-- <div class="line" v-show="index != steps.length - 1"></div> -->
             <div class="title">Step {{ item.step }}: {{ item.title }}
@@ -97,7 +97,6 @@ onMounted(()=>{
     justify-content: space-between;
     border-radius: 20px;
     // background-color: rgb(244, 244, 244);
-    border: 1px solid rgb(220, 220, 220);
     padding: 10px;
 
     .project {
@@ -140,6 +139,12 @@ onMounted(()=>{
     padding: 20px;
     height: 78vh;
     overflow-y: auto;
+    //隐藏滚动条
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar{
+        display: none;
+    }
 
     .step {
         width: 100%;
@@ -160,7 +165,7 @@ onMounted(()=>{
                 height: 3rem;
                 text-align: left;
                 // background-color: rgb(217, 217, 217);
-                background-image: linear-gradient( 135deg, #6da9ff 10%, #92e4c0 100%);
+                background-image: linear-gradient( 135deg, #6da9ff 10%, #367DB0 100%);
                 color: white;
                 .time{
                     font-size: 0.5rem;

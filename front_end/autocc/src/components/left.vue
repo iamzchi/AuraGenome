@@ -247,7 +247,7 @@ onMounted(() => {
 const fileRecommendItems = ref([
   {
     "chart_type": "Histogram",
-    "chart_description": "To display heterozygous (light orange) and homozygous (dark orange) mutations with 10Mb aggregation"
+    "chart_description": "To display heterozygous (light orange) and homozygous (dark orange) mutations with 10Mb aggregation."
   },
   {
     "chart_type": "Heatmap",
@@ -282,7 +282,7 @@ import svgIcon from './Left/svgIcon.vue'
       </template>
       upload</t-button>
   </div>
-  <div id="dataStore" class="radius20">
+  <div id="dataStore" class="border radius20">
     <t-menu width="15%">
       <t-menu-item v-for="i in 8" :value="i">
         <template #icon>
@@ -302,13 +302,14 @@ import svgIcon from './Left/svgIcon.vue'
         <span>Vis. SOLUTIONS</span>
       </div>
       <div class="fileRecommendItem" v-for="(item, index) in fileRecommendItems" :key="item.id">
-        <p class="fileRecommendItemTitle">
-          <svgIcon :chartType="item.chart_type" />  {{
-            item.chart_type
-          }}
-        </p>
-
-        {{ item.chart_description }}
+        <div style="padding: 0 10px;">
+          <p class="fileRecommendItemTitle">
+            <svgIcon :chartType="item.chart_type" /> {{
+              item.chart_type
+            }}
+          </p>
+          {{ item.chart_description }}
+        </div>
         <p class="itemNumber">
           Recommend No.{{ index + 1 }}
         </p>
@@ -331,7 +332,7 @@ import svgIcon from './Left/svgIcon.vue'
         <span>CHAT WITH<span class="gradientText">Aura</span></span>
       </div>
 
-      <div id="chat" class="radius20">
+      <div id="chat" class="radius20 border">
         <div id="messages">
           <div v-for="(msg, index) in messages" :key="index"
             :class="['message', msg.role === 'ai' ? 'ai-message' : 'user-message']">
@@ -460,7 +461,6 @@ import svgIcon from './Left/svgIcon.vue'
 
 #chat {
   // background-color: #f4f4f4;
-  border: 1px solid #ddd;
   height: 38.5vh;
   // width: 60%;
   padding: 10px;
@@ -479,7 +479,7 @@ import svgIcon from './Left/svgIcon.vue'
 #dataStore {
   background-color: rgb(255, 255, 255);
   // background-color: #f4f4f4;
-  border: 1px solid #ddd;
+  // border: 1px solid #9d9d9d;
   height: 40vh;
   padding: 10px;
   display: flex;
@@ -542,7 +542,7 @@ import svgIcon from './Left/svgIcon.vue'
 }
 
 .user-message .bubble {
-  background-color: #007AFF;
+  background-color: var(--td-brand-color-7);
   color: white;
 }
 </style>

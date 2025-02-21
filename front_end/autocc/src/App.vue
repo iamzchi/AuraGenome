@@ -58,7 +58,6 @@ const modelOptions = [
 #body {
   max-width: 2500px;
   margin: 0 auto;
-  // background-color: rgb(245, 245, 245);
   #head_gradient {
     background-image: linear-gradient( 135deg, #6da9ff 10%, #92e4c0 100%);
     height: 20px;
@@ -92,7 +91,7 @@ const modelOptions = [
       // background-color: rgb(220, 255, 255);
       height: 100%;
       width: 50%;
-      padding: 20px;
+      padding: 20px 0;
 
     }
 
