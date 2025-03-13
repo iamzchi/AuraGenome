@@ -84,13 +84,14 @@ const setChartOption = (key) => {
           //   return props.data[key][params.dataIndex].color; // 使用正确的数据类型
           // }
           color: function (params) {
-            if (params.dataIndex % 3 === 0) {
-              return '#91e2c3';
-            } else if (params.dataIndex % 3 === 1) {
-              return '#83ccd9';
-            } else {
-              return '#6eaffd';
-            }
+            // if (params.dataIndex % 3 === 0) {
+            //   return '#6da9ff';
+            // } else if (params.dataIndex % 3 === 1) {
+            //   return '#83ccd9';
+            // } else {
+            //   return '#6eaffd';
+            // }
+            return '#c5c6c8'
             // return params.dataIndex % 2 === 0 ? '#91e2c3' : '#83ccd9';
           }
 

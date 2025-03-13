@@ -1,0 +1,62 @@
+[
+    {
+        "file_name": "file1",
+        "tags": ["遗传变异", "突变", "合子型", "基因间", "内含子"],
+        "description": "此文件包含有关遗传变异的信息，包括其位置、效应和合子型。",
+        "recommends": [
+            {
+                "chart_type": "高亮",
+                "chart_description": "一个显示基因组中突变位置的轨迹。'Position' 列用于定位突变，'Effect' 列可以分类以区分不同的突变类型。"
+            },
+            {
+                "chart_type": "热图",
+                "chart_description": "显示基因组中不同突变效应密度的热图，'Position' 列用于绘制突变，'Effect' 可以分组以显示不同的突变类型。"
+            }
+        ]
+    },
+    {
+        "file_name": "file2",
+        "tags": ["遗传变异", "插入", "缺失", "内含子", "基因间"],
+        "description": "此文件包含有关插入和缺失变异的信息，包括其序列、大小和基因组位置。",
+        "recommends": [
+            {
+                "chart_type": "高亮",
+                "chart_description": "一个显示基因组中插入和缺失位置的轨迹，'Start' 和 'End' 列指示变异的位置，'Effect' 列可用于区分变异类型。"
+            },
+            {
+                "chart_type": "堆叠",
+                "chart_description": "一个堆叠轨迹，显示在不同基因组位置的插入和缺失密度，'Start' 和 'End' 列用于确定变异位置，'Type' 列用于堆叠插入和缺失。"
+            }
+        ]
+    },
+    {
+        "file_name": "file3",
+        "tags": ["遗传重排", "重复", "缺失", "倒位", "易位"],
+        "description": "此文件包含有关各种遗传重排的信息，包括重复、缺失、倒位和易位，以及相关的基因组位置和效应。",
+        "recommends": [
+            {
+                "chart_type": "弦图",
+                "chart_description": "一个弦图，展示重排的基因组区域之间的关系，使用 'Chromosome' 和 'Chromosome.1' 显示连接，'Rearrangement type' 用于分类不同类型的重排。"
+            },
+            {
+                "chart_type": "热图",
+                "chart_description": "一个热图，显示不同重排类型在基因组中的频率和分布，'Position' 和 'Position.1' 列用于定位重排位点，'Rearrangement type' 用于分类。"
+            }
+        ]
+    },
+    {
+        "file_name": "file4",
+        "tags": ["遗传变异", "单核苷酸多态性", "错义", "沉默", "无义"],
+        "description": "此文件包含关于单核苷酸多态性（SNP）的信息，包括它们对基因的影响以及由此产生的氨基酸变化。",
+        "recommends": [
+            {
+                "chart_type": "热图",
+                "chart_description": "一个热图，显示突变的分布和类型，'Position' 用于定位基因组中的突变，'Effect' 或 'Zygosity' 列可用于分类。"
+            },
+            {
+                "chart_type": "堆叠",
+                "chart_description": "一个堆叠轨迹，表示不同突变类型（如 '错义'、'沉默'、'无义'）在基因组中的出现，'Position' 用于基因组定位，'Effect' 用于分类突变类型。"
+            }
+        ]
+    }
+]

@@ -1,11 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, inject } from 'vue';
 import * as d3 from 'd3';
 import Circos from 'circos';
 import { readFile } from '@/utils/server'; // 引入封装的 readFile API 调用
 import { reduceData, reduceData_Position, gieStainColor, transform_startend_position } from './utils_circos.js';
 import { add_hover_effect, addTrack, reverse } from './utils_interact.js';
-
+const bus = inject('bus');
 const tracks = ref({});//所有track的配置
 let circos;
 onMounted(async () => {
@@ -376,7 +376,7 @@ onMounted(async () => {
       radius: 0.48
     });
     circos.render();
-    add_hover_effect();
+    add_hover_effect(bus);
   } catch (err) {
     console.error('Error fetching or processing data:', err);
   }
@@ -387,6 +387,11 @@ const reverse_track = (id1,id2) => {
   console.log('tracks.value:', tracks.value);
   reverse(circos,tracks,id1,id2)
 }
+bus.on('go_exchange', (tracks) => {
+  console.log("go_exchange", tracks);
+  
+  reverse_track(tracks[0],tracks[1]);
+})
 </script>
 
 <template>

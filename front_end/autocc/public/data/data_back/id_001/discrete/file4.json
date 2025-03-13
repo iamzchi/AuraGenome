@@ -1,0 +1,82 @@
+{
+    "Zygosity": [
+        {
+            "name": "het",
+            "value": 246,
+            "color": "#ff2918",
+            "class": ""
+        },
+        {
+            "name": "hom",
+            "value": 53,
+            "color": "#ff4652",
+            "class": ""
+        }
+    ],
+    "Effect": [
+        {
+            "name": "Missense",
+            "value": 168,
+            "color": "#ff2918",
+            "class": ""
+        },
+        {
+            "name": "Silent",
+            "value": 104,
+            "color": "#ff4652",
+            "class": ""
+        },
+        {
+            "name": "Nonsense",
+            "value": 14,
+            "color": "#ff0f4b",
+            "class": ""
+        },
+        {
+            "name": "Splice",
+            "value": 13,
+            "color": "#d4334f",
+            "class": ""
+        }
+    ],
+    "Validation_status": [
+        {
+            "name": "SOMATIC",
+            "value": 44,
+            "color": "#ff2918",
+            "class": ""
+        },
+        {
+            "name": "COSMIC",
+            "value": 41,
+            "color": "#ff4652",
+            "class": ""
+        },
+        {
+            "name": "REAL, SOMATIC UNKNOWN",
+            "value": 4,
+            "color": "#ff0f4b",
+            "class": ""
+        },
+        {
+            "name": "UNCONFIRMED",
+            "value": 3,
+            "color": "#d4334f",
+            "class": ""
+        }
+    ],
+    "Validation_zygosity": [
+        {
+            "name": "Het",
+            "value": 59,
+            "color": "#ff2918",
+            "class": ""
+        },
+        {
+            "name": "Hom",
+            "value": 23,
+            "color": "#ff4652",
+            "class": ""
+        }
+    ]
+}

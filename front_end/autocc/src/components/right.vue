@@ -165,7 +165,7 @@ onMounted(()=>{
                 height: 3rem;
                 text-align: left;
                 // background-color: rgb(217, 217, 217);
-                background-image: linear-gradient( 135deg, #6da9ff 10%, #367DB0 100%);
+                background-image: linear-gradient( -135deg, #6da9ff 10%, #367DB0 100%);
                 color: white;
                 .time{
                     font-size: 0.5rem;
@@ -206,7 +206,7 @@ onMounted(()=>{
 
             .description{
                 font-size: 0.7rem;
-                color: var(--td-brand-color-6);
+                color: var(--td-font-gray-1);
             }
             .note{
                 font-size: 0.7rem;

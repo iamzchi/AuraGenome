@@ -89,8 +89,8 @@ const isloading = ref(false);
                 </div>
 
 
-                <demo1></demo1>
-                <!-- <demo2></demo2> -->
+                <!-- <demo1></demo1> -->
+                <demo2></demo2>
                 <!-- <demo3></demo3> -->
                 <!-- <demo_show></demo_show> -->
                 <!-- <root v-show="step == 'root'"></root> -->

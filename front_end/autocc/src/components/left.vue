@@ -240,7 +240,6 @@ watch(chatStore.messages, (newMessages) => {
 });
 onMounted(() => {
   scrollToBottom()
-
 })
 
 //推荐内容
@@ -255,6 +254,32 @@ const fileRecommendItems = ref([
   },
 ])
 import svgIcon from './Left/svgIcon.vue'
+
+// 添加新的响应式变量来控制边框样式
+const isGradientBorder = ref(false);
+const isFocused = ref(false);
+
+// 处理鼠标进入和离开事件
+const handleMouseEnter = () => {
+  isGradientBorder.value = true;
+};
+
+const handleMouseLeave = () => {
+  if (!isFocused.value) {
+    isGradientBorder.value = false;
+  }
+};
+
+// 处理输入框焦点事件
+const handleInputFocus = () => {
+  isFocused.value = true;
+  isGradientBorder.value = true;
+};
+
+const handleInputBlur = () => {
+  isFocused.value = false;
+  isGradientBorder.value = false;
+};
 
 </script>
 <template>
@@ -284,7 +309,7 @@ import svgIcon from './Left/svgIcon.vue'
   </div>
   <div id="dataStore" class="border radius20">
     <t-menu width="15%">
-      <t-menu-item v-for="i in 8" :value="i">
+      <t-menu-item v-for="i in 6" :value="i">
         <template #icon>
           <t-icon name="file" />
         </template>
@@ -302,17 +327,18 @@ import svgIcon from './Left/svgIcon.vue'
         <span>Vis. SOLUTIONS</span>
       </div>
       <div class="fileRecommendItem" v-for="(item, index) in fileRecommendItems" :key="item.id">
-        <div style="padding: 0 10px;">
-          <p class="fileRecommendItemTitle">
-            <svgIcon :chartType="item.chart_type" /> {{
-              item.chart_type
-            }}
+        <div class="fileRecommendItemTitle">
+          <p class="itemNumber">
+            Recommend No.{{ index + 1 }}
           </p>
+          <svgIcon :chartType="item.chart_type" /> {{
+            item.chart_type
+          }}
+        </div>
+        <div style="padding: 20px 10px;">
           {{ item.chart_description }}
         </div>
-        <p class="itemNumber">
-          Recommend No.{{ index + 1 }}
-        </p>
+
         <t-button style="margin-top: 10px;" size="small" variant="outline" shape="round" block>
           <template #icon>
             <t-icon name="check-double" />
@@ -332,7 +358,10 @@ import svgIcon from './Left/svgIcon.vue'
         <span>CHAT WITH<span class="gradientText">Aura</span></span>
       </div>
 
-      <div id="chat" class="radius20 border">
+      <div id="chat" 
+        :class="['radius20', isGradientBorder ? 'gradient-border' : 'border']"
+        @mouseenter="handleMouseEnter"
+        @mouseleave="handleMouseLeave">
         <div id="messages">
           <div v-for="(msg, index) in messages" :key="index"
             :class="['message', msg.role === 'ai' ? 'ai-message' : 'user-message']">
@@ -340,10 +369,14 @@ import svgIcon from './Left/svgIcon.vue'
             <div class="bubble">{{ msg.content }}</div>
           </div>
         </div>
-
         <div id="inputPanel">
           <div class="row">
-            <t-input v-model="inputText" @enter="sendMessage"></t-input>
+            <t-input 
+              v-model="inputText" 
+              @enter="sendMessage"
+              @focus="handleInputFocus"
+              @blur="handleInputBlur">
+            </t-input>
             <t-button @click="sendMessage">
               send
             </t-button>
@@ -371,11 +404,12 @@ import svgIcon from './Left/svgIcon.vue'
 
   .inputRecommendItems {
     font-size: .7rem;
-    background-color: var(--td-brand-color-7);
+    // background-color: var(--td-brand-color-7);
+    background-color: var(--td-gray-color-3);
     padding: .2rem .6rem;
     border-radius: 40px;
     width: fit-content;
-    color: white;
+    color: var(--td-font-gray-1);
     display: inline-block;
     margin: .2rem .1rem;
     transition: all 0.3s ease;
@@ -417,33 +451,31 @@ import svgIcon from './Left/svgIcon.vue'
     // color: white;
     border: 1px solid var(--td-brand-color-7);
     color: var(--td-brand-color-7);
-    padding: 0.3rem;
+    // padding: 0.3rem;
     font-size: 0.8rem;
     border-radius: 10px;
     margin: 2px;
     transition: all 0.3s ease;
     position: relative;
     margin-top: 30px;
+    overflow: hidden;
 
     .fileRecommendItemTitle {
-      // position: absolute;
-      // background-color: var(--td-brand-color-7);
-      // border-radius: 5px 5px 0px 0;
-      // padding: 0.3rem;
-      // top: -30px;
-      // left: 0px;
+      background-image: linear-gradient(-135deg, #6da9ff 10%, #367DB0 100%);
+      color: white;
       font-weight: bold;
-      color: var(--td-brand-color-7);
       display: flex;
       align-items: center;
-      // justify-content: center;
       font-size: 1rem;
       gap: 5px;
+      position: relative;
+      height: 40px;
+      padding-left: 1rem;
     }
 
     .itemNumber {
       position: absolute;
-      top: -5px;
+      top: -50px;
       right: 10px;
       font-size: 0.7rem;
       color: var(--td-brand-color-7);
@@ -542,7 +574,18 @@ import svgIcon from './Left/svgIcon.vue'
 }
 
 .user-message .bubble {
-  background-color: var(--td-brand-color-7);
-  color: white;
+  // background-color: var(--td-brand-color-7);
+  // background-color: var(--td-gray-color-13);
+  background-color: #89c2ff29;
+  color: #000;
+  // color: white;
 }
+
+// .gradient-border {
+//   border: 2px solid transparent;
+//   background-image: linear-gradient(white, white), 
+//     linear-gradient(90deg, var(--td-brand-color-7), var(--td-brand-color-8));
+//   background-origin: border-box;
+//   background-clip: padding-box, border-box;
+// }
 </style>

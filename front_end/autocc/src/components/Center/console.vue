@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue'
+import { ref,inject,onMounted,onUnmounted } from 'vue'
+const bus = inject('bus');
 const track = ref({
     trackName: 'Track 3',
     content: 'Zygosity Mutation Bar',
@@ -28,25 +29,88 @@ const value1 = ref(30);
 const fillColor = ref('#FFA500'); // 橙色
 const strokeColor = ref('#808080'); // 灰色
 
+// 添加下载功能
+const downloadSVGAsPNG = () => {
+  // 获取SVG元素
+  const svgElement = document.querySelector('#circos_chart #chart svg');
+  
+  if (!svgElement) {
+    console.error('未找到SVG元素');
+    return;
+  }
+  
+  // 创建Canvas
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  
+  // 获取SVG尺寸
+  const svgRect = svgElement.getBoundingClientRect();
+  canvas.width = svgRect.width;
+  canvas.height = svgRect.height;
+  
+  // 将SVG转为XML字符串
+  const svgData = new XMLSerializer().serializeToString(svgElement);
+  const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+  const url = URL.createObjectURL(svgBlob);
+  
+  // 创建图片对象
+  const img = new Image();
+  img.onload = function() {
+    // 在Canvas上绘制图片
+    ctx.drawImage(img, 0, 0);
+    URL.revokeObjectURL(url);
+    
+    // 将Canvas转为PNG并下载
+    const pngUrl = canvas.toDataURL('image/png');
+    const downloadLink = document.createElement('a');
+    downloadLink.href = pngUrl;
+    downloadLink.download = 'circos_chart.png';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  };
+  
+  img.src = url;
+};
+
 const exchanging = ref(false);
 const exchenge_tracks = (e) => {
     exchanging.value = true;
+    //调用兄弟组件的方法
+
 }
 const close_exchenge_tracks = (e) => {
     exchanging.value = false;
 }
+
+const tracks_to_exchange = ref([".","."]);
+const go_exchenge = () => {
+    console.log("go_exchenge", tracks_to_exchange.value);
+    
+    bus.emit('go_exchange', tracks_to_exchange.value);//发送交换请求
+}
+onMounted(() => {
+    bus.on('send_tracks_to_exchange', (tracks) => {//监听哪两个tracks进行了交换
+        tracks_to_exchange.value = tracks;
+        console.log("收到的tracks_to_exchange", tracks_to_exchange.value);
+    });
+});
+
+onUnmounted(() => {
+    bus.off('send_tracks_to_exchange');
+});
 </script>
 <template>
     <t-config-provider :global-config="enConfig">
         <div class="action_container border">
             <div id="exchange_track_panel">
-                <div>track1:</div>
-                <div>track2:</div>
+                <div>track1:{{ tracks_to_exchange[0] }}</div>
+                <div>track2:{{ tracks_to_exchange[1] }}</div>
                 <br />
                 <br />
                 <br />
 
-                <t-button class="btns" shape="" theme="primary" variant="outline">Exchange</t-button>
+                <t-button @click="go_exchenge" class="btns" shape="" theme="primary" variant="outline">Exchange</t-button>
             </div>
             <t-tooltip content="Grab" trigger="hover">
                 <t-button class="btns" shape="circle" theme="primary" variant="outline">
@@ -60,7 +124,7 @@ const close_exchenge_tracks = (e) => {
             </t-tooltip>
             <t-space />
             <t-tooltip content="Download Everything..." trigger="hover">
-                <t-button class="btns" shape="circle" theme="primary" variant="outline">
+                <t-button class="btns" shape="circle" theme="primary" variant="outline" @click="downloadSVGAsPNG">
                     <t-icon name="download" />
                 </t-button>
             </t-tooltip>
@@ -109,10 +173,11 @@ const close_exchenge_tracks = (e) => {
             <div class="trackDetail">
                 <div class="detailTitle">Color Palette</div>
                 <div class="detailContent">
-                    <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="color"
+                    <!-- <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="color"
                         :show-primary-color-preview="true" />
                     <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="color"
-                        :show-primary-color-preview="true" />
+                        :show-primary-color-preview="true" /> -->
+                        <img src="/colorp1.png" style="width: 50%;margin-top: .3rem;" alt="color_palette" class="color_palette">
 
                 </div>
             </div>

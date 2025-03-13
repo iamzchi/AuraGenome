@@ -15,7 +15,7 @@ onMounted(async () => {
     //设置画布
     let chartWidth = chart.value.clientWidth;
     let width = chartWidth;
-    let innerRadius = chartWidth/2-100;
+    let innerRadius = chartWidth/2-100+10;
     let outerRadius = chartWidth/2-100+50;
 
     //初始化circos
@@ -31,14 +31,14 @@ onMounted(async () => {
         outerRadius: outerRadius,
         labels: {
           display: true,
-          radialOffset: 60,
+          radialOffset: 30,
           color: "black",
           size: 10
         },
         ticks: {
           display: true,
           color: 'grey',
-          labels: false,
+          labels: true,
           labelSuffix: 'Mb',//百万级别
           labelDenominator: 5000000,
           spacing: 5000000,
@@ -61,7 +61,7 @@ onMounted(async () => {
     let highlightConfig = {
       innerRadius: innerRadius,
       outerRadius: outerRadius,
-      opacity: .7,
+      opacity: 1,
       color: function (d) {
         return gieStainColor[d.gieStain]
       }
@@ -76,37 +76,187 @@ onMounted(async () => {
      * Linking regions where Chromosome and Chromosome.1 columns have different values.
      * Data source: file3.csv.
      */
-    let level7_2 = await readFile('id_001/file3.csv');
-    level7_2 = level7_2.filter((item) => {
-      if (item["Chromosome"] != item["Chromosome.1"]) {
+    let lines = await d3.csv('/data/data_back/id_002/file.csv')
+    
+    
+    //将lines中chr1中的“chr”去掉
+    lines = lines.map((item) => {
+      return {
+        ...item,
+        chr1: item["chr1"].replace("chr", ""),
+        chr2: item["chr2"].replace("chr", "")
+      }
+    })
+    //过滤的规则：
+    // color字段范围 是0-300
+    // 颜色映射规则是：
+    // 2黄
+    // 4紫
+    // 0-50 对应#ffffb3
+    // 50-100 对应#ffff65
+    // 100-150 对应#e3d5fa
+    // 150-200 对应#c1a8f4
+    // 200-250 对应#7d5be8
+    // 250-300 对应#422ddf
+    // 透明度都是0.8
+    let lines_1 = lines.filter((item) => {
+      if (item["color"] >= 0 && item["color"] <= 50) {
         return true;
       } else {
         return false;
       }
     })
-    level7_2 = level7_2.map((item) => {
+    console.log(`lines_1: ${lines_1}`)
+    let lines_2 = lines.filter((item) => {
+      if (item["color"] >= 50 && item["color"] <= 100) {
+        return true;
+      } else {
+        return false;
+      }
+    })  
+    let lines_3 = lines.filter((item) => {
+      if (item["color"] >= 100 && item["color"] <= 150) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    let lines_4 = lines.filter((item) => {
+      if (item["color"] >= 150 && item["color"] <= 200) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    let lines_5 = lines.filter((item) => {
+      if (item["color"] >= 200 && item["color"] <= 250) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    let lines_6 = lines.filter((item) => {
+      if (item["color"] >= 250 && item["color"] <= 300) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    lines_1 = lines_1.map((item) => {
       return {
         source: {
-          id: item["Chromosome"],
-          start: Number(item["Position"]),
-          end: Number(item["Position"]) + 10000000
+          id: item["chr1"],
+          start: Number(item["start1"]),
+          end: Number(item["end1"])
         },
-        target: {
-          id: item["Chromosome.1"],
-          start: Number(item["Position.1"]),
-          end: Number(item["Position.1"]) + 10000000
+        target: { 
+          id: item["chr2"],
+          start: Number(item["start2"]),
+          end: Number(item["end2"])
         }
       }
     })
-    circos.chords('level7_2', level7_2, {
-      color: "purple",
-      radius: 0.88,
+    circos.chords('lines_1', lines_1, {
+      color: "#ffffb3",
+      opacity: 0.8
+    })
+
+    lines_2 = lines_2.map((item) => {
+      return {
+        source: {
+          id: item["chr1"],
+          start: Number(item["start1"]),
+          end: Number(item["end1"])
+        }, 
+        target: {
+          id: item["chr2"],
+          start: Number(item["start2"]),
+          end: Number(item["end2"]) 
+        }
+      } 
+    })
+    lines_3 = lines_3.map((item) => {
+      return {
+        source: {
+          id: item["chr1"],
+          start: Number(item["start1"]),
+          end: Number(item["end1"])
+        }, 
+        target: {
+          id: item["chr2"],
+          start: Number(item["start2"]),
+          end: Number(item["end2"]) 
+        }
+      } 
+    })
+    lines_4 = lines_4.map((item) => {
+      return {
+        source: {
+          id: item["chr1"],
+          start: Number(item["start1"]),
+          end: Number(item["end1"])
+        }, 
+        target: {
+          id: item["chr2"],
+          start: Number(item["start2"]),
+          end: Number(item["end2"]) 
+        }
+      } 
+    })
+    lines_5 = lines_5.map((item) => {
+      return {
+        source: {
+          id: item["chr1"],
+          start: Number(item["start1"]),
+          end: Number(item["end1"])
+        }, 
+        target: {
+          id: item["chr2"],
+          start: Number(item["start2"]),
+          end: Number(item["end2"]) 
+        }
+      } 
+    })
+    lines_6 = lines_6.map((item) => {
+      return {
+        source: {
+          id: item["chr1"],
+          start: Number(item["start1"]),
+          end: Number(item["end1"])
+        }, 
+        target: {
+          id: item["chr2"],
+          start: Number(item["start2"]),
+          end: Number(item["end2"]) 
+        }
+      } 
+    })
+    circos.chords('lines_2', lines_2, {
+      color: "#ffff65",
+      opacity: 0.8
+    })
+    circos.chords('lines_3', lines_3, {
+      color: "#e3d5fa",
+      opacity: 0.8
+    })
+    circos.chords('lines_4', lines_4, {
+      color: "#c1a8f4",
+      opacity: 0.8
+    })
+    circos.chords('lines_5', lines_5, {
+      color: "#7d5be8",
+      opacity: 0.8
+    })
+    circos.chords('lines_6', lines_6, {
+      color: "#422ddf",
+      opacity: 0.8
     })
 
     circos.render();
   } catch (err) {
     console.error('Error fetching or processing data:', err);
   }
+  
 });
 </script>
 

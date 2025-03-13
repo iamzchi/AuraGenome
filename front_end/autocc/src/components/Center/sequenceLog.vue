@@ -33,7 +33,7 @@ onMounted(() => {
      * 全局颜色面板 & 其他全局变量
      ***********************************************/
     // const runColorPanel = ["#66c2a4", "#fc8d62", "#5d5cce"];
-    const runColorPanel = ["#ffffff","#66c2a4", "#fc8d62", "#ce5c5d"];
+    const runColorPanel = ["#ffffff","#91e2c1", "#6da9ff", "#6458e3"];//修改节点颜色：绿、蓝、紫
     const colorPanel = ["#ffffff", "#8ea0cb", "#66c2a4", "#fc8d62"];
     const linkColorPanel = ["#2d2736", "#767171", "#afabab", "#d0cece", "#f4f4f4"]
     const circleRadius = 25; // 节点半径
@@ -297,6 +297,7 @@ onMounted(() => {
     // 在 svg 中添加一个 <g> 作为容器
     const container = svg.append("g").attr("class", "container");
     
+    // 修改层级顺序：先添加参考线层，然后是连线层，最后是节点层
     // 1. 首先添加参考线层
     const guideLineLayer = container.append("g").attr("class", "guideLineLayer");
     // 2. 然后是连线层
@@ -657,6 +658,34 @@ onMounted(() => {
         .attr("stroke-linejoin", "round")
         .attr("transform", `translate(${-circleRadius / 2 + 2}, ${-circleRadius / 2 + 2}) scale(1.3)`);
 
+    // 在绘制节点的部分后添加以下代码
+    nodes.append("circle") 
+        .attr("class", "highlight-circle")
+        .attr("r", circleRadius * 3/4 + 3) // 比原始圆稍大一些
+        .attr("fill", "none")
+        .attr("stroke", "#ff4d4f") // 红色描边
+        .attr("stroke-width", 2)
+        .style("display", "none"); // 初始时隐藏
+
+    // 修改 nodes 的点击事件
+    nodes.on("click", function(event, d) {
+        // 先重置所有高亮圈为隐藏
+        nodeLayer.selectAll(".highlight-circle")
+            .style("display", "none");
+        
+        // 显示当前点击节点的高亮圈
+        d3.select(this).select(".highlight-circle")
+            .style("display", "block");
+    });
+
+    // 在 svg 空白处点击时取消高亮
+    svg.on("click", function(event) {
+        if (event.target.tagName === "svg") {
+            nodeLayer.selectAll(".highlight-circle")
+                .style("display", "none");
+        }
+    });
+
     /***********************************************
      * 文本框功能
      ***********************************************/
@@ -666,7 +695,10 @@ onMounted(() => {
     // 监听 svg dblclick
     svg.on("dblclick", (event) => {
         if (isLinking) return;
-        if (isEditing) { finalizeTextbox(); return; }
+        if (isEditing) {
+            finalizeTextbox(); 
+            return;
+        }
 
         const [sx, sy] = d3.pointer(event, svg.node());
         const tr = d3.zoomTransform(container.node());
@@ -820,17 +852,12 @@ onMounted(() => {
         }
     });
 
-    // 添加垂直参考线的函数移到这里
+    // 修改添加垂直参考线的函数实现
     const addVerticalGuideLines = () => {
         const xPositions = [...new Set(data.map(d => d.x))].sort((a, b) => a - b);
 
-        // 添加垂直参考线组
-        const guideLines = container.append("g")
-            .attr("class", "guide-lines")
-            .attr("pointer-events", "none"); // 确保线不会影响交互
-
-        // 添加垂直线
-        guideLines.selectAll("line")
+        // 使用已经创建的 guideLineLayer 而不是创建新的 g 元素
+        guideLineLayer.selectAll("line")
             .data(xPositions)
             .enter()
             .append("line")
@@ -846,6 +873,57 @@ onMounted(() => {
     // 调用添加参考线函数
     addVerticalGuideLines();
 
+    // 在创建完所有其他元素后，添加图例
+    const legend = svg.append("g")
+        .attr("class", "legend")
+        .attr("transform", "translate(0, 0)"); // 位置会在updateLegend中更新
+
+    // 添加图例项
+    const legendData = [
+        { color: "#91e2c1", text: "default" },
+        { color: "#6da9ff", text: "modify" },
+        { color: "#6458e3", text: "saved" }
+    ];
+
+    const legendItems = legend.selectAll("g")
+        .data(legendData)
+        .enter()
+        .append("g")
+        .attr("class", "legend-item");
+
+    // 添加颜色圆点
+    legendItems.append("circle")
+        .attr("r", 6)
+        .attr("fill", d => d.color);
+
+    // 添加文本
+    legendItems.append("text")
+        .attr("x", 15)
+        .attr("y", 5)
+        .style("font-size", "12px")
+        .style("fill", linkColorPanel[0])
+        .text(d => d.text);
+
+    // 更新图例位置的函数
+    function updateLegend() {
+        const padding = 20;
+        const itemHeight = 25;
+        
+        // 更新每个图例项的位置
+        legendItems.attr("transform", (d, i) => 
+            `translate(${width - 100}, ${height - 100 + i * itemHeight})`
+        );
+    }
+
+    // 初始更新图例位置
+    updateLegend();
+
+    // 在窗口调整大小时更新图例位置
+    const originalOnResize = onResize;
+    onResize = () => {
+        originalOnResize();
+        updateLegend();
+    };
 });
 </script>
 
