@@ -78,7 +78,6 @@ onMounted(async () => {
      */
     let lines = await d3.csv('/data/data_back/id_002/file.csv')
     
-    
     //将lines中chr1中的“chr”去掉
     lines = lines.map((item) => {
       return {
@@ -87,6 +86,29 @@ onMounted(async () => {
         chr2: item["chr2"].replace("chr", "")
       }
     })
+
+    //Draw me a chord graph using the data from file1,and assign different colors to the wires according to the color value
+    let step1 = lines.map((item) => {
+      return {
+        source: {
+          id: item["chr1"],
+          start: Number(item["start1"]),
+          end: Number(item["end1"])
+        },
+        target: {
+          id: item["chr2"],
+          start: Number(item["start2"]),
+          end: Number(item["end2"])
+        }
+      }
+    })
+    circos.chords('lines', step1, {
+      color: "#800080",
+      opacity: 0.8,
+    })
+
+
+
     //过滤的规则：
     // color字段范围 是0-300
     // 颜色映射规则是：
@@ -158,7 +180,7 @@ onMounted(async () => {
     })
     circos.chords('lines_1', lines_1, {
       color: "#ffffb3",
-      opacity: 0.8
+      opacity: 0.8,
     })
 
     lines_2 = lines_2.map((item) => {
@@ -233,23 +255,75 @@ onMounted(async () => {
     })
     circos.chords('lines_2', lines_2, {
       color: "#ffff65",
-      opacity: 0.8
+      opacity: 0.8,
+      radius: .6
     })
     circos.chords('lines_3', lines_3, {
       color: "#e3d5fa",
+      radius: .6,
       opacity: 0.8
     })
     circos.chords('lines_4', lines_4, {
       color: "#c1a8f4",
-      opacity: 0.8
+      radius: .6,
+      opacity: 0.8,
     })
     circos.chords('lines_5', lines_5, {
       color: "#7d5be8",
+      radius: .6,
       opacity: 0.8
     })
     circos.chords('lines_6', lines_6, {
       color: "#422ddf",
+      radius: .6,
       opacity: 0.8
+    })
+
+    let histogram = await d3.csv('/data/data_back/id_002/file2.csv')
+    histogram = histogram.map((item) => {
+      return {
+        ...item,
+        block_id: item["block_id"].replace("chr", "")
+      }
+    })
+    histogram=histogram.map((item) => {
+      return {
+        block_id:item["block_id"],
+        start:Number(item["start"]),
+        end:Number(item["end"]),
+        value:Number(item["value"])
+      }
+    })
+    //大于0的
+    let histogram_1 = histogram.filter((item) => {
+      if (item["value"] > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    
+    //小于0的
+    let histogram_2 = histogram.filter((item) => {
+      if (item["value"] < 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    console.log(histogram_1)
+    circos.histogram('histogram_1', histogram_1, {
+      innerRadius: .8,
+      outerRadius: 1,
+      color: "#f97794",
+      // opacity: 0.8
+    })
+    circos.histogram('histogram_2', histogram_2, {
+      innerRadius:.6,
+      outerRadius: .8,
+      color: "#44c7fe",
+      // opacity: 0.8,
+      direction: "in"
     })
 
     circos.render();

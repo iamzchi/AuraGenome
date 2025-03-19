@@ -2,6 +2,7 @@
 import demo1 from './demo1.vue'
 import demo2 from './demo2.vue'
 import demo3 from './demo3.vue'
+import demo4 from './demo4.vue'
 import consolePanel from './console.vue'
 import root from './charts/id_001/root.vue'
 import step1 from './charts/id_001/step1.vue'
@@ -89,9 +90,10 @@ const isloading = ref(false);
                 </div>
 
 
-                <!-- <demo1></demo1> -->
-                <demo2></demo2>
+                <demo1></demo1>
+                <!-- <demo2></demo2> -->
                 <!-- <demo3></demo3> -->
+                 <!-- <demo4></demo4> -->
                 <!-- <demo_show></demo_show> -->
                 <!-- <root v-show="step == 'root'"></root> -->
                 <step1 v-show="step == 'step1'"></step1>

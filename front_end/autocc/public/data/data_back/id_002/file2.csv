@@ -1,4 +1,4 @@
-chr,start,end,value
+block_id,start,end,value
 chr1,5622039,9110831,0.095
 chr1,5622039,9110831,-0.405
 chr1,16816819,18551718,0.247

@@ -13,6 +13,8 @@ const color = ref('#0052d9');
 const color2 = ref('pink');
 const numberFormat1 = (value) => `${value} px`;
 const innerRadius = ref(3);
+const outerRadius = ref(10);
+const gap = ref(2);
 
 import enConfig from 'tdesign-vue-next/es/locale/en_US';
 
@@ -32,7 +34,7 @@ const strokeColor = ref('#808080'); // 灰色
 // 添加下载功能
 const downloadSVGAsPNG = () => {
   // 获取SVG元素
-  const svgElement = document.querySelector('#circos_chart #chart svg');
+  const svgElement = document.querySelector('#circos_chart svg');
   
   if (!svgElement) {
     console.error('未找到SVG元素');
@@ -103,7 +105,7 @@ onUnmounted(() => {
 <template>
     <t-config-provider :global-config="enConfig">
         <div class="action_container border">
-            <div id="exchange_track_panel">
+            <!-- <div id="exchange_track_panel">
                 <div>track1:{{ tracks_to_exchange[0] }}</div>
                 <div>track2:{{ tracks_to_exchange[1] }}</div>
                 <br />
@@ -111,7 +113,7 @@ onUnmounted(() => {
                 <br />
 
                 <t-button @click="go_exchenge" class="btns" shape="" theme="primary" variant="outline">Exchange</t-button>
-            </div>
+            </div> -->
             <t-tooltip content="Grab" trigger="hover">
                 <t-button class="btns" shape="circle" theme="primary" variant="outline">
                     <t-icon name="wave-left" />
@@ -191,14 +193,14 @@ onUnmounted(() => {
             <div class="trackDetail_row">
                 <div class="detailTitle">Outer Radius</div>
                 <div class="detailContent">
-                    <t-input-number style="color:red" theme="column" width="100px" v-model="innerRadius" size="small"
+                    <t-input-number style="color:red" theme="column" width="100px" v-model="outerRadius" size="small"
                         :max="15" :min="-2" :format="numberFormat1" auto-width></t-input-number>
                 </div>
             </div>
             <div class="trackDetail_row">
                 <div class="detailTitle">Gap</div>
                 <div class="detailContent">
-                    <t-input-number style="color:red" theme="column" width="100px" v-model="innerRadius" size="small"
+                    <t-input-number style="color:red" theme="column" width="100px" v-model="gap" size="small"
                         :max="15" :min="-2" :format="numberFormat1" auto-width></t-input-number>
                 </div>
             </div>

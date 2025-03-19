@@ -290,7 +290,7 @@ const handleInputBlur = () => {
         <t-icon name="attach"></t-icon>
         <span>Reference Genome Ver</span>
       </div>
-      <t-select v-model="refVersion" :options="options" placeholder="请选择" filterable />
+      <t-select v-model="refVersion" :options="options" placeholder="Please select" filterable />
 
     </div>
   </div>
@@ -375,7 +375,8 @@ const handleInputBlur = () => {
               v-model="inputText" 
               @enter="sendMessage"
               @focus="handleInputFocus"
-              @blur="handleInputBlur">
+              @blur="handleInputBlur"
+              placeholder="How can I help you?">
             </t-input>
             <t-button @click="sendMessage">
               send

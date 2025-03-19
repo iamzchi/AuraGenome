@@ -2,47 +2,56 @@
 import { ref,onMounted } from 'vue';
 const steps = ref([
   {
-    title: "Insertion and Deletion Bar",
+    title: "Import Existing Configs and Rearrangements Links",
     step: 1,
     note: "add your note",
-    time:"2025-1-23",
-    description: "Visualizes insertion (dark green) and deletion (light green) events with validation status."
+    time:"2025-1-24",
+    description: "Shows chromosomal rearrangements using green (intra) and purple (inter) connection lines.",
+    img:"/assets/s1.png"
   },
   {
     title: "Zygosity Mutation Bar",
     step: 2,
     note: "add your note",
     time:"2025-1-23",
-    description: "Displays heterozygous (light orange) and homozygous (dark orange) mutations with 10Mb aggregation."
+    description: "Displays heterozygous (light orange) and homozygous (dark orange) mutations with 10Mb aggregation.",
+    img:"/assets/s2.png"
   },
   {
-    title: "Mutation Types",
+    title: "Insertion and Deletion Bar",
     step: 3,
     note: "add your note",
     time:"2025-1-23",
-    description: "Shows different mutation effects (Silent, Missense, Nonsense, Splice site) using colored scatter plots."
+    description: "Visualizes insertion (dark green) and deletion (red) events with validation status.",
+    img:"/assets/s3.png"
   },
   {
-    title: "Copy Number Changes",
+    title: "Mutation Types",
     step: 4,
     note: "add your note",
     time:"2025-1-23",
-    description: "Depicts copy number variations across the genome using a blue line chart."
+    description: "Shows different mutation effects (Silent, Missense, Nonsense, Splice site) using colored scatter plots.",
+    img:"/assets/s4.png"
+
   },
   {
     title: "Loss of Heterozygosity",
     step: 5,
     note: "add your note",
     time:"2025-1-23",
-    description: "Represents LOH (Loss of Heterozygosity) regions in the genome with a red heatmap."
+    description: "Represents LOH (Loss of Heterozygosity) regions in the genome with a red heatmap.",
+    img:"/assets/s5.png"
+
   },
   {
-    title: "Rearrangements Links",
+    title: "Copy Number Changes",
     step: 6,
     note: "add your note",
-    time:"2025-1-24",
-    description: "Shows chromosomal rearrangements using green (intra) and purple (inter) connection lines."
-  }
+    time:"2025-1-23",
+    description: "Depicts copy number variations across the genome using a blue line chart.",
+    img:"/assets/s6.png"
+
+  },
 ]
 )
 onMounted(()=>{
@@ -70,8 +79,7 @@ onMounted(()=>{
                 <p class="time">{{ item.time }}</p>
             </div>
             <div class="row" style="padding: 10px;">
-                <div class="snapshot">
-
+                <div class="snapshot" :style="{ backgroundImage: `url(${item.img})` }">
                 </div>
                 <div class="content">
 
@@ -102,13 +110,13 @@ onMounted(()=>{
     .project {
         width: 100px;
         height: 100px;
-        background-color: rgb(217, 217, 217);
+        // background-color: rgb(217, 217, 217);
         border-radius: 50%;
         transition: all 0.3s ease;
     }
 
     .project:hover {
-        background-color: rgb(207, 207, 207);
+        // background-color: rgb(207, 207, 207);
         cursor: pointer;
         transform: scale(1.1);
     }
@@ -189,10 +197,10 @@ onMounted(()=>{
             width: 100px;
             height: 100px;
             aspect-ratio: 1;
-            background-color: rgb(131, 131, 131);
+            // background-color: rgb(131, 131, 131);
             border-radius: 200px;
             z-index: 10;
-            background-image: url('@/assets/projects/project1.png');
+            //background-image: url('@/assets/projects/project1.png');
             background-size: cover;
             background-position: center;
         }
