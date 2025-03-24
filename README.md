@@ -1,6 +1,6 @@
 # AuraGenome
 
-一个基于Vue3和Python的前后端分离项目，用于自动化生成和可视化环形生物基因组学图表。
+A full-stack project based on Vue3 and Python for automated generation and visualization of circular genomics diagrams.
 
 [![Vue Version](https://img.shields.io/badge/Vue-3.x-brightgreen.svg)](https://vuejs.org/) [![Python Version](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/) [![Flask](https://img.shields.io/badge/Flask-2.x-lightgrey.svg)](https://flask.palletsprojects.com/) [![Vite](https://img.shields.io/badge/Vite-Latest-646CFF.svg)](https://vitejs.dev/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  [![Status](https://img.shields.io/badge/Status-Active-success.svg)](#)  [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)](#)
@@ -10,48 +10,48 @@
 ![](./code_paper/imgs/p1.png)
 
 
-## 环境要求
+## Requirements
 
 - Python 3.x
 - Node.js 16+
-- Conda（用于管理Python环境）
+- Conda (for Python environment management)
 
-## 安装步骤
+## Installation
 
-### 后端安装
+### Backend Setup
 
-1. 使用Conda创建并激活环境：
+1. Create and activate Conda environment:
 ```bash
 conda env create -f environment.yml
-conda activate base  # 或环境创建时指定的名称
+conda activate base  # or the name specified during environment creation
 ```
 
-2. 进入后端目录并启动服务：
+2. Navigate to backend directory and start the service:
 ```bash
 cd back_end
 python run.py
 ```
 
-### 前端安装
+### Frontend Setup
 
-1. 进入前端项目目录：
+1. Navigate to frontend project directory:
 ```bash
 cd front_end/autocc
 ```
 
-2. 安装依赖：
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-3. 启动开发服务器：
+3. Start development server:
 ```bash
 npm run dev
 ```
 
-## 开发说明
+## Development Notes
 
-- 后端服务默认运行在 `http://localhost:5000`
-- 前端开发服务器默认运行在 `http://localhost:5173`
-- 使用Vue 3 + Vite作为前端开发框架
-- 后端使用Flask框架提供API服务
+- Backend service runs on `http://localhost:5000` by default
+- Frontend development server runs on `http://localhost:5173` by default
+- Frontend uses Vue 3 + Vite as development framework
+- Backend uses Flask framework to provide API services
