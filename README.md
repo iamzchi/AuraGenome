@@ -2,6 +2,9 @@
 
 一个基于Vue3和Python的前后端分离项目，用于自动化生成和可视化环形生物基因组学图表。
 
+[![Vue Version](https://img.shields.io/badge/Vue-3.x-brightgreen.svg)](https://vuejs.org/) [![Python Version](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/) [![Flask](https://img.shields.io/badge/Flask-2.x-lightgrey.svg)](https://flask.palletsprojects.com/) [![Vite](https://img.shields.io/badge/Vite-Latest-646CFF.svg)](https://vitejs.dev/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  [![Status](https://img.shields.io/badge/Status-Active-success.svg)](#)  [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)](#)
+
 ![](./code_paper/imgs/p2.png)
 ---
 ![](./code_paper/imgs/p1.png)
