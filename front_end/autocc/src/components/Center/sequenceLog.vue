@@ -3,27 +3,41 @@ import { onMounted } from 'vue';
 import * as d3 from 'd3';
 
 // 树结构数据
+// const data = [
+//     { id: "0",  text: "", parent: null, status: 0, type: "root" },
+//     { id: "1",  text: "", parent: "0", status: 3, type: "radial" },
+//     { id: "2",  text: "", parent: "1", status: 2, type: "radial" },
+//     { id: "3",  text: "", parent: "0", status: 3, type: "circular" },
+//     { id: "4",  text: "", parent: "3", status: 2, type: "circular" },
+//     { id: "5",  text: "", parent: "4", status: 1, type: "circular" },
+//     { id: "6",  text: "", parent: "5", status: 1, type: "radial" },
+//     { id: "7",  text: "", parent: "6", status: 3, type: "circular" },
+//     { id: "8",  text: "", parent: "7", status: 2, type: "circular" },
+//     { id: "9",  text: "", parent: "8", status: 1, type: "circular" },
+//     { id: "10",  text: "", parent: "9", status: 3, type: "radial" },
+//     { id: "11",  text: "", parent: "10", status: 2, type: "radial" },
+//     { id: "12",  text: "", parent: "11", status: 1, type: "radial" },
+//     { id: "13",  text: "", parent: "10", status: 1, type: "circular" },
+//     { id: "14",  text: "", parent: "13", status: 1, type: "chord" },
+//     { id: "15",  text: "", parent: "14", status: 2, type: "chord" },
+//     { id: "16",  text: "", parent: "15", status: 2, type: "chord" },
+//     { id: "17",  text: "", parent: "15", status: 2, type: "chord" },
+//     { id: "18",  text: "", parent: "17", status: 2, type: "chord" },
+//     { id: "19",  text: "", parent: "18", status: 3, type: "chord" },
+//     // {id:'20',text:'',parent:null,status:0,type:'root'},
+//     // {id:'21',text:'',parent:'20',status:3,type:'radial'},
+//   ];
 const data = [
     { id: "0",  text: "", parent: null, status: 0, type: "root" },
-    { id: "1",  text: "", parent: "0", status: 3, type: "radial" },
-    { id: "2",  text: "", parent: "1", status: 2, type: "radial" },
-    { id: "3",  text: "", parent: "0", status: 3, type: "circular" },
-    { id: "4",  text: "", parent: "3", status: 2, type: "circular" },
-    { id: "5",  text: "", parent: "4", status: 1, type: "circular" },
-    { id: "6",  text: "", parent: "5", status: 1, type: "radial" },
-    { id: "7",  text: "", parent: "6", status: 3, type: "circular" },
-    { id: "8",  text: "", parent: "7", status: 2, type: "circular" },
-    { id: "9",  text: "", parent: "8", status: 1, type: "circular" },
-    { id: "10",  text: "", parent: "9", status: 3, type: "radial" },
-    { id: "11",  text: "", parent: "10", status: 2, type: "radial" },
-    { id: "12",  text: "", parent: "11", status: 1, type: "radial" },
-    { id: "13",  text: "", parent: "10", status: 1, type: "circular" },
-    { id: "14",  text: "", parent: "13", status: 1, type: "chord" },
-    { id: "15",  text: "", parent: "14", status: 2, type: "chord" },
-    { id: "16",  text: "", parent: "15", status: 2, type: "chord" },
-    { id: "17",  text: "", parent: "15", status: 2, type: "chord" },
-    { id: "18",  text: "", parent: "17", status: 2, type: "chord" },
-    { id: "19",  text: "", parent: "18", status: 1, type: "chord" }
+    { id: "1",  text: "", parent: "0", status: 1, type: "chord" },
+    { id: "2",  text: "", parent: "0", status: 1, type: "chord" },
+    { id: "3",  text: "", parent: "2", status: 2, type: "radial" },
+    { id: "4",  text: "", parent: "3", status: 3, type: "radial" },
+    { id: "5",  text: "", parent: "4", status: 2, type: "chord" },
+    { id: "6",  text: "", parent: "5", status: 2, type: "chord" },
+    { id: "7",  text: "", parent: "6", status: 2, type: "chord" },
+    { id: "8",  text: "", parent: "7", status: 3, type: "chord" },
+
   ];
 
 onMounted(() => {
@@ -865,7 +879,7 @@ onMounted(() => {
             .attr("x2", d => d)
             .attr("y1", 0)
             .attr("y2", height * 3)
-            .attr("stroke", "#e0e0e0") // 浅灰色
+            .attr("stroke", "#fff") // 浅灰色#e0e0e0 纵向参考线
             .attr("stroke-width", 3)
             .attr("stroke-dasharray", "4,4");
     };

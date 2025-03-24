@@ -1,4 +1,3 @@
-```js
 
 
 app.config = {
@@ -73,7 +72,7 @@ option = {
     {
       type: 'category',
       axisTick: { show: false },
-      data: ['Functionality', 'Domain Adapt. ', 'Efficiency', 'Multi-lang.', 'Interpret.']
+      data: ['SemUnderstand', 'CodeAccuracy ', 'InstrFollow', 'RespEfficiency', 'OutputInterpret']
     }
   ],
   yAxis: [
@@ -90,7 +89,7 @@ option = {
       emphasis: {
         focus: 'series'
       },
-      data: [8.21, 9, 6.11, 9.1, 1],
+      data: [9, 7.43, 9, 8.5, 2.123],
       itemStyle: {
         color: '#19c37d' // Red color for this series
       }
@@ -102,7 +101,7 @@ option = {
       emphasis: {
         focus: 'series'
       },
-      data: [5.234, 4, 9, 7.78, 1.3],
+      data: [6, 8.2, 7.5, 5.34, 3.32],
             itemStyle: {
         color: '#191b1c' // Red color for this series
       }
@@ -114,11 +113,10 @@ option = {
       emphasis: {
         focus: 'series'
       },
-      data: [9.3, 8,4.23,9,7],
+      data: [8.5, 9.32,8.5,4.43,8.43],
                   itemStyle: {
         color: '#4d6bfe' // Red color for this series
       }
     }
   ]
 };
-```
