@@ -5,8 +5,8 @@
         "description": "This file contains information about genetic variants, their positions, effects, and zygosity.",
         "recommends": [
             {
-                "chart_type": "Highlight",
-                "chart_description": "A track that highlights the positions of mutations across the genome. The 'Position' column is used to locate mutations, and 'Effect' can be categorized to differentiate between mutation types."
+                "chart_type": "Histogram",
+                "chart_description": "To display heterozygous (light orange) and homozygous (dark orange) mutations with 10Mb aggregation."
             },
             {
                 "chart_type": "Heatmap",
@@ -56,6 +56,36 @@
             {
                 "chart_type": "Stack",
                 "chart_description": "A stacked track representing the occurrence of different mutation types (e.g., 'Missense', 'Silent', 'Nonsense') across the genome, with 'Position' used for genomic location and 'Effect' used for categorizing mutation types."
+            }
+        ]
+    },
+    {
+        "file_name": "file5",
+        "tags": ["Copy Number Variations", "Genomic Segments", "Chromosomal Regions", "Copy Number"],
+        "description": "This file contains information about copy number variations (CNVs) across genomic segments, including chromosome IDs, start and end positions, number of bins, and copy number values.",
+        "recommends": [
+            {
+                "chart_type": "Heatmap",
+                "chart_description": "A heatmap displaying the distribution of copy number variations across genomic segments, using 'Start' and 'End' columns for positioning and 'Copy number' for intensity or categorization."
+            },
+            {
+                "chart_type": "Highlight",
+                "chart_description": "A track highlighting the genomic segments with copy number variations, where 'Start' and 'End' columns define the segment boundaries and 'Copy number' indicates the variation level."
+            }
+        ]
+    },
+    {
+        "file_name": "file6",
+        "tags": ["Genomic Regions", "Chromosomal Segments", "Structural Variants", "Genomic Intervals"],
+        "description": "This file contains information about genomic intervals across different chromosomes, including chromosome IDs, start and end positions of the segments.",
+        "recommends": [
+            {
+                "chart_type": "Highlight",
+                "chart_description": "A track highlighting the genomic intervals across chromosomes, using 'Start' and 'End' columns to define the segment boundaries and 'id' to differentiate chromosomes."
+            },
+            {
+                "chart_type": "Heatmap",
+                "chart_description": "A heatmap showing the distribution and density of genomic intervals across chromosomes, with 'Start' and 'End' columns for positioning and 'id' for chromosome-specific categorization."
             }
         ]
     }

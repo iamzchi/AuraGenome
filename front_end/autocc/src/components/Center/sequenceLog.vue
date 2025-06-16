@@ -1,44 +1,57 @@
 <script setup>
 import { onMounted } from 'vue';
 import * as d3 from 'd3';
-
+import { useChatStore } from '../../stores/useChatStore';
 // 树结构数据
-// const data = [
-//     { id: "0",  text: "", parent: null, status: 0, type: "root" },
-//     { id: "1",  text: "", parent: "0", status: 3, type: "radial" },
-//     { id: "2",  text: "", parent: "1", status: 2, type: "radial" },
-//     { id: "3",  text: "", parent: "0", status: 3, type: "circular" },
-//     { id: "4",  text: "", parent: "3", status: 2, type: "circular" },
-//     { id: "5",  text: "", parent: "4", status: 1, type: "circular" },
-//     { id: "6",  text: "", parent: "5", status: 1, type: "radial" },
-//     { id: "7",  text: "", parent: "6", status: 3, type: "circular" },
-//     { id: "8",  text: "", parent: "7", status: 2, type: "circular" },
-//     { id: "9",  text: "", parent: "8", status: 1, type: "circular" },
-//     { id: "10",  text: "", parent: "9", status: 3, type: "radial" },
-//     { id: "11",  text: "", parent: "10", status: 2, type: "radial" },
-//     { id: "12",  text: "", parent: "11", status: 1, type: "radial" },
-//     { id: "13",  text: "", parent: "10", status: 1, type: "circular" },
-//     { id: "14",  text: "", parent: "13", status: 1, type: "chord" },
-//     { id: "15",  text: "", parent: "14", status: 2, type: "chord" },
-//     { id: "16",  text: "", parent: "15", status: 2, type: "chord" },
-//     { id: "17",  text: "", parent: "15", status: 2, type: "chord" },
-//     { id: "18",  text: "", parent: "17", status: 2, type: "chord" },
-//     { id: "19",  text: "", parent: "18", status: 3, type: "chord" },
-//     // {id:'20',text:'',parent:null,status:0,type:'root'},
-//     // {id:'21',text:'',parent:'20',status:3,type:'radial'},
-//   ];
-const data = [
-    { id: "0",  text: "", parent: null, status: 0, type: "root" },
-    { id: "1",  text: "", parent: "0", status: 1, type: "chord" },
-    { id: "2",  text: "", parent: "0", status: 1, type: "chord" },
-    { id: "3",  text: "", parent: "2", status: 2, type: "radial" },
-    { id: "4",  text: "", parent: "3", status: 3, type: "radial" },
-    { id: "5",  text: "", parent: "4", status: 2, type: "chord" },
-    { id: "6",  text: "", parent: "5", status: 2, type: "chord" },
-    { id: "7",  text: "", parent: "6", status: 2, type: "chord" },
-    { id: "8",  text: "", parent: "7", status: 3, type: "chord" },
 
-  ];
+// const data = useChatStore().log; //正式开发的时候用这个代码，下面的代码为演示用
+let data0 = [
+      { id: "0",  text: "", parent: null, status: 0, type: "root" },
+      { id: "1",  text: "", parent: "0", status: 1, type: "chord" },
+      { id: "2",  text: "", parent: "0", status: 1, type: "chord" },
+      { id: "3",  text: "", parent: "2", status: 2, type: "radial" },
+      { id: "4",  text: "", parent: "3", status: 3, type: "radial" },
+      { id: "5",  text: "", parent: "4", status: 2, type: "chord" },
+      { id: "6",  text: "", parent: "5", status: 2, type: "chord" },
+      { id: "7",  text: "", parent: "6", status: 2, type: "chord" },
+      { id: "8",  text: "", parent: "7", status: 3, type: "chord" },]
+let data = [
+      { id: "0",  text: "", parent: null, status: 0, type: "root" },
+      { id: "1",  text: "", parent: "0", status: 1, type: "chord" },
+      { id: "2",  text: "", parent: "1", status: 1, type: "chord" },
+      { id: "3",  text: "", parent: "2", status: 2, type: "radial" },
+      { id: "4",  text: "", parent: "3", status: 3, type: "radial" },
+      { id: "5",  text: "", parent: "10", status: 2, type: "chord" },
+      { id: "6",  text: "", parent: "5", status: 2, type: "chord" },
+      { id: "7",  text: "", parent: "6", status: 1, type: "radial" },
+      { id: "8",  text: "", parent: "7", status: 3, type: "radial" },
+      { id: "9",  text: "", parent: "0", status: 1, type: "radial" },
+      { id: "10", text: "", parent: "9", status: 1, type: "radial" },
+    ]
+
+
+let data1 = [
+      { id: "0",  text: "", parent: null, status: 0, type: "root" },
+      { id: "1",  text: "", parent: "0", status: 3, type: "radial" },
+      { id: "2",  text: "", parent: "0", status: 3, type: "circular" },
+      { id: "3",  text: "", parent: "1", status: 2, type: "radial" },
+      { id: "4",  text: "", parent: "2", status: 2, type: "circular" },
+      { id: "5",  text: "", parent: "4", status: 1, type: "circular" },
+      { id: "6",  text: "", parent: "5", status: 1, type: "radial" },
+      { id: "7",  text: "", parent: "6", status: 3, type: "circular" },
+      { id: "8",  text: "", parent: "7", status: 2, type: "circular" },
+      { id: "9",  text: "", parent: "8", status: 1, type: "circular" },
+      { id: "10", text: "", parent: "9", status: 3, type: "radial" },
+      { id: "11", text: "", parent: "10", status: 2, type: "radial" },
+      { id: "12", text: "", parent: "11", status: 1, type: "radial" },
+      { id: "13", text: "", parent: "10", status: 1, type: "circular" },
+      { id: "14", text: "", parent: "13", status: 1, type: "chord" },
+      { id: "15", text: "", parent: "14", status: 2, type: "chord" },
+      { id: "16", text: "", parent: "15", status: 2, type: "chord" },
+      { id: "17", text: "", parent: "15", status: 2, type: "chord" },
+      { id: "18", text: "", parent: "16", status: 2, type: "chord" },
+      { id: "19", text: "", parent: "18", status: 3, type: "chord" },
+]
 
 onMounted(() => {
 
@@ -607,6 +620,85 @@ onMounted(() => {
         .attr("transform", d => `translate(${d.x},${d.y})`)
         .call(drag);
     
+    // 为每个节点添加垂直虚线（y轴）
+    guideLineLayer.selectAll("line.node-guideline")
+        .data(data)
+        .enter()
+        .append("line")
+        .attr("class", "node-guideline")
+        .attr("x1", d => d.x)
+        .attr("x2", d => d.x)
+        .attr("y1", 0)
+        .attr("y2", height * 3) // 足够长以覆盖整个视图区域
+        .attr("stroke", "#cccccc") // 灰色
+        .attr("stroke-width", 1)
+        .attr("stroke-dasharray", "3,3"); // 虚线样式
+    
+    // 更新连线函数中添加对垂直虚线的更新
+    function updateLinks() {
+        // a) 树形连线(三次贝塞尔)
+        linkLayer.selectAll("g.treeLinkGroup").each(function (d) {
+            const parent = nodeMap.get(d.parent);
+            const child = nodeMap.get(d.id);
+
+            const x1 = parent.x, y1 = parent.y;
+            const x2 = child.x, y2 = child.y;
+            const midX = (x1 + x2) / 2;
+
+            const cubicPath = `
+        M${x1},${y1}
+        C${midX},${y1}
+         ${midX},${y2}
+         ${x2},${y2}
+      `.trim();
+
+            d3.select(this).select("path.treeLink")
+                .attr("stroke", "url(#linkGradient)")
+                .attr("stroke-width", 2)
+                .attr("d", cubicPath);
+
+            // 箭头放在三次贝塞尔曲线中点(t=0.5)
+            const { x: arrowX, y: arrowY, angleDeg } = getCubicPointAndAngle(
+                x1, y1, midX, y1, midX, y2, x2, y2, 0.5
+            );
+            d3.select(this).select("polygon.treeArrow")
+                .attr("fill", linkColorPanel[1])
+                .attr("transform", `translate(${arrowX},${arrowY}) rotate(${angleDeg})`);
+        });
+
+        // b) 自定义连线(二次贝塞尔)
+        const customLinkGroupsSel = linkLayer.selectAll("g.customLink")
+            .data(customLinks, l => l.id);
+
+        customLinkGroupsSel.select("path.finalLink")
+            .attr("stroke", "url(#linkGradient)")
+            .each(function (d) {
+                const source = nodeMap.get(d.sourceId);
+                const target = nodeMap.get(d.targetId);
+
+                const { d: pathStr, cx, cy } = getQuadraticPath(
+                    source.x, source.y,
+                    target.x, target.y,
+                    data
+                );
+                d3.select(this).attr("d", pathStr);
+
+                // 箭头在二次曲线中点
+                const { x: midX, y: midY, angleDeg } =
+                    getQuadraticPointAndAngle(source.x, source.y, cx, cy, target.x, target.y, 0.5);
+
+                d3.select(this.parentNode).select("polygon.arrowHead")
+                    .attr("fill", linkColorPanel[1])
+                    .attr("transform", `translate(${midX},${midY}) rotate(${angleDeg})`);
+            });
+    }
+
+    // 更新节点垂直虚线位置
+    guideLineLayer.selectAll("line.node-guideline")
+        .attr("x1", d => d.x)
+        .attr("x2", d => d.x)
+        .attr("y1", 0)
+        .attr("y2", height * 3);
     nodes.append("circle")
         .attr("r", circleRadius * 3/4)
         .attr("fill", d => runColorPanel[d.status])

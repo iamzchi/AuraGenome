@@ -48,6 +48,139 @@ watch(() => stepStore.step, (stepCurrent) => {
     step.value = stepCurrent;
 })
 const isloading = ref(false);
+
+/**
+ * 2025.5.10 
+ * 重写了获取可视化代码的逻辑
+ * 使用vue3-sfc-loader 动态加载和渲染 .vue 单文件组件
+ */
+
+// 模拟缺失的模块（需替换为实际实现）
+import { readFile } from '@/utils/server'
+import {
+    reduceData,
+    reduceData_Position,
+    gieStainColor,
+    transform_startend_position
+} from './utils_circos.js'
+import { add_hover_effect, addTrack, reverse } from './utils_interact.js'
+
+import { loadModule } from 'vue3-sfc-loader'
+import * as Vue from 'vue' // 使用命名导出，确保完整版 Vue
+window.Vue = Vue
+import * as d3 from 'd3';
+window.d3 = d3
+import Circos from 'circos'
+window.Circos = Circos
+// 存储动态组件和错误状态
+const dynamicComponent = ref(null)
+const error = ref(null)
+const errorDetails = ref('')
+import { useChatStore } from '../../stores/useChatStore'
+const chatStore = useChatStore()
+console.log('window.Vue exists:', !!window.Vue)
+console.log('window.Vue version:', window.Vue?.version)
+async function loadDynamicComponent(code) {
+    console.log('Attempting to load dynamic component with code:', code)
+    if (!code) {
+        console.log('No code provided, resetting component')
+        dynamicComponent.value = null
+        error.value = null
+        errorDetails.value = ''
+        return
+    }
+
+    try {
+        isloading.value = false;
+        // 配置 vue3-sfc-loader
+        const options = {
+            moduleCache: {
+                vue: window.Vue,
+                d3: window.d3,
+                circos: window.Circos,
+                '@/utils/server': { readFile },
+                '@/components/Center/utils_circos.js': {
+                    reduceData,
+                    reduceData_Position,
+                    gieStainColor,
+                    transform_startend_position
+                },
+                '@/components/Center/utils_interact.js': { add_hover_effect, addTrack, reverse }
+            },
+            async getFile() {
+                console.log('Providing code to vue3-sfc-loader')
+                return {
+                    getContentData: () => code,
+                    type: '.vue'
+                }
+            },
+            addStyle(styleStr) {
+                console.log('Adding style:', styleStr)
+                const style = document.createElement('style')
+                style.textContent = styleStr
+                document.head.appendChild(style)
+            },
+            async resolveModuleId(id) {
+                console.log('Resolving module:', id)
+                const moduleMap = {
+                    vue: window.Vue,
+                    d3: window.d3,
+                    circos: window.Circos,
+                    '@/utils/server': { readFile },
+                    '@/components/Center/utils_circos.js': {
+                        reduceData,
+                        reduceData_Position,
+                        gieStainColor,
+                        transform_startend_position
+                    },
+                    '@/components/Center/utils_interact.js': { add_hover_effect, addTrack, reverse },
+                    // 添加相对路径的映射，指向绝对路径
+                    './utils_circos.js': {
+                        reduceData,
+                        reduceData_Position,
+                        gieStainColor,
+                        transform_startend_position
+                    },
+                    './utils_interact.js': { add_hover_effect, addTrack, reverse }
+                }
+                if (moduleMap[id]) return moduleMap[id];
+                console.error(`Module ${id} not found`);
+                throw new Error(`Module ${id} not found`);
+            }
+        }
+
+        console.log('Loading module...')
+        const component = await loadModule('dynamic.vue', options)
+        console.log('Module loaded:', component)
+        dynamicComponent.value = component
+        error.value = null
+        errorDetails.value = ''
+    } catch (err) {
+        console.error('Failed to load component:', err)
+        console.error('Error details:', {
+            message: err.message,
+            stack: err.stack
+        })
+        error.value = 'Failed to load component'
+        errorDetails.value = `${err.message}\n${err.stack}`
+        dynamicComponent.value = null
+    } finally {
+        isloading.value = false
+    }
+}
+// 初始加载
+console.log('Initial currentCode:', chatStore.currentCode)
+loadDynamicComponent(chatStore.currentCode)
+
+// 监听 currentCode 变化
+watch(
+    () => chatStore.currentCode,
+    (newCode) => {
+        console.log('currentCode changed:', newCode)
+        loadDynamicComponent(newCode)
+    }
+)
+
 </script>
 <template>
     <div id="container">
@@ -61,6 +194,7 @@ const isloading = ref(false);
             </div>
             <div id="circos_chart">
                 <div id="polar_system">
+                    <!-- 图表出现坐标轴才会出现，因为需要一个宽高撑起来。 -->
                     <div class="polar-container">
                         <div class="diagonal-lines"></div>
                         <div class="diagonal-lines-2"></div>
@@ -90,12 +224,25 @@ const isloading = ref(false);
                 </div>
 
 
-                <demo1></demo1>
+                <!-- <demo1></demo1> -->
                 <!-- <demo2></demo2> -->
                 <!-- <demo3></demo3> -->
-                 <!-- <demo4></demo4> -->
+                <!-- <demo4></demo4> -->
                 <!-- <demo_show></demo_show> -->
                 <!-- <root v-show="step == 'root'"></root> -->
+
+                <!-- 下面是动态组件的内容
+暂时没时间做了，2025.5.21 -->
+                <div>
+                    <component :is="dynamicComponent" v-if="dynamicComponent" />
+                    <div v-else-if="error" class="error">
+                        加载组件失败: {{ error }}
+                        <pre style="font-size: 12px; color: red;">{{ error }}</pre>
+                    </div>
+                    <div v-else>正在加载组件...</div>
+                </div>
+
+
                 <step1 v-show="step == 'step1'"></step1>
                 <step2 v-show="step == 'step2'"></step2>
                 <step3 v-show="step == 'step3'"></step3>
@@ -136,7 +283,7 @@ const isloading = ref(false);
 
     #circos {
         // width: 80%;
-        flex: 0 0 75%; 
+        flex: 0 0 75%;
         position: relative;
 
         #loading {
@@ -154,7 +301,7 @@ const isloading = ref(false);
             left: 10px;
 
             #polar_system {
-                // background-color: rgb(237, 237, 237);
+                // background-color: rgb(252, 0, 0);
                 position: relative;
                 top: -2px;
                 left: -1px;
@@ -477,7 +624,7 @@ const isloading = ref(false);
         flex: 0 0 20%;
         max-width: 300px;
         height: 100%;
-        background-color:salmon;
+        background-color: salmon;
     }
 
 }

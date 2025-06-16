@@ -27,6 +27,10 @@ const props = defineProps({
         default:
             "this is a description about the file which is uploaded by the user",
     },
+    currentFileNumber: { // 添加新的prop接收当前文件编号
+        type: Number,
+        default: 1
+    }
 });
 const file_name = ref(props.fileName);
 const file_tags = ref(props.fileTags);
@@ -43,127 +47,8 @@ const columns = ref([
     { colKey: "action5", title: "action5" },
     { colKey: "action6", title: "action6" },
 ]);
+//这里data中的是默认数据
 const data = ref([
-    {
-        type: "Insertion",
-        count: 100,
-        ratio: "10%",
-        action: "11",
-        action1: "12",
-        action2: "13",
-        action3: "14",
-        action4: "15",
-        action5: "16",
-        action6: "17",
-    },
-    {
-        type: "Deletion",
-        count: 200,
-        ratio: "20%",
-        action: "11",
-        action1: "12",
-        action2: "13",
-        action3: "14",
-        action4: "15",
-        action5: "16",
-        action6: "17",
-    },
-    {
-        type: "Insertion",
-        count: 100,
-        ratio: "10%",
-        action: "11",
-        action1: "12",
-        action2: "13",
-        action3: "14",
-        action4: "15",
-        action5: "16",
-        action6: "17",
-    },
-    {
-        type: "Deletion",
-        count: 200,
-        ratio: "20%",
-        action: "11",
-        action1: "12",
-        action2: "13",
-        action3: "14",
-        action4: "15",
-        action5: "16",
-        action6: "17",
-    },
-    {
-        type: "Insertion",
-        count: 100,
-        ratio: "10%",
-        action: "11",
-        action1: "12",
-        action2: "13",
-        action3: "14",
-        action4: "15",
-        action5: "16",
-        action6: "17",
-    },
-    {
-        type: "Deletion",
-        count: 200,
-        ratio: "20%",
-        action: "11",
-        action1: "12",
-        action2: "13",
-        action3: "14",
-        action4: "15",
-        action5: "16",
-        action6: "17",
-    },
-    {
-        type: "Insertion",
-        count: 100,
-        ratio: "10%",
-        action: "11",
-        action1: "12",
-        action2: "13",
-        action3: "14",
-        action4: "15",
-        action5: "16",
-        action6: "17",
-    },
-    {
-        type: "Deletion",
-        count: 200,
-        ratio: "20%",
-        action: "11",
-        action1: "12",
-        action2: "13",
-        action3: "14",
-        action4: "15",
-        action5: "16",
-        action6: "17",
-    },
-    {
-        type: "Insertion",
-        count: 100,
-        ratio: "10%",
-        action: "11",
-        action1: "12",
-        action2: "13",
-        action3: "14",
-        action4: "15",
-        action5: "16",
-        action6: "17",
-    },
-    {
-        type: "Deletion",
-        count: 200,
-        ratio: "20%",
-        action: "11",
-        action1: "12",
-        action2: "13",
-        action3: "14",
-        action4: "15",
-        action5: "16",
-        action6: "17",
-    },
     {
         type: "Insertion",
         count: 100,
@@ -252,111 +137,8 @@ const data = ref([
 import myTable from "./table.vue";
 import myBar from "./bar.vue";
 import { ref } from "vue";
-// const chartData = ref([
-//     {
-//         "name": "Zygosity: het",
-//         "value": 26515,
-//         "color": "#ff2918",
-//         "class": "het"
-//     },
-//     {
-//         "name": "Zygosity: hom",
-//         "value": 6830,
-//         "color": "#ff4652",
-//         "class": "hom"
-//     },
-//     {
-//         "name": "Effect: Intergenic",
-//         "value": 23191,
-//         "color": "#ff2918",
-//         "class": "Intergenic"
-//     },
-//     {
-//         "name": "Effect: Intronic",
-//         "value": 9543,
-//         "color": "#ff4652",
-//         "class": "Intronic"
-//     },
-//     {
-//         "name": "Effect: UTR",
-//         "value": 198,
-//         "color": "#ff0f4b",
-//         "class": "UTR"
-//     },
-//     {
-//         "name": "Effect: Missense",
-//         "value": 168,
-//         "color": "#d4334f",
-//         "class": "Missense"
-//     },
-//     {
-//         "name": "Effect: Noncoding_RNA",
-//         "value": 114,
-//         "color": "#d53c25",
-//         "class": "Noncoding_RNA"
-//     },
-//     {
-//         "name": "Effect: Silent",
-//         "value": 104,
-//         "color": "#9b0000",
-//         "class": "Silent"
-//     },
-//     {
-//         "name": "Effect: Nonsense",
-//         "value": 14,
-//         "color": "#ff354a",
-//         "class": "Nonsense"
-//     },
-//     {
-//         "name": "Effect: Splice",
-//         "value": 13,
-//         "color": "#ff2f2d",
-//         "class": "Splice"
-//     },
-//     {
-//         "name": "Validation_status: SOMATIC",
-//         "value": 454,
-//         "color": "#ff2918",
-//         "class": "SOMATIC"
-//     },
-//     {
-//         "name": "Validation_status: COSMIC",
-//         "value": 43,
-//         "color": "#ff4652",
-//         "class": "COSMIC"
-//     },
-//     {
-//         "name": "Validation_status: REAL, STATUS UNKNOWN",
-//         "value": 25,
-//         "color": "#ff0f4b",
-//         "class": "REAL, STATUS UNKNOWN"
-//     },
-//     {
-//         "name": "Validation_status: UNCONFIRMED",
-//         "value": 16,
-//         "color": "#d4334f",
-//         "class": "UNCONFIRMED"
-//     },
-//     {
-//         "name": "Validation_zygosity: Het",
-//         "value": 322,
-//         "color": "#ff2918",
-//         "class": "Het"
-//     },
-//     {
-//         "name": "Validation_zygosity: Hom",
-//         "value": 171,
-//         "color": "#ff4652",
-//         "class": "Hom"
-//     },
-//     {
-//         "name": "Validation_zygosity: het",
-//         "value": 4,
-//         "color": "#ff0f4b",
-//         "class": "het"
-//     }
-// ]);
-const chartData = ref({
+const chartData = ref(
+    {
     "Zygosity": [
         {
             "name": "het",
@@ -467,15 +249,20 @@ const chartData = ref({
             "class": ""
         }
     ]
-})
+}
+)
 import { getSingleFileDetail } from "@/utils/server";
 const fileInfoObj = ref({});
+// 定义emit事件
+const emit = defineEmits(['update-recommends']);
+
 function getFileDetail(project_name_param, file_name_param) {
     getSingleFileDetail(project_name_param, file_name_param).then((res) => {
-        //把res中的NaN替换为null
-        res = res.replace(/NaN/g, "null");
-        //把res转换为json
-        res = JSON.parse(res);
+        if(typeof res === "string"){
+            res = res.replace(/NaN/g, "null");
+            //把res转换为json
+            res = JSON.parse(res);
+        }
         (columns.value = res.data_for_table.columns),
             (data.value = res.data_for_table.data);
         fileInfoObj.value = res.data_info.find(
@@ -488,12 +275,25 @@ function getFileDetail(project_name_param, file_name_param) {
         fileRecommendItems.value = fileInfoObj.value.recommends;
         chartData.value = res.discrete_data;
         console.log("chartData.value", chartData.value);
+        
+        // 触发事件，将推荐内容传递给父组件
+        if (fileInfoObj.value.recommends) {
+            emit('update-recommends', fileInfoObj.value.recommends);
+        }
     });
 }
-import { onMounted } from "vue";
-onMounted(() => {
-    getFileDetail("id_001", "file1.csv");
-});
+import { onMounted, watch } from "vue";
+// 监听currentFileNumber变化，更新文件详情
+watch(() => props.currentFileNumber, (newVal) => {
+    if (newVal) {
+        getFileDetail("id_001", `file${newVal}.csv`);
+    }
+}, { immediate: true });
+
+// 移除onMounted中的直接调用，因为watch中已经处理了初始加载
+// onMounted(() => {
+//     getFileDetail("id_001", "file1.csv");
+// });
 </script>
 <template>
     <div id="big_container">

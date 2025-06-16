@@ -109,7 +109,7 @@ def get_single_file_detail():
     return jsonify(data_to_return)
 
 
-# 给出用户query的解析结果
+# 给出用户query的解析结果 ✅
 @bp.route('/get-query-result', methods=['POST'])
 def get_query_result():
     data = request.get_json()
@@ -123,15 +123,14 @@ def get_query_result():
 def generate_code():
     data = request.get_json()
     query = data.get('query')
-    queryInfo = data.get('queryInfo')
-    #只需要两个参数
-    current_step = data.get('current_step')
+    query_info = data.get('query_info')
     project_id = data.get('project_id')
-    print(f"generate_code的参数：{query,current_step,project_id,queryInfo}")
-    status = use_generator(query,current_step,project_id,queryInfo)
-    print(f"generate_code返回的内容：{status}")
+    base_code = data.get('base_code')
+    print(f"generate_code的参数：{query, project_id, query_info,base_code}")
+    res = use_generator(query, project_id, query_info,base_code)
+    print(f"generate_code返回的内容：{res}")
 
-    return jsonify({"status": status})
+    return jsonify(res)
 
 
 

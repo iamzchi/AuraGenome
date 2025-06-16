@@ -39,7 +39,7 @@ def call_openai_api(prompt, model="gpt-4"):
 # 示例调用
 if __name__ == "__main__":
     # 用户输入
-    user_prompt = "请解释一下机器学习的基本概念。"
+    user_prompt = "什么是乘风破浪会有时？"
     
     # 调用 OpenAI 接口
     response = call_openai_api(user_prompt, model="gpt-4",)

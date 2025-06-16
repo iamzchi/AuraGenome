@@ -26,7 +26,8 @@ export const getQueryResult = async (query) => {
 };
 
 // 生成代码
-export const getGenerateCode = async (query,queryInfo,project_id,current_step) => {
-    const response = await axios.post('/generate-code', { query,queryInfo,project_id,current_step });
+export const getGenerateCode = async (query, project_id, query_info, base_code) => {
+    const response = await axios.post('/generate-code', { query, project_id, query_info, base_code });
     return response.data;
 };
+

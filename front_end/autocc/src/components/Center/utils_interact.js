@@ -1,7 +1,23 @@
 //引入d3
 import * as d3 from "d3";
 import { ref, inject } from "vue";
-
+import { useChatStore } from "../../stores/useChatStore";
+function updateTrackInfo(trackId) {
+  const store = useChatStore();
+  const trackInfo = store.trackInfo;
+  // 根据trackId过滤出对应的轨道信息
+  const track = trackInfo.find((item) => item.id === trackId);
+  
+  if (track) {
+    console.log("找到轨道信息:", track.id);
+    // 通过 action 更新状态
+    store.setNowTrackInfo(track);
+    return track;
+  } else {
+    console.warn(`未找到ID为 ${trackId} 的轨道信息`);
+    return null;
+  }
+}
 //交互功能-添加高亮
 function add_hover_effect(bus) {
   const tracks_to_exchange = ref([]);
@@ -61,7 +77,8 @@ function add_hover_effect(bus) {
     });
     child.addEventListener("click", () => {
       // 输出class名
-      console.log("点击了", child.className.baseVal);
+      console.log("点击了::", child.className.baseVal);
+      updateTrackInfo(child.className.baseVal);//更新控制台轨道信息
       if (tracks_to_exchange.value.includes(child.className.baseVal)) {
         //从tracks_to_exchange中删除
         tracks_to_exchange.value = tracks_to_exchange.value.filter(

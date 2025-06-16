@@ -1,63 +1,58 @@
 <script setup>
-import { ref,onMounted } from 'vue';
-const steps = ref([
-  {
-    title: "Import Existing Configs and Rearrangements Links",
-    step: 1,
-    note: "add your note",
-    time:"2025-1-24",
-    description: "Shows chromosomal rearrangements using green (intra) and purple (inter) connection lines.",
-    img:"/assets/s1.png"
-  },
-  {
-    title: "Zygosity Mutation Bar",
-    step: 2,
-    note: "add your note",
-    time:"2025-1-23",
-    description: "Displays heterozygous (light orange) and homozygous (dark orange) mutations with 10Mb aggregation.",
-    img:"/assets/s2.png"
-  },
-  {
-    title: "Insertion and Deletion Bar",
-    step: 3,
-    note: "add your note",
-    time:"2025-1-23",
-    description: "Visualizes insertion (dark green) and deletion (red) events with validation status.",
-    img:"/assets/s3.png"
-  },
-  {
-    title: "Mutation Types",
-    step: 4,
-    note: "add your note",
-    time:"2025-1-23",
-    description: "Shows different mutation effects (Silent, Missense, Nonsense, Splice site) using colored scatter plots.",
-    img:"/assets/s4.png"
+import { ref, onMounted, onBeforeMount } from 'vue';
+import { useChatStore } from '../stores/useChatStore';
 
-  },
-  {
-    title: "Loss of Heterozygosity",
-    step: 5,
-    note: "add your note",
-    time:"2025-1-23",
-    description: "Represents LOH (Loss of Heterozygosity) regions in the genome with a red heatmap.",
-    img:"/assets/s5.png"
+const steps = ref([]);
+const showContextMenu = ref(false);
+const contextMenuPosition = ref({ x: 0, y: 0 });
+const selectedProjectIndex = ref(null);
 
-  },
-  {
-    title: "Copy Number Changes",
-    step: 6,
-    note: "add your note",
-    time:"2025-1-23",
-    description: "Depicts copy number variations across the genome using a blue line chart.",
-    img:"/assets/s6.png"
-
-  },
-]
-)
-onMounted(()=>{
-    console.log(steps.value)
-    steps.value = steps.value.reverse()
+onBeforeMount(() => {
+    const store = useChatStore();
+    steps.value = [...store.snapshots].reverse();
 })
+
+onMounted(() => {
+    console.log(steps.value);
+    // 点击页面任意位置关闭右键菜单
+    document.addEventListener('click', () => {
+        showContextMenu.value = false;
+    });
+})
+
+// 处理右键点击事件
+const handleContextMenu = (event, index) => {
+    event.preventDefault();
+    selectedProjectIndex.value = index;
+    contextMenuPosition.value = {
+        x: event.clientX,
+        y: event.clientY
+    };
+    showContextMenu.value = true;
+};
+
+// 处理菜单项点击
+const handleMenuItemClick = (action) => {
+    const projectIndex = selectedProjectIndex.value;
+    console.log(`执行操作: ${action}，项目索引: ${projectIndex}`);
+    
+    switch(action) {
+        case 'import':
+            // 导入项目逻辑
+            break;
+        case 'reuse':
+            // 重用配置逻辑
+            break;
+        case 'download':
+            // 下载项目逻辑
+            break;
+        case 'delete':
+            // 删除项目逻辑
+            break;
+    }
+    
+    showContextMenu.value = false;
+};
 </script>
 <template>
     <div class="blockTitle">
@@ -65,7 +60,7 @@ onMounted(()=>{
         <span>PROJECTS</span>
     </div>
     <div id="projects" class="border">
-        <div class="project" v-for="i in 3" :key="i"></div>
+        <div class="project" v-for="(i, index) in 3" :key="i" @contextmenu="handleContextMenu($event, index)"></div>
     </div>
     <t-space />
     <div class="blockTitle">
@@ -97,6 +92,25 @@ onMounted(()=>{
         </div>
     </div>
 
+    <!-- 自定义右键菜单 -->
+    <div v-if="showContextMenu" class="context-menu" :style="{ top: `${contextMenuPosition.y}px`, left: `${contextMenuPosition.x}px` }">
+        <div class="menu-item" @click="handleMenuItemClick('import')">
+            <t-icon name="upload"></t-icon>
+            <span>Import</span>
+        </div>
+        <div class="menu-item" @click="handleMenuItemClick('reuse')">
+            <t-icon name="refresh"></t-icon>
+            <span>Reuse configs</span>
+        </div>
+        <div class="menu-item" @click="handleMenuItemClick('download')">
+            <t-icon name="download"></t-icon>
+            <span>Download</span>
+        </div>
+        <div class="menu-item delete" @click="handleMenuItemClick('delete')">
+            <t-icon name="delete"></t-icon>
+            <span>Delete</span>
+        </div>
+    </div>
 </template>
 <style scoped lang="scss">
 #projects {
@@ -227,6 +241,46 @@ onMounted(()=>{
         transform: scale(1.05);
         cursor: pointer;
         box-shadow: rgba(0, 0, 0, 0.2) 0px 60px 40px -7px;
+    }
+}
+
+/* 右键菜单样式 */
+.context-menu {
+    position: fixed;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    padding: 8px 0;
+    z-index: 1000;
+    min-width: 180px;
+    
+    .menu-item {
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        
+        &:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .t-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        
+        span {
+            font-size: 14px;
+        }
+        
+        &.delete {
+            color: #e34d59;
+            
+            &:hover {
+                background-color: #ffebee;
+            }
+        }
     }
 }
 </style>

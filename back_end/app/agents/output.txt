@@ -1,6 +1,0 @@
-<details style="color:gray;background-color: #f8f8f8;padding: 8px;border-radius: 4px;" open> <summary> Thinking... </summary>
-Okay, the user said "hi". I need to respond politely. Let me think of a friendly greeting. Maybe "Hello! How can I assist you today?" That sounds good. I don't need any tools for this, just a straightforward reply.
-</details>
-
-
-Hello! How can I assist you today?

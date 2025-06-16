@@ -63,7 +63,7 @@ onMounted(async () => {
     let highlightConfig = {
       innerRadius: innerRadius,
       outerRadius: outerRadius,
-      opacity: .7,
+      opacity: 1,
       color: function (d) {
         return gieStainColor[d.gieStain]
       }
@@ -378,7 +378,161 @@ onMounted(async () => {
       });
       circos.render();
     }
-    final_step();
+    // final_step();
+    async function step0() {
+      
+      let level2 = await readFile('id_001/file2.csv');
+      //第一步：条件过滤
+      let level2_1 = level2.filter((item) => {
+        if (item["Type"] == "Insertion" && item["Validation_status"] != "") {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      let level2_2 = level2.filter((item) => {
+        if (item["Type"] == "Deletion" && item["Validation_status"] != "") {
+          return true;
+        } else {
+          return false;
+        }
+      })
+
+      //第二步：组合成绘图需要的格式
+      level2_1 = reduceData(level2_1, hg19, 10000000)
+      level2_2 = reduceData(level2_2, hg19, 10000000)
+
+      // 第三步：绘图
+      addTrack(circos, tracks, 'level2_1', level2_1, 'histogram', {
+        innerRadius: .7,
+        outerRadius: .9,
+        color: "red",
+        opacity: 1.0
+      });
+
+      addTrack(circos, tracks, 'level2_2', level2_2, 'histogram', {
+        innerRadius: .9,
+        outerRadius: 1,
+        color: "green",
+        opacity: 1.0
+      });
+      /**
+       * 橙色柱状图
+       * 体细胞突变的密度（橙色条）：
+          浅橙色条：异型合子的单核苷酸变异（heterozygous）。
+          深橙色条：纯合子的单核苷酸变异（homozygous）。
+          每10 Mb的密度计算来自附表1。
+       */
+      //第0步：拿文件
+      let level3 = await readFile('id_001/file1.csv');
+
+      //第一步：条件过滤
+      let level3_1 = level3.filter((item) => {
+        if (item["Zygosity"] == "het") {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      let level3_2 = level3.filter((item) => {
+        if (item["Zygosity"] == "hom") {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      //第二步：组合成绘图需要的格式
+      level3_1 = reduceData_Position(level3_1, hg19, 10000000)
+      level3_2 = reduceData_Position(level3_2, hg19, 10000000)
+
+      //画图
+      addTrack(circos, tracks, 'level3_1', level3_1, 'histogram', {
+        innerRadius: 0.4,
+        outerRadius: 0.6,
+        // color: "#faa95d",
+        // color:'#44c7fe',
+        color:'#ffd794',
+
+        // color:'orange',
+        opacity: 1.0,
+        direction:'in'
+      });
+
+      addTrack(circos, tracks, 'level3_2', level3_2, 'histogram', {
+        innerRadius: 0.6,
+        outerRadius: 0.8,
+        // color: "#f0761e",
+        color:'orange',
+        opacity: 1.0
+      });
+
+
+      /**
+       * 连线
+       * 重排（绿色和紫色线条）：
+          绿色线条：验证的染色体内重排（intrachromosomal rearrangements）。
+          紫色线条：验证的染色体间重排（interchromosomal rearrangements）。
+          数据来源为附表3。
+       */
+      let level7 = await readFile('id_001/file3.csv');
+      let level7_1 = level7.filter((item) => {
+        if (item["Chromosome"] == item["Chromosome.1"]) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      let level7_2 = level7.filter((item) => {
+        if (item["Chromosome"] != item["Chromosome.1"]) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      level7_1 = level7_1.map((item) => {
+        return {
+          source: {
+            id: item["Chromosome"],
+            start: Number(item["Position"]),
+            end: Number(item["Position"]) + 10000000
+          },
+          target: {
+            id: item["Chromosome.1"],
+            start: Number(item["Position.1"]),
+            end: Number(item["Position.1"]) + 10000000
+          }
+        }
+      })
+      level7_2 = level7_2.map((item) => {
+        return {
+          source: {
+            id: item["Chromosome"],
+            start: Number(item["Position"]),
+            end: Number(item["Position"]) + 10000000
+          },
+          target: {
+            id: item["Chromosome.1"],
+            start: Number(item["Position.1"]),
+            end: Number(item["Position.1"]) + 10000000
+          }
+        }
+      })
+      addTrack(circos, tracks, 'level7_1', level7_1, 'chords', {
+        color: "green",
+        // color:'#ffff84',
+        radius: 0.4
+      });
+
+      addTrack(circos, tracks, 'level7_2', level7_2, 'chords', {
+        color: "purple",
+        // color:'#533ce1',
+        radius: 0.4
+      });
+      circos.render();
+      add_hover_effect(bus);
+    }
+    step0();
+
     async function step1() {
       /**
        * 橙色柱状图
@@ -485,6 +639,7 @@ onMounted(async () => {
         radius: 0.6
       });
       circos.render();
+      add_hover_effect(bus);
     }
     // step1();
     async function step2() {
@@ -1154,7 +1309,7 @@ onMounted(async () => {
     // step4();
 
 
-    add_hover_effect(bus);
+    
   } catch (err) {
     console.error('Error fetching or processing data:', err);
   }

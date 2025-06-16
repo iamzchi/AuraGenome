@@ -101,6 +101,13 @@ onMounted(() => {
 onUnmounted(() => {
     bus.off('send_tracks_to_exchange');
 });
+
+//更新console面板当前点击的track信息
+import { useChatStore } from '../../stores/useChatStore';
+import { computed } from 'vue';
+const store = useChatStore();
+const trackInfo = computed(() => store.nowTrackInfo);
+console.log("console面板当前点击的track信息", trackInfo);
 </script>
 <template>
     <t-config-provider :global-config="enConfig">
@@ -152,25 +159,25 @@ onUnmounted(() => {
                 </t-button>
             </t-tooltip>
         </div>
-        <div class="console_container border">
+        <div class="console_container border" style="display: block;">
             <div id="trackName">
-                {{ track.trackName }}
+                {{ trackInfo.id?trackInfo.id:track.trackName }}
             </div>
             <div class="trackDetail">
                 <div class="detailTitle">Display Content</div>
-                <div class="detailContent">{{ track.content }}</div>
+                <div class="detailContent">{{ trackInfo.title?trackInfo.title:track.content }}</div>
             </div>
             <div class="trackDetail">
                 <div class="detailTitle">Associated Data</div>
-                <div class="detailContent">{{ track.associatedData }}</div>
+                <div class="detailContent">{{ trackInfo.file?trackInfo.file:track.associatedData }}</div>
             </div>
             <div class="trackDetail">
                 <div class="detailTitle">Explanation</div>
-                <div class="detailContent">{{ track.explanation }}</div>
+                <div class="detailContent">{{ trackInfo.explanation?trackInfo.explanation:track.explanation }}</div>
             </div>
             <div class="trackDetail">
                 <div class="detailTitle">Elements</div>
-                <div class="detailContent">{{ track.elements }}</div>
+                <div class="detailContent">{{ trackInfo.type?trackInfo.type:track.elements }}</div>
             </div>
             <div class="trackDetail">
                 <div class="detailTitle">Color Palette</div>
@@ -186,28 +193,28 @@ onUnmounted(() => {
             <div class="trackDetail_row">
                 <div class="detailTitle">Inner Radius</div>
                 <div class="detailContent">
-                    <t-input-number style="color:red" theme="column" width="100px" v-model="innerRadius" size="small"
+                    <t-input-number  style="color:red" theme="column" width="100px" v-model="innerRadius" size="small"
                         :max="15" :min="-2" :format="numberFormat1" auto-width></t-input-number>
                 </div>
             </div>
             <div class="trackDetail_row">
                 <div class="detailTitle">Outer Radius</div>
                 <div class="detailContent">
-                    <t-input-number style="color:red" theme="column" width="100px" v-model="outerRadius" size="small"
+                    <t-input-number  style="color:red" theme="column" width="100px" v-model="outerRadius" size="small"
                         :max="15" :min="-2" :format="numberFormat1" auto-width></t-input-number>
                 </div>
             </div>
             <div class="trackDetail_row">
                 <div class="detailTitle">Gap</div>
                 <div class="detailContent">
-                    <t-input-number style="color:red" theme="column" width="100px" v-model="gap" size="small"
+                    <t-input-number  style="color:red" theme="column" width="100px" v-model="gap" size="small"
                         :max="15" :min="-2" :format="numberFormat1" auto-width></t-input-number>
                 </div>
             </div>
             <div class="trackDetail_row">
                 <div class="detailTitle">Fill Color</div>
                 <div class="detailContent">
-                    <t-color-picker borderless="false" format="HEX" size="small" class="colorPicker" v-model="fillColor"
+                    <t-color-picker  borderless="false" format="HEX" size="small" class="colorPicker" v-model="fillColor"
                         :show-primary-color-preview="true" />
                 </div>
             </div>

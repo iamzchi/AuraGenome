@@ -1,18 +1,18 @@
-const rawData = [
-    [0, 0, 2, 0, 0, 1],  // Strongly Disagree (1)
-    [1, 0, 1, 0, 1, 1],  // Disagree (2)
-    [2, 2, 2, 2, 2, 3],  // Neutral (3)
-    [3, 1, 3, 3, 3, 2],  // Agree (4)
-    [6, 9, 4, 7, 6, 5],  // Strongly Agree (5)
-  ];
+// const rawData = [
+//     [0, 0, 2, 0, 0, 1],  // Strongly Disagree (1)
+//     [1, 0, 1, 0, 1, 1],  // Disagree (2)
+//     [2, 2, 2, 2, 2, 3],  // Neutral (3)
+//     [3, 1, 3, 3, 3, 2],  // Agree (4)
+//     [6, 9, 4, 7, 6, 5],  // Strongly Agree (5)
+//   ];
   
-  // const rawData = [ //circos
-  //   [4, 2, 2, 3, 5, 3],  // Strongly Disagree (1)
-  //   [5, 5, 3, 5, 4, 4],  // Disagree (2)
-  //   [2, 3, 0, 3, 2, 2],  // Neutral (3)
-  //   [1, 1, 4, 1, 1, 2],  // Agree (4)
-  //   [0, 1, 3, 0, 0, 1],  // Strongly Agree (5)
-  // ];
+  const rawData = [ //circos
+    [4, 2, 2, 3, 5, 3],  // Strongly Disagree (1)
+    [5, 5, 3, 5, 4, 4],  // Disagree (2)
+    [2, 3, 0, 3, 2, 2],  // Neutral (3)
+    [1, 1, 4, 1, 1, 2],  // Agree (4)
+    [0, 1, 3, 0, 0, 1],  // Strongly Agree (5)
+  ];
   
   const totalData = [];
   for (let i = 0; i < rawData[0].length; ++i) {

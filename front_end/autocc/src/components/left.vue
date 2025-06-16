@@ -78,6 +78,20 @@ const messages = ref([
     content: "Initializing..."
   }
 ]);
+
+/***
+ * 文件菜单的逻辑
+ */
+// 添加当前选中文件的状态
+const currentFile = ref(1); // 默认选中file1
+// 处理菜单项点击事件
+const handleMenuChange = (value) => {
+  currentFile.value = value;
+  console.log('选中文件：file' + value);
+};
+
+
+
 const inputText = ref(''); // 新增输入框绑定值
 function sendVueFileToBackend() {
   // 读取 Vue 文件的内容
@@ -120,88 +134,43 @@ function getVueFileContent(filePath) {
 import { getQueryResult } from '@/utils/server';
 const lastQuery = ref('');
 const queryInfo = ref('');
+//点击send按钮
 const sendMessage = async () => {
   if (!inputText.value.trim()) return;
   addNewMessage('user', inputText.value);
   let query = inputText.value;
   inputText.value = '';
-
-  console.log("将目前有的前端文件内容传给后端");
-  if (query == 'd' || query == 'D') {
-    setTimeout(() => {
-      addNewMessage('ai', "OK, I will use the default aggregation distance of 10Mb.");
-    }, 1000);
-    setTimeout(() => {
-      addNewMessage('ai', "Generating, please wait a moment...");
-    }, 2000);
-    generateCode(lastQuery.value, queryInfo.value);
-    lastQuery.value = '';
-  } else if (lastQuery.value == '') {
-    let queryResult = await getQueryResult(query);
-    queryResult = queryResult.query_info;
-    console.log("queryResult:", queryResult);
-    queryInfo.value = queryResult;
-    console.log("queryInfo.value:", queryInfo.value);
-
-    console.log(queryResult.query_type);
-    if (queryResult.query_type == "a") {
-      // 添加新的代码
-      if (queryResult.chart_type == "histogram" || queryResult.chart_type == "highlight" || queryResult.chart_type == "heatmap") {
-        addNewMessage('ai', `Generating a ${queryResult.chart_type} requires aggregating the chromosome data ${queryResult.file_name} you uploaded. What aggregation distance do you want? (Reply "d" to aggregate according to the distance of 10Mb by default)`);
-        lastQuery.value = query;
-      } else if (queryResult.chart_type == "line" || queryResult.chart_type == "scatter") {
-        addNewMessage('ai', `Generating ${queryResult.chart_type} using ${queryResult.file_name}, please wait a moment...`);
-        generateCode(query, queryInfo.value);
-      }
-    } else if (queryResult.query_type == "b") {
-      // 修改现有的文件
-      console.log("修改现有的文件");
-    }
-  }
+  
+  await chatStore.handleMessage(query);
 };
+
+// 删除原来的 sendVueFileToBackend、generateCode 函数
 import { getGenerateCode } from '@/utils/server';
 import { useStepStore } from '@/stores/useStepStore.js';
 const stepStore = useStepStore();
 const updateStep = stepStore.updateStep;
-async function generateCode(query, queryInfojson) {
-  let current_step = stepStore.step;
-  console.log(`发送的内容：${query},${queryInfojson}`);
-  let project_id = "id_001";
-  // { query,queryInfo,project_id,current_step })
-  const res = await getGenerateCode(query, queryInfojson, project_id, current_step);
-  console.log(`generatecode返回的内容：${res.status},string:${res.status.toString()}`);
-  if (res.status == 200) {
-    console.log("成功拿到返回后（本次生成图表成功）");
-    //成功拿到返回后（本次生成图表成功）
-    if (current_step == "root") {
-      updateStep("step1");
-      addNewMessage('ai', "Done! and I will update the step to step1");
-    } else {
-      //获取current_step中的数字
-      const stepNumber = current_step.match(/\d+/); // 使用正则表达式提取数字
-      if (stepNumber) {
-        const nextStep = `step${parseInt(stepNumber[0]) + 1}`;
-        updateStep(nextStep); // 更新为下一步
-        console.log(`更新到步骤：${nextStep}`);
-        addNewMessage('ai', "Done! and I will update the step to " + nextStep);
-      } else {
-        console.log("当前步骤中没有数字，无法更新步骤");
-      }
-    }
-  } else {
-    console.log("本次生成图表失败");
-  }
-
-  console.log("本次生成图表全部结束");
-
-
-}
 import fileDetail from './Left/fileDetail.vue'
 
 const inputRecommendItems = ref([])
 
 const uploadFile = () => {
   console.log('uploadFile')
+}
+const visible = ref(false)
+const restart = () => {
+  console.log('restart')
+  visible.value = true;  // 直接设置visible的值为true
+  console.log(visible.value);
+}
+
+
+
+const openDialog = () => {
+  visible.value = true
+}
+
+const closeDialog = () => {
+  visible.value = false
 }
 import { useChatStore } from '@/stores/useChatStore'
 const chatStore = useChatStore()
@@ -213,7 +182,6 @@ function updateRecommendations(newArray) {
   chatStore.updateInputRecommendItems(newArray)
 }
 messages.value = chatStore.messages
-inputRecommendItems.value = chatStore.inputRecommendItems
 
 //watch messages 每次一发生变化，对话框就滚动到最底部，添加动画效果
 // 使用 watch 来监听 chatStore.messages 的变化
@@ -253,6 +221,15 @@ const fileRecommendItems = ref([
     "chart_description": "A heatmap showing the density of different mutation effects across the genome, where the 'Position' column is used to plot and 'Effect' can be grouped for different mutation types."
   },
 ])
+
+// 添加处理子组件传递数据的函数
+const updateFileRecommends = (recommends) => {
+  if (recommends && Array.isArray(recommends)) {
+    fileRecommendItems.value = recommends;
+    console.log('已更新推荐内容:', recommends);
+  }
+};
+
 import svgIcon from './Left/svgIcon.vue'
 
 // 添加新的响应式变量来控制边框样式
@@ -281,8 +258,31 @@ const handleInputBlur = () => {
   isGradientBorder.value = false;
 };
 
+
+
+
 </script>
 <template>
+  <t-dialog closeBtn closeOnEscKeydown footer theme="danger" header="请检查并保存重要信息后新建项目。" v-model:visible="visible">
+    <t-form requiredMark>
+      <t-form-item label="演示项目" name="course" initial-data="['1']">
+        <t-checkbox-group :max="1">
+          <t-checkbox value="1">案例1：急性髓系白血病（AML）患者基因组中染色体易位可视化分析</t-checkbox>
+          <t-checkbox value="2">案例2：恶性黑色素瘤患者基因组中体细胞突变的全面目录的研究</t-checkbox>
+        </t-checkbox-group>
+      </t-form-item>
+      <t-form-item label="新项目ID" name="name" initial-data="TDesign">
+        <t-input placeholder="不可与已有ID重复" />
+      </t-form-item>
+      <t-form-item label="手机号码" name="tel" initial-data="123456">
+        <t-input placeholder="请输入" />
+      </t-form-item>
+    </t-form>
+    <t-divider />
+    <h4>或者你可以从之前的项目中恢复进度：</h4>
+    <div style="display: flex;"> <t-input placeholder="请输入你的项目ID" /><t-button>确认</t-button></div>
+   
+  </t-dialog>
   <div style="display: flex; justify-content: space-between; align-items: center;">
     <img src="/aura_logo.png" height="48" alt="logo" class="logo">
     <div id="select_genome">
@@ -291,33 +291,38 @@ const handleInputBlur = () => {
         <span>Reference Genome Ver</span>
       </div>
       <t-select v-model="refVersion" :options="options" placeholder="Please select" filterable />
-
     </div>
   </div>
-
   <t-divider />
   <div class="row" style="justify-content: space-between;">
     <div class="blockTitle">
       <t-icon name="app"></t-icon>
       <span>DATA STORE</span>
     </div>
-    <t-button @click="uploadFile" size="small">
-      <template #icon>
-        <t-icon name="upload" />
-      </template>
-      upload</t-button>
-  </div>
-  <div id="dataStore" class="border radius20">
-    <t-menu width="15%">
-      <t-menu-item v-for="i in 6" :value="i">
+    <div style="margin-bottom: .2rem;">
+      <t-button @click="uploadFile" size="small">
         <template #icon>
-          <t-icon name="file" />
+          <t-icon name="upload" />
         </template>
-        file{{ i }}
-      </t-menu-item>
-    </t-menu>
-    <fileDetail style="width: 85%;" />
+        upload</t-button>
+      <t-button style="margin-left: 10px;" @click="restart" size="small">
+        <template #icon>
+          <t-icon name="star" />
+        </template>
+        RESTART</t-button>
+    </div>
   </div>
+<div id="dataStore" class="border radius20">
+  <t-menu width="15%" :value="currentFile" @change="handleMenuChange">
+    <t-menu-item v-for="i in 6" :key="i" :value="i">
+      <template #icon>
+        <t-icon name="file" />
+      </template>
+      file{{ i }}
+    </t-menu-item>
+  </t-menu>
+  <fileDetail style="width: 85%;" :current-file-number="currentFile" @update-recommends="updateFileRecommends" />
+</div>
   <!-- <t-divider /> -->
   <t-space></t-space>
   <div id="chatContainer">
@@ -358,10 +363,8 @@ const handleInputBlur = () => {
         <span>CHAT WITH<span class="gradientText">Aura</span></span>
       </div>
 
-      <div id="chat" 
-        :class="['radius20', isGradientBorder ? 'gradient-border' : 'border']"
-        @mouseenter="handleMouseEnter"
-        @mouseleave="handleMouseLeave">
+      <div id="chat" :class="['radius20', isGradientBorder ? 'gradient-border' : 'border']"
+        @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
         <div id="messages">
           <div v-for="(msg, index) in messages" :key="index"
             :class="['message', msg.role === 'ai' ? 'ai-message' : 'user-message']">
@@ -371,11 +374,7 @@ const handleInputBlur = () => {
         </div>
         <div id="inputPanel">
           <div class="row">
-            <t-input 
-              v-model="inputText" 
-              @enter="sendMessage"
-              @focus="handleInputFocus"
-              @blur="handleInputBlur"
+            <t-input v-model="inputText" @enter="sendMessage" @focus="handleInputFocus" @blur="handleInputBlur"
               placeholder="How can I help you?">
             </t-input>
             <t-button @click="sendMessage">
@@ -383,7 +382,7 @@ const handleInputBlur = () => {
             </t-button>
           </div>
           <div id="inputRecommend">
-            <div class="inputRecommendItems" v-for="item in inputRecommendItems" :key="item.id">
+            <div class="inputRecommendItems" v-for="(item,index) in chatStore.inputRecommendItems" :key="index">
               {{ item }} <t-icon name="enter" />
             </div>
           </div>
@@ -588,5 +587,4 @@ const handleInputBlur = () => {
 //     linear-gradient(90deg, var(--td-brand-color-7), var(--td-brand-color-8));
 //   background-origin: border-box;
 //   background-clip: padding-box, border-box;
-// }
-</style>
+// }</style>

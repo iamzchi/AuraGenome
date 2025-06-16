@@ -1,5 +1,6 @@
 <script setup>
-import { ref, defineProps, onMounted, watch, onUnmounted } from 'vue';
+// 引入 nextTick
+import { ref, defineProps, onMounted, watch, onUnmounted, nextTick } from 'vue';
 import * as echarts from 'echarts';
 import { color } from 'd3';
 
@@ -19,10 +20,6 @@ const setChartRef = (el, key) => {
     chartRefs.value[key] = el;
   }
 };
-
-
-console.log("bar.vue的props.data", props.data);
-
 const setChartOption = (key) => {
   const option = {
     color: ['#91e2c3', '#83ccd9'], // 设置全局调色盘
@@ -127,24 +124,81 @@ const updateChartHeight = (key) => {
   }
 };
 
-// 修改初始化图表的方法
-const initCharts = () => {
-  Object.keys(props.data).forEach(key => {
-    if (!charts.value[key] && chartRefs.value[key]) {
-      updateChartHeight(key); // 先设置高度
-      charts.value[key] = echarts.init(chartRefs.value[key]);
-      setChartOption(key);
-    }
-  });
-};
+// // 修改初始化图表的方法
+// const initCharts = () => {
+//   Object.keys(props.data).forEach(key => {
+//     if (!charts.value[key] && chartRefs.value[key]) {
+//       updateChartHeight(key); // 先设置高度
+//       charts.value[key] = echarts.init(chartRefs.value[key]);
+//       setChartOption(key);
+//     }
+//   });
+// };
 
+// 修改 watch 函数部分
 watch(() => props.data, () => {
   console.log("数据发生改变，重新渲染echarts");
-  Object.keys(props.data).forEach(key => {
-    updateChartHeight(key);
-    setChartOption(key);
+  
+  // 先销毁所有现有图表
+  Object.keys(charts.value).forEach(key => {
+    if (charts.value[key]) {
+      charts.value[key].dispose();
+      charts.value[key] = null;
+    }
+  });
+  
+  // 使用 nextTick 确保 DOM 已更新
+  nextTick(() => {
+    // 使用新数据重新创建所有图表
+    Object.keys(props.data).forEach(key => {
+      if (chartRefs.value[key]) {
+        // 设置高度
+        const height = Math.max(props.data[key].length * 17, 40);
+        chartRefs.value[key].style.height = `${height}px`;
+        
+        // 确保容器可见且有尺寸
+        if (chartRefs.value[key].clientWidth > 0 && chartRefs.value[key].clientHeight > 0) {
+          // 创建新图表
+          charts.value[key] = echarts.init(chartRefs.value[key]);
+          setChartOption(key);
+        } else {
+          // 如果容器尺寸仍为0，使用setTimeout再次尝试
+          setTimeout(() => {
+            if (chartRefs.value[key] && chartRefs.value[key].clientWidth > 0 && chartRefs.value[key].clientHeight > 0) {
+              charts.value[key] = echarts.init(chartRefs.value[key]);
+              setChartOption(key);
+            }
+          }, 100); // 延迟100ms再次尝试
+        }
+      }
+    });
   });
 }, { deep: true });
+
+// 同样修改 initCharts 方法
+const initCharts = () => {
+  nextTick(() => {
+    Object.keys(props.data).forEach(key => {
+      if (!charts.value[key] && chartRefs.value[key]) {
+        updateChartHeight(key); // 先设置高度
+        
+        // 确保容器可见且有尺寸
+        if (chartRefs.value[key].clientWidth > 0 && chartRefs.value[key].clientHeight > 0) {
+          charts.value[key] = echarts.init(chartRefs.value[key]);
+          setChartOption(key);
+        } else {
+          // 如果容器尺寸仍为0，使用setTimeout再次尝试
+          setTimeout(() => {
+            if (chartRefs.value[key] && chartRefs.value[key].clientWidth > 0 && chartRefs.value[key].clientHeight > 0) {
+              charts.value[key] = echarts.init(chartRefs.value[key]);
+              setChartOption(key);
+            }
+          }, 100); // 延迟100ms再次尝试
+        }
+      }
+    });
+  });
+};
 
 onMounted(() => {
   initCharts();

@@ -1,5 +1,4 @@
-##包装openai的方法，将大模型返回的内容return出去
-# 参考 autoCircos\back_end\test.py 文件
+#解析用户意图
 
 import os
 from dotenv import load_dotenv
@@ -14,26 +13,31 @@ api_key = os.getenv("OPENAI_API_KEY")
 base_url = os.getenv("BASE_URL")
 
 # 初始化 OpenAI 客户端
-client = OpenAI(
+client = OpenAI(          
     api_key=api_key,  # 从环境变量中加载 API 密钥
     base_url=base_url,  # 从环境变量中加载自定义 API 地址
 )
 
-prompt = f"""You are a master at identifying the user's intent before drawing a circular chart. Analyze a query from the user to determine whether it is a "chart generation request" or a "chart modification request." "Chart generation" means adding new tracks based on the existing structure, which will lead to changes in the layout of all tracks (such as innerRadius and outerRadius). "Chart modification" means adjusting certain parameters based on the original code without changing the overall layout.
+prompt = f"""
+You are a master at identifying the user's intent before drawing a circular chart. Analyze a query from the user to determine whether it is a "chart generation request" or a "chart modification request." "Chart generation" means adding new tracks based on the existing structure, which will lead to changes in the layout of all tracks (such as innerRadius and outerRadius). "Chart modification" means adjusting certain parameters based on the original code without changing the overall layout.
 Please return a JSON like this:
 {{
     "file_name": "",
     "chart_type": "",
     "query_type": "",
-    "track_id": ""
+    "track_id": "",
+    "reply":"",
+    "next":[]
 }}
-If it is a "chart generation request," set `query_type` to "a" If it is a "chart modification request," set `query_type` to "b"
+If it is a "chart generation request," set `query_type` to "a" If it is a "chart modification request," set `query_type` to "b". If it is neither a chart generation requirement nor a modification requirement, then it is considered to be in the "chat mode", with the query_type being "chat", and you should provide an answer in the reply field. When answering, your name is Aura, an artificial intelligence AI responsible for generating bioinformatics visualization charts. All other fields are allowed to be set as null. 
+
 the options for chart_type are: histogram, scatter, heatmap, line, highlight, chords,stack
+You should fill in the next array every time. The next array represents "suggestions for the user's next input". Fill in three items to guess what the user might input next.less than 7 words.
 Just return this JSON; no other explanation is needed.
         """
 
 # 调用 API 的方法
-def use_judge(query,model="gpt-3.5-turbo"):
+def use_judge(query,model="gpt-4o"):
     try:
 
         # 调用 Chat Completion 接口
