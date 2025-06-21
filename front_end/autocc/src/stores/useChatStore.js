@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getQueryResult, getGenerateCode } from '@/utils/server'
+// 全局变量
+const project_id = "id_001"
+
 
 export const useChatStore = defineStore('chat', () => {
   /**
@@ -122,13 +125,27 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
   
+  const loading = ref(false)
   const generateCode = async (query, query_info) => {
-    const project_id = "id_001"
+    loading.value = true
+    
     console.log('开始生成代码')
     //后端接口要求：query, project_id, query_info, base_code
     const res = await getGenerateCode(query, project_id, query_info,allCodes.value[allCodes.value.length-1])
-  
-    if (res.status === 200) {
+    loading.value = false
+    if (res.code === 200) {
+      allCodes.value.push(res.generated_code);
+      currentCode.value = res.generated_code;
+      addMessage('ai', "Done. what else?")
+    }
+  }
+  const modifyCode = async(query, query_info)=>{
+    loading.value = true
+    console.log('开始修改代码')
+    //后端接口要求：query, project_id, query_info, base_code
+    const res = await getGenerateCode(query, project_id, query_info,allCodes.value[allCodes.value.length-1])
+    loading.value = false
+    if (res.code === 200) {
       allCodes.value.push(res.generated_code);
       currentCode.value = res.generated_code;
       addMessage('ai', "Done. what else?")
@@ -926,5 +943,6 @@ let circos;
     setNowTrackInfo,
     allCodes,
     currentCode,
+    loading
   }
 })

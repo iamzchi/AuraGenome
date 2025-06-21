@@ -5,7 +5,7 @@ import pandas as pd
 import json
 import os
 from .agents.Judge import use_judge
-from .agents.Generator import use_generator
+from .agents.Generator import use_generator,use_modifier
 
 bp = Blueprint('main', __name__)
 
@@ -129,6 +129,19 @@ def generate_code():
     print(f"generate_code的参数：{query, project_id, query_info,base_code}")
     res = use_generator(query, project_id, query_info,base_code)
     print(f"generate_code返回的内容：{res}")
+
+    return jsonify(res)
+
+@bp.route('/modify-code', methods=['POST'])
+def modify_code():
+    data = request.get_json()
+    query = data.get('query')
+    query_info = data.get('query_info')
+    project_id = data.get('project_id')
+    base_code = data.get('base_code')
+    print(f" modify_code的参数：{query, project_id, query_info,base_code}")
+    res = use_modifier(query, project_id, query_info,base_code)
+    print(f" modify_code返回的内容：{res}")
 
     return jsonify(res)
 

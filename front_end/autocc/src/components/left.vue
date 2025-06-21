@@ -62,7 +62,7 @@ const options = [
   }
 ];
 
-import { ref, watch, watchEffect, nextTick, onMounted } from 'vue';
+import { ref, watch, watchEffect, nextTick, onMounted, computed } from 'vue';
 const refVersion = ref('');
 //监听改变 refVersion的值，console出来
 watch(refVersion, (newVal) => {
@@ -183,6 +183,8 @@ function updateRecommendations(newArray) {
 }
 messages.value = chatStore.messages
 
+// 将 const loading = chatStore.loading; 替换为：
+const loading = computed(() => chatStore.loading);
 //watch messages 每次一发生变化，对话框就滚动到最底部，添加动画效果
 // 使用 watch 来监听 chatStore.messages 的变化
 
@@ -362,7 +364,7 @@ const handleInputBlur = () => {
         <t-icon name="chat-bubble-smile"></t-icon>
         <span>CHAT WITH<span class="gradientText">Aura</span></span>
       </div>
-
+      <t-loading :loading="loading" text="Estimated time consumption: 1 minute.">
       <div id="chat" :class="['radius20', isGradientBorder ? 'gradient-border' : 'border']"
         @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
         <div id="messages">
@@ -388,6 +390,7 @@ const handleInputBlur = () => {
           </div>
         </div>
       </div>
+      </t-loading>
     </div>
   </div>
 
