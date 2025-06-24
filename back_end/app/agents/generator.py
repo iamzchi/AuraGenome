@@ -7,7 +7,7 @@ from openai import OpenAI
 load_dotenv()
 
 # 从 .env 文件中获取密钥和 API 基础地址
-api_key = os.getenv("OPENAI_API_KEY")
+api_key = os.getenv("API_KEY")
 base_url = os.getenv("BASE_URL")
 
 # 初始化 OpenAI 客户端
@@ -56,7 +56,7 @@ def use_generator(query, project_id, query_info, base_code):
                 {"role": "system", "content": f"{generator_prompt}  and the base code is:{base_code}"},
                 {"role": "user", "content": query},
             ],
-            model="gpt-4o",  # 可以根据需要修改模型
+            model="openai/gpt-4o",  # 可以根据需要修改模型
             temperature=0.7,
         )
         
@@ -92,7 +92,7 @@ def use_modifier(query, project_id, query_info, base_code):
                 {"role": "system", "content": modifier_prompt},
                 {"role": "user", "content": f"{query}, and the base code is:{base_code}"},
             ],
-            model="gpt-4o",  # 可以根据需要修改模型
+            model="openai/gpt-4o",  # 可以根据需要修改模型
             temperature=0.7,
         )
         
