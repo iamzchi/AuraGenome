@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getQueryResult, getGenerateCode } from '@/utils/server'
+import { getQueryResult, getGenerateCode, getModifyCode } from '@/utils/server'
 // 全局变量
 const project_id = "id_001"
 
@@ -9,37 +9,7 @@ export const useChatStore = defineStore('chat', () => {
   /**
    * @description 聊天窗口
    */
-  // 使用 ref 来定义响应式状态
-  // const messages = ref([
-  //   { role: 'ai', content: "Hi! Let's create cool gene visualization charts together!" },
-  //   { role: 'ai', content: "You can upload your files." },
-  //   { role: 'user', content: '✔ uploaded: file1' },
-  //   { role: 'ai', content: 'I got it!' },
-  //   { role: 'ai', content: "What's your next plan?" },
-  //   { role: 'user', content: 'Please display the gene mutation data in file1 for me with a bar chart.' },
-  //   { role: 'ai', content: 'Here it is!' },
-  //   { role: 'user', content: 'change the scatter track of the Synonymous Substitution to purple.'  },
-  //   { role: 'ai', content: 'No problem! ' },
-  //   { role: 'ai', content: 'I have turned track7 purple. anything else?' },
-  //   { role: 'user', content: 'nice but I want the width of Track5 to be enlarged a bit, and Track4 to be reduced a bit.' },
-  //   { role: 'ai', content: 'Done! Is this what you want? If not, you can click the track for finer adjustment.' },
-  //   // { role: 'user', content: 'using file2.csv to generate a dark-green bar chart, and use the "Insertion" type column and Validation column should not be empty.' },
-  //   {role:'ai',content:'OK, I will generate the chart for you according to the configuration of Proj1, please upload your data.'},
-  //   {role:'user',content:'✔ uploaded: 📄file1,📄file2'},
-  //   {role:'ai',content:"Got it. I noticed that there are multiple discrete values in file1. I've recommended two solutions for you. Is there any one you like?"},
-  //   {role:'user',content:'To display heterozygous (light orange) and homozygous (dark orange) mutations with 10Mb aggregation.'},
-  //   {role:'ai',content:'All right! Here it is!'},
-  //   {role:'user',content:'Using file5.csv to generate a blue line chart, plotting Copy number column values against their genomic position.'  },
-  //   {role:'ai',content:'Here it is! I generated a blue line chart to show the changes in copy number. '},
-  //   {role:'user',content:'OK, but add axes to the line chart. A simple light gray color.'  },
-  //   {role:'ai',content:'Done! Is this what you want? If not, you can click the track for finer adjustment.'},
-  //   {role:'user',content:"Not bad, but I can't clearly see the ups and downs of the blue line. It looks like this broken line is quite flat. " },
-  //   {role:'ai',content:"How about we narrow down the Substitution track and expand the line chart track? "},
-  //   {role:'user',content:"Why?"},
-  //   {role:'ai',content:"Because the scatter point distribution isn't very sensitive to height. Do you want me to adjust the chart for you? "},
-  // ])
-//👮‍♂️代表左边的操作
-//🈶️代表右边的操作
+
   const messages = ref([
     { role: 'ai', content: "Hi! Let's create cool gene visualization charts together!" },
     { role: 'ai', content: "You can upload your files." },
@@ -120,7 +90,7 @@ export const useChatStore = defineStore('chat', () => {
       }
       if(queryResult.query_type === 'b'){//修改模式
         addMessage('ai', `${queryResult.reply},Modifying ${queryResult.chart_type} using ${queryResult.file_name}, please wait a moment...`)
-        await generateCode(query, queryInfo.value) //生成代码
+        await modifyCode(query, queryInfo.value) //修改代码
       }
     }
   }
@@ -136,19 +106,19 @@ export const useChatStore = defineStore('chat', () => {
     if (res.code === 200) {
       allCodes.value.push(res.generated_code);
       currentCode.value = res.generated_code;
-      addMessage('ai', "Done. what else?")
+      addMessage('ai', "Done. what else?✌️")
     }
   }
   const modifyCode = async(query, query_info)=>{
     loading.value = true
     console.log('开始修改代码')
     //后端接口要求：query, project_id, query_info, base_code
-    const res = await getGenerateCode(query, project_id, query_info,allCodes.value[allCodes.value.length-1])
+    const res = await getModifyCode(query, project_id, query_info, allCodes.value[allCodes.value.length-1])
     loading.value = false
     if (res.code === 200) {
       allCodes.value.push(res.generated_code);
       currentCode.value = res.generated_code;
-      addMessage('ai', "Done. what else?")
+      addMessage('ai', "Modify Done. what else? 😎")
     }
   }
 

@@ -31,3 +31,9 @@ export const getGenerateCode = async (query, project_id, query_info, base_code) 
     return response.data;
 };
 
+// 修改代码
+export const getModifyCode = async (query, project_id, query_info, base_code) => {
+    const response = await axios.post('/modify-code', { query, project_id, query_info, base_code });
+    return response.data;
+};
+
