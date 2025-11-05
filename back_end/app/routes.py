@@ -126,9 +126,9 @@ def generate_code():
     query_info = data.get('query_info')
     project_id = data.get('project_id')
     base_code = data.get('base_code')
-    print(f"generate_code的参数：{query, project_id, query_info,base_code}")
+    # print(f"generate_code的参数：{query, project_id, query_info,base_code}")
     res = use_generator(query, project_id, query_info,base_code)
-    print(f"generate_code返回的内容：{res}")
+    # print(f"generate_code返回的内容：{res}")
 
     return jsonify(res)
 
@@ -139,9 +139,9 @@ def modify_code():
     query_info = data.get('query_info')
     project_id = data.get('project_id')
     base_code = data.get('base_code')
-    print(f" modify_code的参数：{query, project_id, query_info,base_code}")
+    # print(f" modify_code的参数：{query, project_id, query_info,base_code}")
     res = use_modifier(query, project_id, query_info,base_code)
-    print(f" modify_code返回的内容：{res}")
+    # print(f" modify_code返回的内容：{res}")
 
     return jsonify(res)
 
