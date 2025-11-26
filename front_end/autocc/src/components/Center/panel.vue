@@ -338,7 +338,7 @@ watch(
             /* 设置环形圆圈 */
             .circle {
                 position: absolute;
-                border: 1px solid #ccc;
+                border: 1px solid #434343;
                 border-radius: 50%;
 
             }
@@ -497,7 +497,7 @@ watch(
             .polar-container::after {
                 content: '';
                 position: absolute;
-                background-color: #ccc;
+                background-color: #434343;
             }
 
             /* 水平线 */
@@ -530,7 +530,7 @@ watch(
             .diagonal-lines::after {
                 content: '';
                 position: absolute;
-                background-color: #ccc;
+                background-color: #434343;
                 width: 141.4%;
                 /* 100% * √2 */
                 height: 1px;
@@ -553,7 +553,7 @@ watch(
                 &::before {
                     content: '';
                     position: absolute;
-                    background-color: #ccc;
+                    background-color: #434343;
                     width: 141.4%;
                     height: 1px;
                     left: -20.7%;
@@ -584,7 +584,7 @@ watch(
                 &::before {
                     content: '';
                     position: absolute;
-                    background-color: #ccc;
+                    background-color: #434343;
                     width: 141.4%;
                     height: 1px;
                     left: -20.7%;

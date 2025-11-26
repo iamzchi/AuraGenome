@@ -1,6 +1,70 @@
-// 2025-11-26 20:44:40 | query: Using file5.csv to generate a blue line chart, plotting Copy number column values against their genomic position.
+#输出console面板里面的信息
 
-<script setup>
+import os
+from dotenv import load_dotenv
+from openai import OpenAI
+import json
+
+# 加载 .env 文件中的环境变量
+load_dotenv()
+
+# 从 .env 文件中获取密钥和 API 基础地址
+api_key = os.getenv("API_KEY")
+base_url = os.getenv("BASE_URL")
+
+# 初始化 OpenAI 客户端
+client = OpenAI(          
+    api_key=api_key,  # 从环境变量中加载 API 密钥
+    base_url=base_url,  # 从环境变量中加载自定义 API 地址
+)
+
+LOG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'Deletle_Track_log.vue'))
+
+prompt = """
+接下来我会给你一段代码，这个代码会绘制一些环形轨道
+请你删掉对应的轨道，返回新的代码
+
+## 注意事项
+- 不要修改已有代码上的其他轨道！只删除这个轨道相关的代码即可，一般情况下是关于addTrack这个方法。
+- 给我完整的代码，不要任何解释说明的文字。
+- 不要使用任何代码块标记（例如```），只输出完整的 .vue 文件代码文本。
+"""
+
+# 调用 API 的方法
+def use_delete_track(current_code,trackId,model="openai/gpt-4o-mini"):
+    try:
+        #打印调试信息
+        print("开始生成删除轨道的数据：use_delete_track")
+        # 调用 Chat Completion 接口
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": f"and the code is: '{current_code}',I want you to delete the track that is {trackId}"},
+            ],
+            model=model,
+            temperature=0.7,
+        )
+        reply = chat_completion.choices[0].message.content
+        reply = reply.replace("```", "")
+        with open(LOG_PATH, 'w', encoding='utf-8') as f:
+            f.write(reply)
+        return reply
+    except Exception as e:
+        print(f"调用 OpenAI API 时出错：{e}")
+        try:
+            with open(LOG_PATH, 'w', encoding='utf-8') as f:
+                f.write('')
+        except Exception:
+            pass
+        return None
+
+
+# 测试代码
+if __name__ == "__main__":
+    
+    # 设置测试参数
+    current_code = '''
+    <script setup>
 import { ref, onMounted, inject } from 'vue';
 import * as d3 from 'd3';
 import Circos from 'circos';
@@ -160,3 +224,6 @@ bus.on('go_exchange', (tracks) => {
 
 }
 </style>
+    '''
+    result = use_delete_track(current_code, 'hom_histogram')
+    print(f"结果: {result}")

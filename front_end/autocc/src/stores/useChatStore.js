@@ -1,158 +1,242 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { getQueryResult, getGenerateCode, getModifyCode, getConsoleInfo } from '@/utils/server'
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import {
+  getQueryResult,
+  getGenerateCode,
+  getModifyCode,
+  getConsoleInfo,
+} from "@/utils/server";
 // 全局变量
-const project_id = "id_001"
+const project_id = "id_001";
 
-
-export const useChatStore = defineStore('chat', () => {
+export const useChatStore = defineStore("chat", () => {
   /**
    * @description 聊天窗口
    */
 
   const messages = ref([
-    { role: 'ai', content: "Hi! Let's create cool gene visualization charts together!" },
-    { role: 'ai', content: "You can upload your files." },
-    { role: 'user', content: '✔ uploaded: 6 files' },
-    { role: 'ai', content: "I got it! I have parsed the data for you to review and analyze. What's your next plan?" },
-  ])
+    {
+      role: "ai",
+      content: "Hi! Let's create cool gene visualization charts together!",
+    },
+    { role: "ai", content: "You can upload your files." },
+    { role: "user", content: "✔ uploaded: 6 files" },
+    {
+      role: "ai",
+      content:
+        "I got it! I have parsed the data for you to review and analyze. What's your next plan?",
+    },
+  ]);
   const inputRecommendItems = ref([
-    'What can you do?',
-    'Save as png and download',
-    'Modify the axes of Track9'
-  ])
+    "What can you do?",
+    "Save as png and download",
+    "Modify the axes of Track9",
+  ]);
   // 可以提供一些 actions 来操作这些状态
   const addMessage = (role, content) => {
-    messages.value.push({ role: role, content: content })
-  }
+    messages.value.push({ role: role, content: content });
+  };
   const updateInputRecommendItems = (newItems) => {
-    inputRecommendItems.value = newItems
-  }
-  
+    inputRecommendItems.value = newItems;
+  };
 
   // 添加新的状态
-  const lastQuery = ref('')
-  const queryInfo = ref('')
-  
+  const lastQuery = ref("");
+  const queryInfo = ref("");
+
   // 添加新的方法
   const sendVueFileToBackend = async (filePath, fileContent) => {
-    const backendUrl = 'https://your-backend-api.com/upload'
+    const backendUrl = "https://your-backend-api.com/upload";
     const payload = {
-      filename: 'demo1.vue',
-      content: fileContent
-    }
+      filename: "demo1.vue",
+      content: fileContent,
+    };
     try {
       const response = await fetch(backendUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
-      })
-      const data = await response.json()
-      console.log('成功上传文件内容:', data)
-      return data
+      });
+      const data = await response.json();
+      console.log("成功上传文件内容:", data);
+      return data;
     } catch (error) {
-      console.error('上传文件失败:', error)
-      throw error
+      console.error("上传文件失败:", error);
+      throw error;
     }
-  }
+  };
 
   const handleMessage = async (query) => {
-    if (query === 'd' || query === 'D') {
+    if (query === "d" || query === "D") {
       setTimeout(() => {
-        addMessage('ai', "OK, I will use the default aggregation distance of 10Mb.")
-      }, 1000)
+        addMessage(
+          "ai",
+          "OK, I will use the default aggregation distance of 10Mb."
+        );
+      }, 1000);
       setTimeout(() => {
-        addMessage('ai', "Generating, please wait a moment...")
-      }, 2000)
-      await generateCode(lastQuery.value, queryInfo.value)
-      lastQuery.value = ''
-    } else if (lastQuery.value === '') {
-      let queryResult = await getQueryResult(query)
-      queryResult = queryResult.query_info
-      queryInfo.value = queryResult
-      //打印queryResult
-      console.log('11111',queryInfo.value)
+        addMessage("ai", "Generating, please wait a moment...");
+      }, 2000);
+      await generateCode(lastQuery.value, queryInfo.value);
+      lastQuery.value = "";
+    } else if (lastQuery.value === "") {
+      let queryResult = await getQueryResult(query);
+      queryResult = queryResult.query_info;
+      queryInfo.value = queryResult;
+      console.log("11111", queryInfo.value);
+      if (queryResult.query_type !== "chat" && !selectedReferenceVersion.value) {
+        addMessage("ai", "⚠️Please select the reference genome track version first.");
+        return;
+      }
       if (queryResult.query_type === "chat") {
-        addMessage('ai', queryResult.reply);
-        updateInputRecommendItems(queryResult.next)
+        addMessage("ai", queryResult.reply);
+        updateInputRecommendItems(queryResult.next);
       }
       if (queryResult.query_type === "a") {
-        if (queryResult.chart_type === "histogram" || queryResult.chart_type === "highlight" || queryResult.chart_type === "heatmap") {
-          addMessage('ai', `Generating a ${queryResult.chart_type} requires aggregating the chromosome data ${queryResult.file_name} you uploaded. What aggregation distance do you want? (Reply "d" to aggregate according to the distance of 10Mb by default)`)
-          lastQuery.value = query
+        if (
+          queryResult.chart_type === "histogram" ||
+          queryResult.chart_type === "highlight" ||
+          queryResult.chart_type === "heatmap"
+        ) {
+          addMessage(
+            "ai",
+            `Generating a ${queryResult.chart_type} requires aggregating the chromosome data ${queryResult.file_name} you uploaded. What aggregation distance do you want? (Reply "d" to aggregate according to the distance of 10Mb by default)`
+          );
+          lastQuery.value = query;
         } else {
           //  line\scatter\chord
-          addMessage('ai', `Generating ${queryResult.chart_type} using ${queryResult.file_name}, please wait a moment...`)
-          await generateCode(query, queryInfo.value) //生成代码
-          lastQuery.value='';
+          addMessage(
+            "ai",
+            `Generating ${queryResult.chart_type} using ${queryResult.file_name}, please wait a moment...`
+          );
+          await generateCode(query, queryInfo.value); //生成代码
+          lastQuery.value = "";
         }
       }
-      if(queryResult.query_type === 'b'){//修改模式
-        addMessage('ai', `${queryResult.reply},Modifying ${queryResult.chart_type} using ${queryResult.file_name}, please wait a moment...`)
-        await modifyCode(query, queryInfo.value) //修改代码
+      if (queryResult.query_type === "b") {
+        //修改模式
+        addMessage(
+          "ai",
+          `${queryResult.reply},Modifying ${queryResult.chart_type} using ${queryResult.file_name}, please wait a moment...`
+        );
+        await modifyCode(query, queryInfo.value); //修改代码
       }
     }
-  }
-  
-  const loading = ref(false)
+  };
+
+  const loading = ref(false);
   const generateCode = async (query, query_info) => {
-    loading.value = true
-    
-    console.log('开始生成代码')
-    //后端接口要求：query, project_id, query_info, base_code
-    const res = await getGenerateCode(query, project_id, query_info,allCodes.value[allCodes.value.length-1])
-    loading.value = false
-    if (res.code === 200) {
-      allCodes.value.push(res.generated_code);
-      currentCode.value = res.generated_code;
-      addMessage('ai', "Done. what else?✌️")
-      try {
-        const consoleInfo = await getConsoleInfo(res.generated_code);
-        console.log('Console Info:', consoleInfo);
-      } catch (e) {
-        console.error('Get console info failed:', e);
+    loading.value = true;
+    console.log("开始生成代码");
+    try {
+      const res = await getGenerateCode(
+        query,
+        project_id,
+        query_info,
+        allCodes.value[allCodes.value.length - 1]
+      );
+      if (res.code === 200) {
+        allCodes.value.push(res.generated_code);
+        currentCode.value = res.generated_code;
+        addMessage("ai", "Done. what else?✌️");
+        loading.value = false;
+        try {
+          const consoleInfo = await getConsoleInfo(res.generated_code);
+          if (Array.isArray(consoleInfo)) {
+            trackInfo.value = consoleInfo;
+          } else if (consoleInfo && Array.isArray(consoleInfo.data)) {
+            trackInfo.value = consoleInfo.data;
+          }
+        } catch (e) {
+          console.error("Get console info failed:", e);
+        }
+      } else if (res.code === 500) {
+        addMessage(
+          "ai",
+          "A problem has occurred at the model end. Please retry the operation."
+        );
       }
-    }
-  }
-  const modifyCode = async(query, query_info)=>{
-    loading.value = true
-    console.log('开始修改代码')
-    //后端接口要求：query, project_id, query_info, base_code
-    const res = await getModifyCode(query, project_id, query_info, allCodes.value[allCodes.value.length-1])
-    loading.value = false
-    if (res.code === 200) {
-      allCodes.value.push(res.generated_code);
-      currentCode.value = res.generated_code;
-      addMessage('ai', "Modify Done. what else? 😎")
-      try {
-        const consoleInfo = await getConsoleInfo(res.generated_code);
-        console.log('Console Info:', consoleInfo);
-      } catch (e) {
-        console.error('Get console info failed:', e);
+    } catch (e) {
+      console.error('Generate code failed:', e);
+      if (e && (e.code === 'ECONNABORTED' || (typeof e.message === 'string' && e.message.toLowerCase().includes('timeout')) || e.isTimeout)) {
+        addMessage('ai', '🕙The response timed out. Don’t worry, this isn’t your fault—please try again.');
+      } else {
+        addMessage('ai', 'A problem has occurred at the model end. Please retry the operation.');
       }
+    } finally {
+      loading.value = false;
     }
-  }
+  };
+  const modifyCode = async (query, query_info) => {
+    loading.value = true;
+    console.log("开始修改代码");
+    try {
+      const res = await getModifyCode(
+        query,
+        project_id,
+        query_info,
+        allCodes.value[allCodes.value.length - 1]
+      );
+      if (res.code === 200) {
+        allCodes.value.push(res.generated_code);
+        currentCode.value = res.generated_code;
+        addMessage("ai", "Modify Done. what else? 😎");
+        loading.value = false;
+        try {
+          const consoleInfo = await getConsoleInfo(res.generated_code);
+          if (Array.isArray(consoleInfo)) {
+            trackInfo.value = consoleInfo;
+          } else if (consoleInfo && Array.isArray(consoleInfo.data)) {
+            trackInfo.value = consoleInfo.data;
+          }
+        } catch (e) {
+          console.error("Get console info failed:", e);
+        }
+      } else if (res.code === 500) {
+        addMessage(
+          "ai",
+          "A problem has occurred at the model end. Please retry the operation."
+        );
+      }
+    } catch (e) {
+      console.error('Modify code failed:', e);
+      if (e && (e.code === 'ECONNABORTED' || (typeof e.message === 'string' && e.message.toLowerCase().includes('timeout')) || e.isTimeout)) {
+        addMessage('ai', '🕙The response timed out. Don’t worry, this isn’t your fault—please try again.');
+      } else {
+        addMessage('ai', 'A problem has occurred at the model end. Please retry the operation.');
+      }
+    } finally {
+      loading.value = false;
+    }
+  };
 
   /**
    * @description Log窗口
    *
    */
-    const log = ref([
-      { id: "0",  text: "", parent: null, status: 0, type: "root" },
-      { id: "1",  text: "", parent: "0", status: 1, type: "chord" },
-      { id: "2",  text: "", parent: "0", status: 1, type: "chord" },
-      { id: "3",  text: "", parent: "2", status: 2, type: "radial" },
-      { id: "4",  text: "", parent: "3", status: 3, type: "radial" },
-      { id: "5",  text: "", parent: "4", status: 2, type: "chord" },
-      { id: "6",  text: "", parent: "5", status: 2, type: "chord" },
-      { id: "7",  text: "", parent: "6", status: 2, type: "chord" },
-      { id: "8",  text: "", parent: "7", status: 3, type: "chord" },])
+  const log = ref([
+    { id: "0", text: "", parent: null, status: 0, type: "root" },
+    { id: "1", text: "", parent: "0", status: 1, type: "chord" },
+    { id: "2", text: "", parent: "0", status: 1, type: "chord" },
+    { id: "3", text: "", parent: "2", status: 2, type: "radial" },
+    { id: "4", text: "", parent: "3", status: 3, type: "radial" },
+    { id: "5", text: "", parent: "4", status: 2, type: "chord" },
+    { id: "6", text: "", parent: "5", status: 2, type: "chord" },
+    { id: "7", text: "", parent: "6", status: 2, type: "chord" },
+    { id: "8", text: "", parent: "7", status: 3, type: "chord" },
+  ]);
 
   const addLog = (id, text, parent, status, type) => {
-    log.value.push({ id: id, text: text, parent: parent, status: status, type: type })
-  }
+    log.value.push({
+      id: id,
+      text: text,
+      parent: parent,
+      status: status,
+      type: type,
+    });
+  };
 
   /**
    * @description step snapshots
@@ -162,295 +246,84 @@ export const useChatStore = defineStore('chat', () => {
       title: "Import Existing Configs and Rearrangements Links",
       step: 1,
       note: "add your note",
-      time:"2025-1-24",
-      description: "Shows chromosomal rearrangements using green (intra) and purple (inter) connection lines.",
-      img:"/assets/s1.png"
+      time: "2025-1-24",
+      description:
+        "Shows chromosomal rearrangements using green (intra) and purple (inter) connection lines.",
+      img: "/assets/s1.png",
     },
     {
       title: "Zygosity Mutation Bar",
       step: 2,
       note: "add your note",
-      time:"2025-1-23",
-      description: "Displays heterozygous (light orange) and homozygous (dark orange) mutations with 10Mb aggregation.",
-      img:"/assets/s2.png"
+      time: "2025-1-23",
+      description:
+        "Displays heterozygous (light orange) and homozygous (dark orange) mutations with 10Mb aggregation.",
+      img: "/assets/s2.png",
     },
     {
       title: "Insertion and Deletion Bar",
       step: 3,
       note: "add your note",
-      time:"2025-1-23",
-      description: "Visualizes insertion (dark green) and deletion (red) events with validation status.",
-      img:"/assets/s3.png"
+      time: "2025-1-23",
+      description:
+        "Visualizes insertion (dark green) and deletion (red) events with validation status.",
+      img: "/assets/s3.png",
     },
     {
       title: "Mutation Types",
       step: 4,
       note: "add your note",
-      time:"2025-1-23",
-      description: "Shows different mutation effects (Silent, Missense, Nonsense, Splice site) using colored scatter plots.",
-      img:"/assets/s4.png"
-  
+      time: "2025-1-23",
+      description:
+        "Shows different mutation effects (Silent, Missense, Nonsense, Splice site) using colored scatter plots.",
+      img: "/assets/s4.png",
     },
     {
       title: "Loss of Heterozygosity",
       step: 5,
       note: "add your note",
-      time:"2025-1-23",
-      description: "Represents LOH (Loss of Heterozygosity) regions in the genome with a red heatmap.",
-      img:"/assets/s5.png"
-  
+      time: "2025-1-23",
+      description:
+        "Represents LOH (Loss of Heterozygosity) regions in the genome with a red heatmap.",
+      img: "/assets/s5.png",
     },
     {
       title: "Copy Number Changes",
       step: 6,
       note: "add your note",
-      time:"2025-1-23",
-      description: "Depicts copy number variations across the genome using a blue line chart.",
-      img:"/assets/s6.png"
-  
+      time: "2025-1-23",
+      description:
+        "Depicts copy number variations across the genome using a blue line chart.",
+      img: "/assets/s6.png",
     },
-  ]
-  )
+  ]);
   const addSnapshot = (title, step, note, time, description, img) => {
-    snapshots.value.push({ title: title, step: step, note: note, time: time, description: description, img: img })
-  }
+    snapshots.value.push({
+      title: title,
+      step: step,
+      note: note,
+      time: time,
+      description: description,
+      img: img,
+    });
+  };
 
   /**
    * @description Track Infomation
    */
-  const trackInfo = ref([
-    {
-      "id": "level2_1", 
-      "file": "file2.csv",
-      "title": "Insertion Bar (Validated)",
-      "innerRadius": 0.95,
-      "outerRadius": 0.96,
-      "explanation": "Displays validated insertions (deep green) with 10Mb aggregation.",
-      "color": "green",
-      "type": "histogram",
-      "opacity": 1.0,
-      "radiusConfig": {
-        "inner": 0.95,
-        "outer": 0.96
-      },
-      "colorConfig": {
-        "deepGreen": "#006400"
-      },
-      "aggregation": "10Mb"
-    },
-    {
-      "id": "level2_2",
-      "file": "file2.csv",
-      "title": "Deletion Bar (Validated)",
-      "innerRadius": 0.96,
-      "outerRadius": 0.97,
-      "explanation": "Displays validated deletions (light green) with 10Mb aggregation.",
-      "color": "green",
-      "type": "histogram",
-      "opacity": 1.0,
-      "radiusConfig": {
-        "inner": 0.96,
-        "outer": 0.97
-      },
-      "colorConfig": {
-        "lightGreen": "#90EE90"
-      },
-      "aggregation": "10Mb"
-    },
-    {
-      "id": "level3_1",
-      "file": "file1.csv",
-      "title": "Heterozygous Mutations",
-      "innerRadius": 0.88,
-      "outerRadius": 0.93,
-      "explanation": "Displays heterozygous (light orange) mutations with 10Mb aggregation.",
-      "color": "#faa95d",
-      "type": "histogram",
-      "opacity": 1.0,
-      "radiusConfig": {
-        "inner": 0.88,
-        "outer": 0.93
-      },
-      "colorConfig": {
-        "het": "#FFB74D"
-      },
-      "aggregation": "10Mb"
-    },
-    {
-      "id": "level3_2",
-      "file": "file1.csv",
-      "title": "Homozygous Mutations",
-      "innerRadius": 0.80,
-      "outerRadius": 0.85,
-      "explanation": "Displays homozygous (dark orange) mutations with 10Mb aggregation.",
-      "color": "#f0761e",
-      "type": "histogram",
-      "opacity": 1.0,
-      "radiusConfig": {
-        "inner": 0.80,
-        "outer": 0.85
-      },
-      "colorConfig": {
-        "hom": "#FF8C00"
-      },
-      "aggregation": "10Mb"
-    },
-    {
-      "id": "level4_1",
-      "file": "file4.csv",
-      "title": "Silent Mutations",
-      "innerRadius": 0.77,
-      "outerRadius": 0.80,
-      "explanation": "Displays silent mutations (gray) in the genome.",
-      "color": "gray",
-      "type": "scatter",
-      "opacity": 1.0,
-      "radiusConfig": {
-        "inner": 0.77,
-        "outer": 0.80
-      },
-      "colorConfig": {
-        "silent": "gray"
-      }
-    },
-    {
-      "id": "level4_2",
-      "file": "file4.csv",
-      "title": "Missense Mutations",
-      "innerRadius": 0.74,
-      "outerRadius": 0.77,
-      "explanation": "Displays missense mutations (purple) in the genome.",
-      "color": "purple",
-      "type": "scatter",
-      "opacity": 1.0,
-      "radiusConfig": {
-        "inner": 0.74,
-        "outer": 0.77
-      },
-      "colorConfig": {
-        "missense": "purple"
-      }
-    },
-    {
-      "id": "level4_3",
-      "file": "file4.csv",
-      "title": "Nonsense Mutations",
-      "innerRadius": 0.71,
-      "outerRadius": 0.74,
-      "explanation": "Displays nonsense mutations (red) in the genome.",
-      "color": "red",
-      "type": "scatter",
-      "opacity": 1.0,
-      "radiusConfig": {
-        "inner": 0.71,
-        "outer": 0.74
-      },
-      "colorConfig": {
-        "nonsense": "red"
-      }
-    },
-    {
-      "id": "level4_4",
-      "file": "file4.csv",
-      "title": "Splice Site Mutations",
-      "innerRadius": 0.68,
-      "outerRadius": 0.71,
-      "explanation": "Displays splice site mutations (black) in the genome.",
-      "color": "black",
-      "type": "scatter",
-      "opacity": 1.0,
-      "radiusConfig": {
-        "inner": 0.68,
-        "outer": 0.71
-      },
-      "colorConfig": {
-        "splice": "black"
-      }
-    },
-    {
-      "id": "level5",
-      "file": "file5.csv",
-      "title": "Copy Number Variations",
-      "innerRadius": 0.50,
-      "outerRadius": 0.68,
-      "explanation": "Displays copy number variations (blue lines) across the genome.",
-      "color": "#5979ae",
-      "type": "line",
-      "opacity": 0.8,
-      "radiusConfig": {
-        "inner": 0.50,
-        "outer": 0.68
-      },
-      "colorConfig": {
-        "copyNumber": "#5979ae"
-      }
-    },
-    {
-      "id": "level6",
-      "file": "file6.csv",
-      "title": "Loss of Heterozygosity",
-      "innerRadius": 0.49,
-      "outerRadius": 0.50,
-      "explanation": "Displays regions of loss of heterozygosity (red heatmap).",
-      "color": "red",
-      "type": "heatmap",
-      "opacity": 1.0,
-      "radiusConfig": {
-        "inner": 0.49,
-        "outer": 0.50
-      },
-      "colorConfig": {
-        "loh": "red"
-      }
-    },
-    {
-      "id": "level7_1",
-      "file": "file3.csv",
-      "title": "Intrachromosomal Rearrangements",
-      "innerRadius": 0.48,
-      "outerRadius": 0.50,
-      "explanation": "Displays intrachromosomal rearrangements (green chords).",
-      "color": "green",
-      "type": "chords",
-      "opacity": 1.0,
-      "radiusConfig": {
-        "inner": 0.48,
-        "outer": 0.50
-      },
-      "colorConfig": {
-        "rearrangements": "green"
-      }
-    },
-    {
-      "id": "level7_2",
-      "file": "file3.csv",
-      "title": "Interchromosomal Rearrangements",
-      "innerRadius": 0.48,
-      "outerRadius": 0.50,
-      "explanation": "Displays interchromosomal rearrangements (purple chords).",
-      "color": "purple",
-      "type": "chords",
-      "opacity": 1.0,
-      "radiusConfig": {
-        "inner": 0.48,
-        "outer": 0.50
-      },
-      "colorConfig": {
-        "rearrangements": "purple"
-      }
-    }
-  ])
 
-  const nowTrackInfo = ref({})
-  const setNowTrackInfo = (track) =>{
+  const trackInfo = ref([]);
+
+  const nowTrackInfo = ref({});
+  const setNowTrackInfo = (track) => {
     nowTrackInfo.value = track;
-  }
+  };
 
   /**
    * @description 当前展示的代码和代码历史
-   * 
+   *
    */
-  const code1=`
+  const code1 = `
   <script setup>
 import { ref, onMounted, inject } from 'vue';
 import * as d3 from 'd3';
@@ -870,8 +743,8 @@ bus.on('go_exchange', (tracks) => {
 }
 </style>
 
-  `
-    const code_base_track_hg19 = `
+  `;
+  const code_base_track_hg19 = `
   <script setup>
 import { ref, onMounted, inject } from 'vue';
 import * as d3 from 'd3';
@@ -986,9 +859,9 @@ bus.on('go_exchange', (tracks) => {
 
 }
 </style>
-  `
+  `;
   //demo1的基础代码,默认会展示出来!
-  const codeTestForSfcLoader=`
+  const codeTestForSfcLoader = `
 <template>
     <h1 style="color: grey;">Please select Reference Genome first.</h1>
   </template>
@@ -1018,15 +891,18 @@ let circos;
     color: blue;
   }
   </style>
-  `
-
+  `;
 
   const allCodes = ref([]);
   const currentCode = ref(codeTestForSfcLoader);
-  const setHg19 = ()=>{
+  const selectedReferenceVersion = ref("");
+  const setReferenceVersion = (ver) => {
+    selectedReferenceVersion.value = ver || "";
+  };
+  const setHg19 = () => {
     currentCode.value = code_base_track_hg19;
     allCodes.value.push(code_base_track_hg19);
-  }
+  };
 
   return {
     messages,
@@ -1048,6 +924,8 @@ let circos;
     allCodes,
     currentCode,
     loading,
+    selectedReferenceVersion,
+    setReferenceVersion,
     setHg19,
-  }
-})
+  };
+});

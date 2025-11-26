@@ -1,0 +1,36 @@
+[
+    {
+        "color": "",
+        "colorConfig": {
+            "het": ""
+        },
+        "explanation": "",
+        "file": "/data/cytobands.csv",
+        "id": "highlight",
+        "innerRadius": null,
+        "outerRadius": null,
+        "radiusConfig": {
+            "inner": null,
+            "outer": null
+        },
+        "title": "",
+        "type": "highlight"
+    },
+    {
+        "color": "rgba(0,100,0,0.85)",
+        "colorConfig": {
+            "het": ""
+        },
+        "explanation": "",
+        "file": "id_001/file2.csv",
+        "id": "Insertion_validated_histogram",
+        "innerRadius": 0.8,
+        "outerRadius": 0.92,
+        "radiusConfig": {
+            "inner": 0.8,
+            "outer": 0.92
+        },
+        "title": "",
+        "type": "histogram"
+    }
+]

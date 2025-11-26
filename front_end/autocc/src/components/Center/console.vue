@@ -27,6 +27,11 @@ const marks1 = {
     100: '100%',
 };
 const value1 = ref(30);
+const change = (val) => {
+  const opacity = Number(val) / 100;
+  const el = document.getElementById('polar_system');
+  if (el) el.style.opacity = String(opacity);
+};
 
 const fillColor = ref('#FFA500'); // 橙色
 const strokeColor = ref('#808080'); // 灰色
@@ -96,15 +101,22 @@ onMounted(() => {
         tracks_to_exchange.value = tracks;
         console.log("收到的tracks_to_exchange", tracks_to_exchange.value);
     });
+    const el = document.getElementById('polar_system');
+    if (el) el.style.opacity = String(value1.value / 100);
 });
 
 onUnmounted(() => {
     bus.off('send_tracks_to_exchange');
 });
 
+watch(value1, (v) => {
+  const el = document.getElementById('polar_system');
+  if (el) el.style.opacity = String(Number(v) / 100);
+});
+
 //更新console面板当前点击的track信息
 import { useChatStore } from '../../stores/useChatStore';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 const store = useChatStore();
 const trackInfo = computed(() => store.nowTrackInfo);
 console.log("console面板当前点击的track信息", trackInfo);

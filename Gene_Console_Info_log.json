@@ -1,0 +1,44 @@
+[
+  {
+    "id": "deletion_histogram",
+    "file": "id_001/file2.csv",
+    "title": "Deletion Histogram",
+    "explanation": "To visualize the frequency of deletion events in the dataset.",
+    "type": "histogram",
+    "innerRadius": 0.65,
+    "outerRadius": 0.8,
+    "color": "red",
+    "radiusConfig": {
+      "inner": null,
+      "outer": null
+    }
+  },
+  {
+    "id": "hom_histogram",
+    "file": "id_001/file1.csv",
+    "title": "Homozygous Histogram",
+    "explanation": "To display the distribution of homozygous mutations across the genome.",
+    "type": "histogram",
+    "innerRadius": 0.5,
+    "outerRadius": 0.64,
+    "color": "#FF8C00",
+    "radiusConfig": {
+      "inner": null,
+      "outer": null
+    }
+  },
+  {
+    "id": "copy_number_line",
+    "file": "id_001/file5.csv",
+    "title": "Copy Number Variation Line",
+    "explanation": "To represent the copy number variations along the genome as a line plot.",
+    "type": "line",
+    "innerRadius": 0.36,
+    "outerRadius": 0.49,
+    "color": "blue",
+    "radiusConfig": {
+      "inner": null,
+      "outer": null
+    }
+  }
+]

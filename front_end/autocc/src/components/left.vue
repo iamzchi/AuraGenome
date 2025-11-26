@@ -69,8 +69,9 @@ const showWarning = ref(false);
 //监听改变 refVersion的值，console出来
 watch(refVersion, (newVal) => {
   console.log(newVal);
+  chatStore.setReferenceVersion(newVal);
   if (newVal === 'hg19/GRCh37') {
-    useChatStore().setHg19();
+    chatStore.setHg19();
     showWarning.value = false;
     addNewMessage('ai', 'Got it! I will use ' + newVal + ' as the reference genome version.');
     addNewMessage('ai', 'Now, you can upload your files.');

@@ -36,15 +36,21 @@ prompt = """
     "inner": null,
     "outer": null
   },
-  "colorConfig": {
-    "het": ""
-  }
 },...]
+
+其中，id和type你可以从addTrack函数的参数中获取，例如：
+addTrack(circos,tracks, id, filtered_data,type, configs);
+file字段是这个轨道对应的文件名，你也可以在代码中找到。
+title和explanation需要你根据代码的内容去写对应的解释，一句话解释即可。例如：
+    title: Zygosity Mutation Bar
+    Explanation: To display heterozygous (light orange) and homozygous (dark orange) mutations with 10Mb aggregation.
+
 处理要求：
    - 每个轨道对应一个JSON对象
-   - 所有字段必须完整，缺失值设为null或空字符串
+   - 所有字段必须完整
    - 保持原始代码中的轨道生成顺序
    - 确保JSON格式有效性，无语法错误
+   - id必须与addTrack函数中的id参数一致
 直接给我这个数组即可，不需要任何解释说明的文字。
 """
 

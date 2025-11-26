@@ -32,7 +32,9 @@ instance.interceptors.response.use(
         return response;
     },
     (error) => {
-        // 处理响应错误
+        if (error && (error.code === 'ECONNABORTED' || (typeof error.message === 'string' && error.message.toLowerCase().includes('timeout')))) {
+            error.isTimeout = true;
+        }
         console.error('Response error:', error.response || error.message);
         return Promise.reject(error);
     }

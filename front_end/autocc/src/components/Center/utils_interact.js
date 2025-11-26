@@ -5,6 +5,7 @@ import { useChatStore } from "../../stores/useChatStore";
 function updateTrackInfo(trackId) {
   const store = useChatStore();
   const trackInfo = store.trackInfo;
+  console.log('trackInfo',trackInfo)
   // 根据trackId过滤出对应的轨道信息
   const track = trackInfo.find((item) => item.id === trackId);
   
