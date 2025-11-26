@@ -80,6 +80,15 @@ import { useChatStore } from '../../stores/useChatStore'
 const chatStore = useChatStore()
 console.log('window.Vue exists:', !!window.Vue)
 console.log('window.Vue version:', window.Vue?.version)
+/**
+ * 动态加载并渲染一段 Vue SFC 源码字符串
+ * @param {string} code - 完整的 .vue 单文件组件源码
+ * @description
+ *  1. 若 code 为空，则清空已渲染组件；
+ *  2. 使用 vue3-sfc-loader 将 code 编译为可运行组件，并注入所需依赖（Vue、d3、circos 及项目工具函数）；
+ *  3. 编译成功后将组件实例赋给 dynamicComponent，失败则记录错误信息；
+ *  4. 整个过程中 isloading 用于控制加载动画的显隐。
+ */
 async function loadDynamicComponent(code) {
     console.log('Attempting to load dynamic component with code:', code)
     if (!code) {

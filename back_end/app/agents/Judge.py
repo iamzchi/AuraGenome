@@ -27,6 +27,7 @@ Please return a JSON like this:
     "query_type": "",
     "track_id": "",
     "reply":"",
+    "column_name":"",
     "next":[]
 }}
 If it is a "chart generation request," set `query_type` to "a",
@@ -42,7 +43,7 @@ Just return this JSON; no other explanation is needed.
         """
 
 # 调用 API 的方法
-def use_judge(query,model="deepseek/deepseek-chat-v3:free"):
+def use_judge(query,model="openai/gpt-4o-mini"):
     try:
 
         # 调用 Chat Completion 接口

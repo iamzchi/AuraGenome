@@ -63,12 +63,25 @@ const options = [
 ];
 
 import { ref, watch, watchEffect, nextTick, onMounted, computed } from 'vue';
+import { useChatStore } from '@/stores/useChatStore'
 const refVersion = ref('');
+const showWarning = ref(false);
 //监听改变 refVersion的值，console出来
 watch(refVersion, (newVal) => {
   console.log(newVal);
-  addNewMessage('ai', 'Got it! I will use ' + newVal + ' as the reference genome version.');
-  addNewMessage('ai', 'Now, you can upload your files.');
+  if (newVal === 'hg19/GRCh37') {
+    useChatStore().setHg19();
+    showWarning.value = false;
+    addNewMessage('ai', 'Got it! I will use ' + newVal + ' as the reference genome version.');
+    addNewMessage('ai', 'Now, you can upload your files.');
+  } else {
+    showWarning.value = true;
+    setTimeout(()=>{
+      showWarning.value = false;
+    },1000)
+    addNewMessage('ai', '❌I can not find ' + newVal + ' reference genome version.');
+  }
+
   updateRecommendations(['make it rainbow!', 'make it more beautiful!'])
 });
 
@@ -140,8 +153,11 @@ const sendMessage = async () => {
   addNewMessage('user', inputText.value);
   let query = inputText.value;
   inputText.value = '';
-  
+  // 发送时点亮聊天框边框
+  isGradientBorder.value = true;
   await chatStore.handleMessage(query);
+  // 收到响应后熄灭聊天框边框
+  isGradientBorder.value = false;
 };
 
 // 删除原来的 sendVueFileToBackend、generateCode 函数
@@ -172,7 +188,7 @@ const openDialog = () => {
 const closeDialog = () => {
   visible.value = false
 }
-import { useChatStore } from '@/stores/useChatStore'
+
 const chatStore = useChatStore()
 function addNewMessage(role, content) {
   chatStore.addMessage(role, content)
@@ -185,6 +201,18 @@ messages.value = chatStore.messages
 
 // 将 const loading = chatStore.loading; 替换为：
 const loading = computed(() => chatStore.loading);
+// 动态加载提示时间（随机 60 秒内）
+const loadingSeconds = ref(0);
+const loadingText = computed(() => `Estimated time consumption: ${loadingSeconds.value}s.`);
+// 根据 loading 状态自动同步聊天框边框效果，并生成随机秒数
+watch(loading, (isLoading) => {
+  isGradientBorder.value = !!isLoading;
+  if (isLoading) {
+    // 生成 30–60 之间的随机整数
+    const seconds = Math.floor(Math.random() * 31) + 30;
+    loadingSeconds.value = seconds;
+  }
+});
 //watch messages 每次一发生变化，对话框就滚动到最底部，添加动画效果
 // 使用 watch 来监听 chatStore.messages 的变化
 
@@ -234,30 +262,13 @@ const updateFileRecommends = (recommends) => {
 
 import svgIcon from './Left/svgIcon.vue'
 
-// 添加新的响应式变量来控制边框样式
+// 控制聊天框边框样式（仅由发送/响应和loading驱动）
 const isGradientBorder = ref(false);
-const isFocused = ref(false);
 
-// 处理鼠标进入和离开事件
-const handleMouseEnter = () => {
-  isGradientBorder.value = true;
-};
-
-const handleMouseLeave = () => {
-  if (!isFocused.value) {
-    isGradientBorder.value = false;
-  }
-};
-
-// 处理输入框焦点事件
-const handleInputFocus = () => {
-  isFocused.value = true;
-  isGradientBorder.value = true;
-};
-
-const handleInputBlur = () => {
-  isFocused.value = false;
-  isGradientBorder.value = false;
+// 点击推荐项的 Apply，将描述插入到输入框
+const applyRecommendation = (item) => {
+  const schemeText = `I would like to use this scheme: ${item.chart_description}`;
+  inputText.value = schemeText;
 };
 
 
@@ -265,6 +276,7 @@ const handleInputBlur = () => {
 
 </script>
 <template>
+  <t-message style="position: absolute;" v-if="showWarning" theme="warning">This reference genome track has been lost.</t-message>
   <t-dialog closeBtn closeOnEscKeydown footer theme="danger" header="请检查并保存重要信息后新建项目。" v-model:visible="visible">
     <t-form requiredMark>
       <t-form-item label="演示项目" name="course" initial-data="['1']">
@@ -346,7 +358,7 @@ const handleInputBlur = () => {
           {{ item.chart_description }}
         </div>
 
-        <t-button style="margin-top: 10px;" size="small" variant="outline" shape="round" block>
+        <t-button @click="applyRecommendation(item)" style="margin-top: 10px;" size="small" variant="outline" shape="round" block>
           <template #icon>
             <t-icon name="check-double" />
           </template>
@@ -364,9 +376,8 @@ const handleInputBlur = () => {
         <t-icon name="chat-bubble-smile"></t-icon>
         <span>CHAT WITH<span class="gradientText">Aura</span></span>
       </div>
-      <t-loading :loading="loading" text="Estimated time consumption: 1 minute.">
-      <div id="chat" :class="['radius20', isGradientBorder ? 'gradient-border' : 'border']"
-        @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
+      <t-loading :loading="loading" :text="loadingText">
+      <div id="chat" :class="['radius20', isGradientBorder ? 'gradient-border' : 'border']">
         <div id="messages">
           <div v-for="(msg, index) in messages" :key="index"
             :class="['message', msg.role === 'ai' ? 'ai-message' : 'user-message']">
@@ -375,11 +386,12 @@ const handleInputBlur = () => {
           </div>
         </div>
         <div id="inputPanel">
-          <div class="row">
-            <t-input v-model="inputText" @enter="sendMessage" @focus="handleInputFocus" @blur="handleInputBlur"
+          <div class="row" style="align-items: flex-end;">
+            <t-textarea v-model="inputText" @enter="sendMessage"
+            :autosize="{ minRows: 1, maxRows: 5 }"
               placeholder="How can I help you?">
-            </t-input>
-            <t-button @click="sendMessage">
+            </t-textarea>
+            <t-button @click="sendMessage" >
               send
             </t-button>
           </div>
@@ -583,11 +595,4 @@ const handleInputBlur = () => {
   color: #000;
   // color: white;
 }
-
-// .gradient-border {
-//   border: 2px solid transparent;
-//   background-image: linear-gradient(white, white), 
-//     linear-gradient(90deg, var(--td-brand-color-7), var(--td-brand-color-8));
-//   background-origin: border-box;
-//   background-clip: padding-box, border-box;
-// }</style>
+</style>
