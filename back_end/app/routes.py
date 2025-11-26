@@ -6,6 +6,7 @@ import json
 import os
 from .agents.Judge import use_judge
 from .agents.Generator import use_generator,use_modifier
+from .agents.Gene_Console_Info import use_gene_console_info
 
 bp = Blueprint('main', __name__)
 
@@ -143,6 +144,18 @@ def modify_code():
     res = use_modifier(query, project_id, query_info,base_code)
     # print(f" modify_code返回的内容：{res}")
 
+    return jsonify(res)
+
+
+@bp.route('/get-console-info', methods=['POST'])
+def get_console_info():
+    data = request.get_json()
+    current_code = data.get('current_code')
+    if not current_code:
+        return jsonify({"error": "Missing 'current_code' parameter"}), 400
+    res = use_gene_console_info(current_code)
+    if res is None:
+        return jsonify({"error": "Failed to generate console info"}), 500
     return jsonify(res)
 
 

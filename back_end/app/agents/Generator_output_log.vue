@@ -1,4 +1,4 @@
-// 2025-11-26 14:25:43 | query: Using file3.csv to generate purple connection lines, linking regions where Chromosome and Chromosome.1 columns have different values."
+// 2025-11-26 15:23:31 | query: Using file1.csv to generate a dark-orange bar chart, using rows where Zygosity column is hom. Aggregate data per 10Mb.
 
 <script setup>
 import { ref, onMounted, inject } from 'vue';
@@ -138,6 +138,7 @@ onMounted(async () => {
           end: +d["Position.1"] + 10000000
         }
       }));
+    // 半径要小于折线图（折线图innerRadius为0.65，outerRadius为0.78），所以此处用明显更小的值
     addTrack(
       circos,
       tracks,
@@ -145,11 +146,31 @@ onMounted(async () => {
       chords_data,
       'chords',
       {
-        innerRadius: 0.55,
+        innerRadius: 0.50,
+        outerRadius: 0.60,
         color: 'purple',
         tooltipContent: d =>
           `From: ${d.source.id}:${d.source.start}-${d.source.end}<br>
            To: ${d.target.id}:${d.target.start}-${d.target.end}`
+      }
+    );
+
+    // === 新增 dark-orange bar chart for file1.csv, Zygosity == hom, per 10Mb aggregation ===
+    let file1_data = await readFile('id_001/file1.csv');
+    let file1_hom = file1_data.filter(item => item["Zygosity"] === "hom");
+    let file1_hom_hist = reduceData_Position(file1_hom, hg19, 10000000);
+    addTrack(
+      circos,
+      tracks,
+      'hom_bar',
+      file1_hom_hist,
+      'histogram',
+      {
+        innerRadius: 0.35,
+        outerRadius: 0.48,
+        color: 'darkorange',
+        tooltipContent: d =>
+          `Chr: ${d.block_id}<br>Start: ${d.start}<br>End: ${d.end}<br>Count: ${d.value}`
       }
     );
 

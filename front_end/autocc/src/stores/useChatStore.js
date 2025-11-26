@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getQueryResult, getGenerateCode, getModifyCode } from '@/utils/server'
+import { getQueryResult, getGenerateCode, getModifyCode, getConsoleInfo } from '@/utils/server'
 // 全局变量
 const project_id = "id_001"
 
@@ -108,6 +108,12 @@ export const useChatStore = defineStore('chat', () => {
       allCodes.value.push(res.generated_code);
       currentCode.value = res.generated_code;
       addMessage('ai', "Done. what else?✌️")
+      try {
+        const consoleInfo = await getConsoleInfo(res.generated_code);
+        console.log('Console Info:', consoleInfo);
+      } catch (e) {
+        console.error('Get console info failed:', e);
+      }
     }
   }
   const modifyCode = async(query, query_info)=>{
@@ -120,6 +126,12 @@ export const useChatStore = defineStore('chat', () => {
       allCodes.value.push(res.generated_code);
       currentCode.value = res.generated_code;
       addMessage('ai', "Modify Done. what else? 😎")
+      try {
+        const consoleInfo = await getConsoleInfo(res.generated_code);
+        console.log('Console Info:', consoleInfo);
+      } catch (e) {
+        console.error('Get console info failed:', e);
+      }
     }
   }
 

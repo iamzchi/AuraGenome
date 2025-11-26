@@ -37,3 +37,8 @@ export const getModifyCode = async (query, project_id, query_info, base_code) =>
     return response.data;
 };
 
+export const getConsoleInfo = async (current_code, model = 'openai/gpt-4o-mini') => {
+    const response = await axios.post('/get-console-info', { current_code, model });
+    return response.data;
+};
+
