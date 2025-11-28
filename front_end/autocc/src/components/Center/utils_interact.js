@@ -96,6 +96,12 @@ function add_hover_effect(bus) {
       bus.emit("send_tracks_to_exchange", tracks_to_exchange.value);
     });
   }
+
+  if (bus) {
+    bus.on("send_tracks_to_exchange", (tracks) => {
+      tracks_to_exchange.value = Array.isArray(tracks) ? tracks : [];
+    });
+  }
 }
 
 //交换两个track
@@ -128,7 +134,7 @@ const addTrack = (circos, tracks, id, data, type, config) => {
 };
 
 // 交换两个track
-const reverse = (circos, tracks, id1, id2) => {
+const reverse = (circos, tracks, id1, id2, bus) => {
   if (tracks.value[id1] && tracks.value[id2]) {
     const tempInner = tracks.value[id1].config.innerRadius;
     tracks.value[id1].config.innerRadius = tracks.value[id2].config.innerRadius;
@@ -142,7 +148,7 @@ const reverse = (circos, tracks, id1, id2) => {
     updateTrack(circos, tracks, id2);
 
     circos.render();
-    add_hover_effect();
+    add_hover_effect(bus);
   } else {
     console.log("交换的track不存在");
   }

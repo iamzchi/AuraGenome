@@ -7,6 +7,8 @@ import os
 from .agents.Judge import use_judge
 from .agents.Generator import use_generator,use_modifier
 from .agents.Gene_Console_Info import use_gene_console_info
+from .agents.Deletle_Track import use_delete_track
+from .agents.Snapshot_agent import use_snapshot_agent
 
 bp = Blueprint('main', __name__)
 
@@ -157,6 +159,39 @@ def get_console_info():
     if res is None:
         return jsonify({"error": "Failed to generate console info"}), 500
     return jsonify(res)
+
+@bp.route('/delete-track', methods=['POST'])
+def delete_track():
+    data = request.get_json()
+    current_code = data.get('current_code')
+    trackId = data.get('trackId')
+    if not current_code:
+        return jsonify({"error": "Missing 'current_code' parameter"}), 400
+    if not trackId:
+        return jsonify({"error": "Missing 'trackId' parameter"}), 400
+    res = use_delete_track(current_code, trackId)
+    if res is None:
+        return jsonify({"code": 500, "error": "Failed to delete track"}), 500
+    return jsonify({"code": 200, "generated_code": res})
+
+@bp.route('/get-snapshot', methods=['POST'])
+def get_snapshot():
+    data = request.get_json()
+    current_code = data.get('current_code')
+    former_steps = data.get('former_steps','there is no former steps')
+    model = data.get('model', 'openai/gpt-4o-mini')
+    if not current_code:
+        return jsonify({"error": "Missing 'current_code' parameter"}), 400
+    if not former_steps:
+        return jsonify({"error": "Missing 'former_steps' parameter"}), 400
+    res = use_snapshot_agent(current_code, former_steps, model)
+    if res is None:
+        return jsonify({"error": "Failed to generate snapshot"}), 500
+    try:
+        payload = json.loads(res)
+    except Exception:
+        payload = {"title": "", "description": res}
+    return jsonify(payload)
 
 
 

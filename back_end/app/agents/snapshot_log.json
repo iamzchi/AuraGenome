@@ -1,0 +1,1 @@
+{"title": "Circos Visualization Update", "description": "Enhanced the Circos visualization by adding multiple histogram tracks for insertion validation and heterozygosity, as well as chord and line tracks for chromosome data. Integrated data fetching and processing with error handling, and included hover effects for interactivity."}

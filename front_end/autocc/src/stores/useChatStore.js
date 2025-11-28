@@ -5,6 +5,7 @@ import {
   getGenerateCode,
   getModifyCode,
   getConsoleInfo,
+  getSnapshotInfo,
 } from "@/utils/server";
 // 全局变量
 const project_id = "id_001";
@@ -86,13 +87,16 @@ export const useChatStore = defineStore("chat", () => {
       queryResult = queryResult.query_info;
       queryInfo.value = queryResult;
       console.log("11111", queryInfo.value);
+      if (Array.isArray(queryResult.next)) {
+        updateInputRecommendItems(queryResult.next);
+      }
+      
       if (queryResult.query_type !== "chat" && !selectedReferenceVersion.value) {
         addMessage("ai", "⚠️Please select the reference genome track version first.");
         return;
       }
       if (queryResult.query_type === "chat") {
         addMessage("ai", queryResult.reply);
-        updateInputRecommendItems(queryResult.next);
       }
       if (queryResult.query_type === "a") {
         if (
@@ -297,14 +301,68 @@ export const useChatStore = defineStore("chat", () => {
       img: "/assets/s6.png",
     },
   ]);
-  const addSnapshot = (title, step, note, time, description, img) => {
+  const snapshotsLoading = ref(false);
+  const addSnapshot = async() => {
+    addMessage('ai', '⌛️Saving snapshot, please wait a moment...');
+    snapshotsLoading.value = true;
+    //开始loading
+    const step = snapshots.value.length+1;
+    const former_steps = snapshots.value.map((item) => ({
+      title: item.title,
+      description: item.description,
+    }));
+    console.log('former_steps',former_steps)
+
+    let title = "";
+    let description = "";
+    try {
+      const snapshotInfo = await getSnapshotInfo(currentCode.value, former_steps);
+      if (snapshotInfo && snapshotInfo.title && snapshotInfo.description) {
+        addMessage('ai', `✅${snapshotInfo.title} snapshot generated successfully!`);
+        //结束loading
+        title = snapshotInfo.title;
+        description = snapshotInfo.description;
+      }
+    } catch (e) {
+      console.error('getSnapshotInfo failed:', e);
+    }
+
+    let img = '';
+    try {
+      const svgEl = document.querySelector('#chart svg');
+      if (svgEl) {
+        const rect = svgEl.getBoundingClientRect();
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.ceil(rect.width);
+        canvas.height = Math.ceil(rect.height);
+        const ctx = canvas.getContext('2d');
+        const svgData = new XMLSerializer().serializeToString(svgEl);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+        const imgEl = new Image();
+        img = await new Promise((resolve, reject) => {
+          imgEl.onload = () => {
+            ctx.drawImage(imgEl, 0, 0);
+            URL.revokeObjectURL(url);
+            resolve(canvas.toDataURL('image/png'));
+          };
+          imgEl.onerror = reject;
+          imgEl.src = url;
+        });
+        console.log("图片生成成功",img)
+      }
+    } catch (e) {
+      console.error('snapshot image capture failed:', e);
+    }
+
+    snapshotsLoading.value = false;
     snapshots.value.push({
-      title: title,
-      step: step,
-      note: note,
-      time: time,
-      description: description,
-      img: img,
+      title,
+      step,
+      note: 'add your note',
+      time: new Date().toLocaleDateString(),
+      description,
+      img,
     });
   };
 
@@ -861,7 +919,7 @@ bus.on('go_exchange', (tracks) => {
 </style>
   `;
   //demo1的基础代码,默认会展示出来!
-  const codeTestForSfcLoader = `
+  const codeTestForSfcLoader= `
 <template>
     <h1 style="color: grey;">Please select Reference Genome first.</h1>
   </template>
@@ -893,6 +951,8 @@ let circos;
   </style>
   `;
 
+  
+
   const allCodes = ref([]);
   const currentCode = ref(codeTestForSfcLoader);
   const selectedReferenceVersion = ref("");
@@ -912,6 +972,7 @@ let circos;
     log,
     addLog,
     snapshots,
+    snapshotsLoading,
     addSnapshot,
     lastQuery,
     queryInfo,

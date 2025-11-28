@@ -42,3 +42,18 @@ export const getConsoleInfo = async (current_code, model = 'openai/gpt-4o-mini')
     return response.data;
 };
 
+export const getSnapshotInfo = async (current_code, former_steps, model = 'openai/gpt-4o-mini') => {
+    const response = await axios.post('/get-snapshot', { current_code, former_steps, model });
+    return response.data;
+};
+
+export const deleteTrack = async (current_code, trackId, model = 'openai/gpt-4o-mini') => {
+    try {
+        const response = await axios.post('/delete-track', { current_code, trackId });
+        return response.data;
+    } catch (error) {
+        console.error('Error in deleteTrack API:', error);
+        throw error;
+    }
+};
+

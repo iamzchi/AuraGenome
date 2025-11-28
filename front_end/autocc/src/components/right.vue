@@ -1,16 +1,15 @@
 <script setup>
-import { ref, onMounted, onBeforeMount } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useChatStore } from '../stores/useChatStore';
 
-const steps = ref([]);
+const store = useChatStore();
+const steps = computed(() => [...store.snapshots].reverse());
 const showContextMenu = ref(false);
 const contextMenuPosition = ref({ x: 0, y: 0 });
 const selectedProjectIndex = ref(null);
 
-onBeforeMount(() => {
-    const store = useChatStore();
-    steps.value = [...store.snapshots].reverse();
-})
+
+
 
 onMounted(() => {
     console.log(steps.value);
@@ -53,6 +52,11 @@ const handleMenuItemClick = (action) => {
     
     showContextMenu.value = false;
 };
+
+const clearSteps = ()=>{
+    store.snapshots = [];
+    store.addMessage('ai', "🌟I have cleared all STEP SNAPSHOTS. Let's start creating them again together!");
+}
 </script>
 <template>
     <div class="blockTitle">
@@ -63,11 +67,16 @@ const handleMenuItemClick = (action) => {
         <div class="project" v-for="(i, index) in 3" :key="i" @contextmenu="handleContextMenu($event, index)"></div>
     </div>
     <t-space />
-    <div class="blockTitle">
-        <t-icon name="animation"> </t-icon>
-        <span>STEP SNAPSHOTS</span>
+    <div class="blockTitle" style="display: flex;justify-content: space-between;align-items: baseline;">
+        <div>
+            <t-icon name="animation"> </t-icon>
+            <span>STEP SNAPSHOTS</span>
+        </div>
+        <span style="font-size: 12px;color: #6da9ff;cursor: pointer;" @click="clearSteps">+restart</span>
     </div>
     <div id="steps" class="border">
+        <!-- //loading -->
+        <t-loading style="margin: 50px 0;" v-show="store.snapshotsLoading" text="generating snapshot..." size="medium"></t-loading>
         <div class="step" v-for="(item, index) of steps" :key="index">
             <!-- <div class="line" v-show="index != steps.length - 1"></div> -->
             <div class="title">Step {{ item.step }}: {{ item.title }}

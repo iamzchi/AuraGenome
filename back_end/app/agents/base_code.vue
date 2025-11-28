@@ -391,7 +391,7 @@ const reverse_track = (id1,id2) => {
   console.log('circos:', circos);
   console.log('tracks:', tracks);
   console.log('tracks.value:', tracks.value);
-  reverse(circos,tracks,id1,id2)
+  reverse(circos,tracks,id1,id2,bus)
 }
 bus.on('go_exchange', (tracks) => {
   console.log("go_exchange", tracks);

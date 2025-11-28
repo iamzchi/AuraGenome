@@ -6,7 +6,7 @@
         "recommends": [
             {
                 "chart_type": "Histogram",
-                "chart_description": "To display heterozygous (light orange) and homozygous (dark orange) mutations with 10Mb aggregation."
+                "chart_description": "Using file1.csv to generate a light-orange bar chart, using rows where Zygosity column is het. Aggregate data per 10Mb."
             },
             {
                 "chart_type": "Heatmap",
@@ -21,7 +21,7 @@
         "recommends": [
             {
                 "chart_type": "Highlight",
-                "chart_description": "A track that highlights insertion and deletion positions along the genome, where the 'Start' and 'End' columns indicate the location of the variants, and 'Effect' can be used to differentiate the variant types."
+                "chart_description": "Using file2.csv to generate a dark-green bar chart, using rows where Type column is Insertion and Validation_status column is not empty."
             },
             {
                 "chart_type": "Stack",
@@ -36,7 +36,7 @@
         "recommends": [
             {
                 "chart_type": "Chords",
-                "chart_description": "A chord diagram that illustrates the relationships between rearranged genomic regions, using 'Chromosome' and 'Chromosome.1' to show the connection, and 'Rearrangement type' to categorize the types of rearrangements."
+                "chart_description": "Using file3.csv to generate purple connection lines, linking regions where Chromosome and Chromosome.1 columns have different values."
             },
             {
                 "chart_type": "Heatmap",

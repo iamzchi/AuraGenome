@@ -18,31 +18,28 @@ client = OpenAI(
     base_url=base_url,  # 从环境变量中加载自定义 API 地址
 )
 
-LOG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'Deletle_Track_log.vue'))
+LOG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'snapshot_log.json'))
 
-prompt = """
-接下来我会给你一段代码，这个代码会绘制一些环形轨道
-请你删掉对应的轨道，返回新的代码
 
-## 注意事项
-- 不要修改已有代码上的其他轨道！只删除这个轨道相关的代码即可，一般情况下是关于addTrack这个方法。
-- 给我完整的代码，不要任何解释说明的文字。
-- 不要使用任何代码块标记（例如```），只输出完整的 .vue 文件代码文本。
-"""
 
 # 调用 API 的方法
-def use_delete_track(current_code,trackId,model="openai/gpt-4o-mini"):
+def use_snapshot_agent(current_code, formerSteps, model="openai/gpt-4o-mini"):
+    prompt = """你是一个快照变更总结 Agent。根据用户提供的上下文，只用 JSON 对象回答，格式为：{"title": "...", "description": "..."}。不要包含额外解释或代码块。"""
     try:
         #打印调试信息
-        print("开始生成删除轨道的数据：use_delete_track")
+        print("开始生成快照描述：use_snapshot_agent")
         # 调用 Chat Completion 接口
         chat_completion = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": prompt},
-                {"role": "user", "content": f"and the code is: '{current_code}',I want you to delete the track that is {trackId}"},
+                {"role": "user", "content": f"""之前做的事情：
+{formerSteps}
+现在的代码：
+{current_code}
+请仅返回包含 title 和 description 的 JSON 对象"""},
             ],
             model=model,
-            temperature=0.7,
+            temperature=0,
         )
         reply = chat_completion.choices[0].message.content
         reply = reply.replace("```", "")
@@ -61,9 +58,7 @@ def use_delete_track(current_code,trackId,model="openai/gpt-4o-mini"):
 
 # 测试代码
 if __name__ == "__main__":
-    
-    # 设置测试参数
-    current_code = '''
-    '''
-    result = use_delete_track(current_code, 'hom_histogram')
+    current_code = ""
+    former_steps = ""
+    result = use_snapshot_agent(current_code, former_steps)
     print(f"结果: {result}")

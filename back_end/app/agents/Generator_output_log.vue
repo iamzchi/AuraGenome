@@ -1,5 +1,4 @@
-// 2025-11-26 20:44:40 | query: Using file5.csv to generate a blue line chart, plotting Copy number column values against their genomic position.
-
+// 2025-11-28 16:34:04 | query: Using file5.csv to generate a blue line chart, plotting Copy number column values against their genomic position."
 <script setup>
 import { ref, onMounted, inject } from 'vue';
 import * as d3 from 'd3';
@@ -54,7 +53,6 @@ onMounted(async () => {
           spacing: 5000000,
           labelSize: 5,
           labelColor: 'grey',
-
         },
       }
     );
@@ -81,50 +79,89 @@ onMounted(async () => {
     // 以上都是一些基本配置
     // 下面才是真正需要llm生成的图表
 
-    // 步骤1：读取数据
-    let level2 = await readFile('id_001/file2.csv');
-    // 步骤2：条件过滤
-    let deletion_data = level2.filter((item) => item["Type"] == "Deletion" && item["Validation_status"] != "");
-    // 步骤3：数据聚合（直方图，默认10Mb）
-    let deletion_hist = reduceData(deletion_data, hg19, 10000000);
-    // 步骤4：可视化轨道
-    addTrack(circos, tracks, 'deletion_histogram', deletion_hist, 'histogram', {
-      innerRadius: 0.65,
-      outerRadius: 0.8,
-      color: 'red',
-      strokeWidth: 0,
-      opacity: 0.85,
-    });
+    // ====== 新增直方图轨道（深绿色 bar chart, filter）======
+    let file2 = await readFile('id_001/file2.csv');
+    let filtered_file2 = file2.filter((item) => item["Type"] === "Insertion" && item["Validation_status"] != "");
+    let reduced_file2 = reduceData(filtered_file2, hg19, 10000000);
+    addTrack(
+      circos,
+      tracks,
+      'insertion_valid_bar',
+      reduced_file2,
+      'histogram',
+      {
+        innerRadius: 0.80,
+        outerRadius: 0.95,
+        color: '#006400', // dark green
+        opacity: 0.9,
+        strokeColor: '#222'
+      }
+    );
 
-    // ==== 新增轨道 ====
-    // 步骤1：读取数据
+    // ====== 新增直方图轨道（浅橙色 het Zygosity，file1）======
     let file1 = await readFile('id_001/file1.csv');
-    // 步骤2：条件过滤
-    let file1_hom = file1.filter(item => item["Zygosity"] == "hom");
-    // 步骤3：数据聚合（每10Mb一个bin）
-    let hom_hist = reduceData_Position(file1_hom, hg19, 10000000);
-    // 步骤4：添加直方图轨道
-    addTrack(circos, tracks, 'hom_histogram', hom_hist, 'histogram', {
-      innerRadius: 0.5,
-      outerRadius: 0.64,
-      color: '#FF8C00', // dark-orange
-      strokeWidth: 0,
-      opacity: 0.85,
-    });
+    let file1_het = file1.filter((item) => item["Zygosity"] === "het");
+    let reduced_file1_het = reduceData_Position(file1_het, hg19, 10000000);
+    addTrack(
+      circos,
+      tracks,
+      'het_zygosity_bar',
+      reduced_file1_het,
+      'histogram',
+      {
+        innerRadius: 0.68,
+        outerRadius: 0.78,
+        color: '#FFD580', // light orange
+        opacity: 0.85,
+        strokeColor: '#FFAE42'
+      }
+    );
 
-    // ==== 新增轨道：蓝色line图，Copy number ====
-    // 步骤1：读取数据
-    let file5 = await readFile('id_001/file5.csv');
-    // 步骤2：数据格式转换
-    let file5_line_data = transform_startend_position(file5, "Copy number");
-    // 步骤3：添加line轨道
-    addTrack(circos, tracks, 'copy_number_line', file5_line_data, 'line', {
-      innerRadius: 0.35,
-      outerRadius: 0.48,
-      color: 'blue',
-      strokeWidth: 2,
-      opacity: 1,
-    });
+    // ====== 新增紫色连线轨道（file3: Chromosome != Chromosome.1）======
+    let file3 = await readFile('id_001/file3.csv');
+    let filtered_file3 = file3.filter(item => item["Chromosome"] !== item["Chromosome.1"]);
+    let chordsData = filtered_file3.map(d => ({
+      source: {
+        id: d.Chromosome,
+        start: +d.Position,
+        end: +d.Position + 10000000
+      },
+      target: {
+        id: d["Chromosome.1"],
+        start: +d["Position.1"],
+        end: +d["Position.1"] + 10000000
+      }
+    }));
+    addTrack(
+      circos,
+      tracks,
+      'purple_links',
+      chordsData,
+      'chords',
+      {
+        color: '#A259E6',
+        opacity: 0.7,
+        radius: 0.60
+      }
+    );
+
+    // ====== 新增蓝色折线图轨道（file5: Copy number）======
+    let level5 = await readFile('id_001/file5.csv');
+    level5 = transform_startend_position(level5, "Copy number");
+    addTrack(
+      circos,
+      tracks,
+      'level5',
+      level5,
+      'line',
+      {
+        innerRadius: 0.50,
+        outerRadius: 0.68,
+        color: "#5979ae",
+        axes: [{ spacing: 2, color: "gray", thickness: .3, opacity: .5 }],
+        backgrounds: [{ color: "#d6d6d6" }]
+      }
+    );
 
     circos.render();
     add_hover_effect(bus);
@@ -140,7 +177,6 @@ const reverse_track = (id1,id2) => {
 }
 bus.on('go_exchange', (tracks) => {
   console.log("go_exchange", tracks);
-  
   reverse_track(tracks[0],tracks[1]);
 })
 </script>
@@ -157,6 +193,5 @@ bus.on('go_exchange', (tracks) => {
   width: 100%;
   height: 100%;
   /* background-color: rgb(239, 239, 239); */
-
 }
 </style>

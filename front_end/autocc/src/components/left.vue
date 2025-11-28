@@ -77,9 +77,9 @@ watch(refVersion, (newVal) => {
     addNewMessage('ai', 'Now, you can upload your files.');
   } else {
     showWarning.value = true;
-    setTimeout(()=>{
+    setTimeout(() => {
       showWarning.value = false;
-    },1000)
+    }, 1000)
     addNewMessage('ai', '❌I can not find ' + newVal + ' reference genome version.');
   }
 
@@ -265,6 +265,8 @@ import svgIcon from './Left/svgIcon.vue'
 
 // 控制聊天框边框样式（仅由发送/响应和loading驱动）
 const isGradientBorder = ref(false);
+const codePanelVisible = ref(false);
+const toggleCodePanel = () => { codePanelVisible.value = !codePanelVisible.value };
 
 // 点击推荐项的 Apply，将描述插入到输入框
 const applyRecommendation = (item) => {
@@ -277,7 +279,8 @@ const applyRecommendation = (item) => {
 
 </script>
 <template>
-  <t-message style="position: absolute;" v-if="showWarning" theme="warning">This reference genome track has been lost.</t-message>
+  <t-message style="position: absolute;" v-if="showWarning" theme="warning">This reference genome track has been
+    lost.</t-message>
   <t-dialog closeBtn closeOnEscKeydown footer theme="danger" header="请检查并保存重要信息后新建项目。" v-model:visible="visible">
     <t-form requiredMark>
       <t-form-item label="演示项目" name="course" initial-data="['1']">
@@ -296,7 +299,7 @@ const applyRecommendation = (item) => {
     <t-divider />
     <h4>或者你可以从之前的项目中恢复进度：</h4>
     <div style="display: flex;"> <t-input placeholder="请输入你的项目ID" /><t-button>确认</t-button></div>
-   
+
   </t-dialog>
   <div style="display: flex; justify-content: space-between; align-items: center;">
     <img src="/aura_logo.png" height="48" alt="logo" class="logo">
@@ -327,17 +330,17 @@ const applyRecommendation = (item) => {
         RESTART</t-button>
     </div>
   </div>
-<div id="dataStore" class="border radius20">
-  <t-menu width="15%" :value="currentFile" @change="handleMenuChange">
-    <t-menu-item v-for="i in 6" :key="i" :value="i">
-      <template #icon>
-        <t-icon name="file" />
-      </template>
-      file{{ i }}
-    </t-menu-item>
-  </t-menu>
-  <fileDetail style="width: 85%;" :current-file-number="currentFile" @update-recommends="updateFileRecommends" />
-</div>
+  <div id="dataStore" class="border radius20">
+    <t-menu width="15%" :value="currentFile" @change="handleMenuChange">
+      <t-menu-item v-for="i in 6" :key="i" :value="i">
+        <template #icon>
+          <t-icon name="file" />
+        </template>
+        file{{ i }}
+      </t-menu-item>
+    </t-menu>
+    <fileDetail style="width: 85%;" :current-file-number="currentFile" @update-recommends="updateFileRecommends" />
+  </div>
   <!-- <t-divider /> -->
   <t-space></t-space>
   <div id="chatContainer">
@@ -359,7 +362,8 @@ const applyRecommendation = (item) => {
           {{ item.chart_description }}
         </div>
 
-        <t-button @click="applyRecommendation(item)" style="margin-top: 10px;" size="small" variant="outline" shape="round" block>
+        <t-button @click="applyRecommendation(item)" style="margin-top: 10px;" size="small" variant="outline"
+          shape="round" block>
           <template #icon>
             <t-icon name="check-double" />
           </template>
@@ -373,37 +377,47 @@ const applyRecommendation = (item) => {
     </div>
 
     <div id="chatPanel">
-      <div class="blockTitle">
-        <t-icon name="chat-bubble-smile"></t-icon>
-        <span>CHAT WITH<span class="gradientText">Aura</span></span>
+      <div class="blockTitle" style="display: flex; justify-content: space-between; align-items: baseline;">
+        <div>
+          <t-icon name="chat-bubble-smile"></t-icon>
+          <span>CHAT WITH<span class="gradientText">Aura</span></span>
+        </div>
+        <span style="font-size: .8rem; color: var(--td-brand-color-6);cursor: pointer;" @click="toggleCodePanel"><t-icon name="code" />
+          code</span>
       </div>
       <t-loading :loading="loading" :text="loadingText">
-      <div id="chat" :class="['radius20', isGradientBorder ? 'gradient-border' : 'border']">
-        <div id="messages">
-          <div v-for="(msg, index) in messages" :key="index"
-            :class="['message', msg.role === 'ai' ? 'ai-message' : 'user-message']">
-            <img src="/aura.png" v-if="msg.role === 'ai'" height="35px">
-            <div class="bubble">{{ msg.content }}</div>
+        <div id="chat" :class="['radius20', isGradientBorder ? 'gradient-border' : 'border']">
+          <div id="messages">
+            <div v-for="(msg, index) in messages" :key="index"
+              :class="['message', msg.role === 'ai' ? 'ai-message' : 'user-message']">
+              <img src="/aura.png" v-if="msg.role === 'ai'" height="35px">
+              <div class="bubble">{{ msg.content }}</div>
+            </div>
           </div>
-        </div>
-        <div id="inputPanel">
-          <div class="row" style="align-items: flex-end;">
-            <t-textarea v-model="inputText" @enter="sendMessage"
-            :autosize="{ minRows: 1, maxRows: 5 }"
-              placeholder="How can I help you?">
-            </t-textarea>
-            <t-button @click="sendMessage" >
-              send
-            </t-button>
-          </div>
-          <div id="inputRecommend">
-            <div class="inputRecommendItems" v-for="(item,index) in chatStore.inputRecommendItems" :key="index">
-              {{ item }} <t-icon name="enter" />
+          <div id="inputPanel">
+            <div class="row" style="align-items: flex-end;">
+              <t-textarea v-model="inputText" @enter="sendMessage" :autosize="{ minRows: 1, maxRows: 5 }"
+                placeholder="How can I help you?">
+              </t-textarea>
+              <t-button @click="sendMessage">
+                send
+              </t-button>
+            </div>
+            <div id="inputRecommend">
+              <div class="inputRecommendItems" v-for="(item, index) in chatStore.inputRecommendItems" :key="index">
+                {{ item }} <t-icon name="enter" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </t-loading>
+    </div>
+    <div id="codePanel" :style="{ display: codePanelVisible?'block':'none' }">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        AuraCode
+        <t-icon style="cursor: pointer;" name="close-circle" @click="toggleCodePanel" />
+      </div>
+
     </div>
   </div>
 
@@ -445,6 +459,7 @@ const applyRecommendation = (item) => {
   width: 100%;
   // background-color: pink;
   display: flex;
+  position: relative;
   justify-content: space-between;
   // align-items: center;
   gap: 20px;
@@ -595,5 +610,21 @@ const applyRecommendation = (item) => {
   background-color: #89c2ff29;
   color: #000;
   // color: white;
+}
+
+
+#codePanel {
+  position: absolute;
+  right: -410px;
+  height: 450px;
+  width: 400px;
+  background-color: #1c1c1c;
+  color: #fff;
+  z-index: 100000;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  transition: right 0.3s ease;
+
 }
 </style>

@@ -1,41 +1,55 @@
 [
   {
-    "id": "deletion_histogram",
+    "id": "insertion_valid_bar",
     "file": "id_001/file2.csv",
-    "title": "Deletion Histogram",
-    "explanation": "To visualize the frequency of deletion events in the dataset.",
+    "title": "Insertion Valid Bar",
+    "explanation": "To display valid insertions as a histogram.",
     "type": "histogram",
-    "innerRadius": 0.65,
-    "outerRadius": 0.8,
-    "color": "red",
+    "innerRadius": 0.8,
+    "outerRadius": 0.95,
+    "color": "#006400",
     "radiusConfig": {
       "inner": null,
       "outer": null
     }
   },
   {
-    "id": "hom_histogram",
+    "id": "het_zygosity_bar",
     "file": "id_001/file1.csv",
-    "title": "Homozygous Histogram",
-    "explanation": "To display the distribution of homozygous mutations across the genome.",
+    "title": "Heterozygous Zygosity Bar",
+    "explanation": "To display heterozygous zygosity as a histogram.",
     "type": "histogram",
-    "innerRadius": 0.5,
-    "outerRadius": 0.64,
-    "color": "#FF8C00",
+    "innerRadius": 0.68,
+    "outerRadius": 0.78,
+    "color": "#6da9ff",
     "radiusConfig": {
       "inner": null,
       "outer": null
     }
   },
   {
-    "id": "copy_number_line",
+    "id": "purple_links",
+    "file": "id_001/file3.csv",
+    "title": "Purple Links",
+    "explanation": "To display connections between different chromosomes.",
+    "type": "chords",
+    "innerRadius": null,
+    "outerRadius": null,
+    "color": "#A259E6",
+    "radiusConfig": {
+      "inner": null,
+      "outer": null
+    }
+  },
+  {
+    "id": "level5",
     "file": "id_001/file5.csv",
-    "title": "Copy Number Variation Line",
-    "explanation": "To represent the copy number variations along the genome as a line plot.",
+    "title": "Copy Number Line",
+    "explanation": "To display copy number variations as a line graph.",
     "type": "line",
-    "innerRadius": 0.36,
-    "outerRadius": 0.49,
-    "color": "blue",
+    "innerRadius": 0.5,
+    "outerRadius": 0.68,
+    "color": "#DF2323",
     "radiusConfig": {
       "inner": null,
       "outer": null

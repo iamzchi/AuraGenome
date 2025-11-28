@@ -1,5 +1,8 @@
 <script setup>
 import { ref,inject,onMounted,onUnmounted } from 'vue'
+import { useChatStore } from '@/stores/useChatStore';
+const { addSnapshot } = useChatStore();
+
 const bus = inject('bus');
 const track = ref({
     trackName: 'Track 3',
@@ -17,6 +20,7 @@ const outerRadius = ref(10);
 const gap = ref(2);
 
 import enConfig from 'tdesign-vue-next/es/locale/en_US';
+import { deleteTrack, getConsoleInfo } from '@/utils/server';
 
 //透明度
 const marks1 = {
@@ -96,6 +100,10 @@ const go_exchenge = () => {
     
     bus.emit('go_exchange', tracks_to_exchange.value);//发送交换请求
 }
+const clear_exchenge = () => {
+    tracks_to_exchange.value = [];
+    bus.emit('send_tracks_to_exchange', tracks_to_exchange.value);
+}
 onMounted(() => {
     bus.on('send_tracks_to_exchange', (tracks) => {//监听哪两个tracks进行了交换
         tracks_to_exchange.value = tracks;
@@ -115,16 +123,48 @@ watch(value1, (v) => {
 });
 
 //更新console面板当前点击的track信息
-import { useChatStore } from '../../stores/useChatStore';
 import { computed, watch } from 'vue';
 const store = useChatStore();
 const trackInfo = computed(() => store.nowTrackInfo);
 console.log("console面板当前点击的track信息", trackInfo);
+
+const handleDeleteTrack = async () => {
+  try {
+    const code = store.currentCode;
+    const trackId = trackInfo.value && trackInfo.value.id ? trackInfo.value.id : '';
+    console.log("删除的trackId", trackId);
+    store.addMessage('user', `Delete track ${trackId}`);
+    setTimeout(() => {
+        store.addMessage('ai', 'Deleting and tweaking the track now – this could take a bit longer than you thought.');
+    }, 800);
+    const res = await deleteTrack(code, trackId);
+    if (res && res.code === 200 && res.generated_code) {
+      store.allCodes.push(res.generated_code);
+      store.currentCode = res.generated_code;
+      try {
+        const consoleInfo = await getConsoleInfo(res.generated_code);
+        if (Array.isArray(consoleInfo)) {
+          store.trackInfo = consoleInfo;
+        } else if (consoleInfo && Array.isArray(consoleInfo.data)) {
+          store.trackInfo = consoleInfo.data;
+        }
+      } catch (e) {
+        console.error('Get console info failed:', e);
+      }
+    } else {
+      console.error('Delete track failed:', res);
+      store.addMessage('ai', '🗑Delete failed. Not your fault, please retry.');
+    }
+  } catch (e) {
+    console.error('Delete track error:', e);
+    store.addMessage('ai', '🗑Delete failed. Not your fault, please retry.');
+  }
+};
 </script>
 <template>
     <t-config-provider :global-config="enConfig">
         <div class="action_container border">
-            <!-- <div id="exchange_track_panel">
+            <div id="exchange_track_panel" v-if="exchanging">
                 <div>track1:{{ tracks_to_exchange[0] }}</div>
                 <div>track2:{{ tracks_to_exchange[1] }}</div>
                 <br />
@@ -132,7 +172,8 @@ console.log("console面板当前点击的track信息", trackInfo);
                 <br />
 
                 <t-button @click="go_exchenge" class="btns" shape="" theme="primary" variant="outline">Exchange</t-button>
-            </div> -->
+                <t-button @click="clear_exchenge" class="btns" shape="" theme="default" variant="outline">清空</t-button>
+            </div>
             <t-tooltip content="Grab" trigger="hover">
                 <t-button class="btns" shape="circle" theme="primary" variant="outline">
                     <t-icon name="wave-left" />
@@ -153,11 +194,11 @@ console.log("console面板当前点击的track信息", trackInfo);
             <t-tooltip content="Exchange Tracks" trigger="hover">
                 <t-button v-show="!exchanging" @click="exchenge_tracks" class="btns" shape="circle" theme="primary"
                     variant="outline">
-                    <t-icon name="swap " />
+                    <t-icon name="swap" />
                 </t-button>
                 <t-button v-show="exchanging" @click="close_exchenge_tracks" style="margin-bottom: 10px;" class="btns"
                     shape="circle" theme="primary">
-                    <t-icon name="swap " />
+                    <t-icon name="swap" />
                 </t-button>
             </t-tooltip>
             <t-tooltip content="Add Tips" trigger="hover">
@@ -248,7 +289,7 @@ console.log("console面板当前点击的track信息", trackInfo);
             <t-divider />
             <div class="trackDetail">
                 <div class="detailTitle">Save to SNAPSHOTS</div>
-                <t-button style="margin-top: 5px;">
+                <t-button style="margin-top: 5px;" @click="addSnapshot">
                     <template #icon>
                         <t-icon name="task-checked" />
                     </template>
@@ -262,7 +303,7 @@ console.log("console面板当前点击的track信息", trackInfo);
                         <t-icon name="lightbulb-circle" />
                     </template>
                     Regenerate this track</t-button>
-                <t-button theme="primary" variant="text" size="small">
+                <t-button theme="primary" variant="text" size="small" @click="handleDeleteTrack">
                     <template #icon>
                         <t-icon name="delete" />
                     </template>
@@ -337,12 +378,16 @@ console.log("console面板当前点击的track信息", trackInfo);
     border-radius: 20px;
     padding: 1.3rem;
     // border: 1px solid #d6d6d6;
-    // width: 100%;
+    width: 380px;
     height: 100%;
 
     #trackName {
         font-size: 1.3rem;
         font-weight: bold;
+        word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        white-space: normal;
     }
 
     .trackDetail {
@@ -359,6 +404,10 @@ console.log("console面板当前点击的track信息", trackInfo);
         .detailContent {
             font-size: 0.8rem;
             color: var(--td-brand-color-6);
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            white-space: normal;
 
             .colorPicker {
                 margin-top: 1rem !important;
@@ -382,6 +431,10 @@ console.log("console面板当前点击的track信息", trackInfo);
         .detailContent {
             font-size: 0.8rem;
             color: var(--td-brand-color-6);
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            white-space: normal;
 
             .colorPicker {
                 margin-top: 1rem !important;
