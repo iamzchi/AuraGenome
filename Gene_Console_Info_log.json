@@ -1,55 +1,13 @@
 [
   {
-    "id": "insertion_valid_bar",
-    "file": "id_001/file2.csv",
-    "title": "Insertion Valid Bar",
-    "explanation": "To display valid insertions as a histogram.",
-    "type": "histogram",
-    "innerRadius": 0.8,
-    "outerRadius": 0.95,
-    "color": "#006400",
-    "radiusConfig": {
-      "inner": null,
-      "outer": null
-    }
-  },
-  {
-    "id": "het_zygosity_bar",
-    "file": "id_001/file1.csv",
-    "title": "Heterozygous Zygosity Bar",
-    "explanation": "To display heterozygous zygosity as a histogram.",
-    "type": "histogram",
-    "innerRadius": 0.68,
-    "outerRadius": 0.78,
-    "color": "#6da9ff",
-    "radiusConfig": {
-      "inner": null,
-      "outer": null
-    }
-  },
-  {
-    "id": "purple_links",
+    "id": "interchr_sv_purple",
     "file": "id_001/file3.csv",
-    "title": "Purple Links",
-    "explanation": "To display connections between different chromosomes.",
+    "title": "Inter-chromosomal Structural Variants",
+    "explanation": "Displays purple chords representing inter-chromosomal structural variants with a 10Mb span.",
     "type": "chords",
     "innerRadius": null,
     "outerRadius": null,
-    "color": "#A259E6",
-    "radiusConfig": {
-      "inner": null,
-      "outer": null
-    }
-  },
-  {
-    "id": "level5",
-    "file": "id_001/file5.csv",
-    "title": "Copy Number Line",
-    "explanation": "To display copy number variations as a line graph.",
-    "type": "line",
-    "innerRadius": 0.5,
-    "outerRadius": 0.68,
-    "color": "#DF2323",
+    "color": "purple",
     "radiusConfig": {
       "inner": null,
       "outer": null

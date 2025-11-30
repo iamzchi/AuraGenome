@@ -12,6 +12,28 @@ gener_api_key = os.getenv("GENER_apikey")
 mod_api_key = os.getenv("MOD_apikey")# 代码修改
 base_url = os.getenv("dify_URL")
 
+def process_streaming_response(response):
+    output = ""
+    for chunk in response.iter_lines():
+        if chunk:
+            chunk_data = chunk.decode('utf-8')
+            if chunk_data.startswith("data:"):
+                json_data = chunk_data[len("data:"):].strip()
+                try:
+                    parsed_data = json.loads(json_data)
+                    if 'answer' in parsed_data:
+                        answer = parsed_data['answer']
+                        output += answer
+                        print(f"Current Output: {output}")
+                    else:
+                        print("No 'answer' found in the response.")
+                        print(f"Response data: {json_data}")
+                except json.JSONDecodeError as json_err:
+                    print(f"Error decoding JSON: {json_err}")
+                    print(f"Raw data: {json_data}")
+    cleaned_output = output.replace('```javascript', '').replace('```vue', '').replace('```', '')
+    return cleaned_output, output
+
 #  生成代码🤖
 def use_generator(query, project_id, query_info, base_code):
     # 打印当前用户输入的查询内容，方便调试与追踪
@@ -72,28 +94,7 @@ def use_generator(query, project_id, query_info, base_code):
                 result["error_details"] = str(response.content)
             return result
 
-        # 处理流式响应
-        output = ""
-        for chunk in response.iter_lines():
-            if chunk:
-                chunk_data = chunk.decode('utf-8')
-                if chunk_data.startswith("data:"):
-                    json_data = chunk_data[len("data:"):].strip()
-                    try:
-                        parsed_data = json.loads(json_data)
-                        if 'answer' in parsed_data:
-                            answer = parsed_data['answer']
-                            output += answer
-                            print(f"Current Output: {output}")
-                        else:
-                            print("No 'answer' found in the response.")
-                            print(f"Response data: {json_data}")
-                    except json.JSONDecodeError as json_err:
-                        print(f"Error decoding JSON: {json_err}")
-                        print(f"Raw data: {json_data}")
-
-        # 清理输出并返回
-        cleaned_output = output.replace('```javascript', '').replace('```vue', '').replace('```', '')
+        cleaned_output, _output = process_streaming_response(response)
         result["generated_code"] = cleaned_output
         try:
             ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -102,7 +103,6 @@ def use_generator(query, project_id, query_info, base_code):
                 f.write(cleaned_output)
         except Exception as write_err:
             print(f"写入日志文件失败: {write_err}")
-        
         return result
     
     except requests.exceptions.RequestException as req_err:
@@ -173,30 +173,8 @@ def use_modifier(query, project_id, query_info, base_code):
                 result["error_details"] = str(response.content)
             return result
 
-        # 处理流式响应
-        output = ""
-        for chunk in response.iter_lines():
-            if chunk:
-                chunk_data = chunk.decode('utf-8')
-                if chunk_data.startswith("data:"):
-                    json_data = chunk_data[len("data:"):].strip()
-                    try:
-                        parsed_data = json.loads(json_data)
-                        if 'answer' in parsed_data:
-                            answer = parsed_data['answer']
-                            output += answer
-                            print(f"Current Output: {output}")
-                        else:
-                            print("No 'answer' found in the response.")
-                            print(f"Response data: {json_data}")
-                    except json.JSONDecodeError as json_err:
-                        print(f"Error decoding JSON: {json_err}")
-                        print(f"Raw data: {json_data}")
-
-        # 清理输出并返回
-        cleaned_output = output.replace('```javascript', '').replace('```vue', '').replace('```', '')
+        cleaned_output, _output = process_streaming_response(response)
         result["generated_code"] = cleaned_output
-        
         return result
     
     except requests.exceptions.RequestException as req_err:
