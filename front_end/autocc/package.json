@@ -17,6 +17,7 @@
     "pinia": "^2.3.0",
     "tdesign-vue-next": "^1.10.6",
     "vue": "^3.5.13",
+    "prismjs": "^1.29.0",
     "vue3-sfc-loader": "^0.9.5"
   },
   "devDependencies": {

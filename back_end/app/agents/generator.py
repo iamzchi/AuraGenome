@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import requests
 from dotenv import load_dotenv
 from datetime import datetime
@@ -33,6 +34,12 @@ def process_streaming_response(response):
                     print(f"Raw data: {json_data}")
     cleaned_output = output.replace('```javascript', '').replace('```vue', '').replace('```', '')
     return cleaned_output, output
+
+def _sse_line(payload: dict) -> str:
+    return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+def _clean_code(code: str) -> str:
+    return code.replace('```javascript', '').replace('```vue', '').replace('```', '')
 
 #  生成代码🤖
 def use_generator(query, project_id, query_info, base_code):
@@ -192,6 +199,151 @@ def use_modifier(query, project_id, query_info, base_code):
             "error_details": str(e)
         }
 
+# SSE 流式生成代码
+def stream_generator(query, project_id, query_info, base_code, interval_ms: int = 150, max_retries: int = 2):
+    print(f"[SSE] GENERATOR query: {query}")
+    file_name = query_info.get("file_name")
+    data = {
+        "inputs": {
+            "file_name": file_name if file_name else "no_filename",
+            "project_id": project_id,
+            "base_code": base_code,
+            "chart_type": query_info.get("chart_type"),
+            "column_name": query_info.get("column_name"),
+        },
+        "query": query,
+        "response_mode": "streaming",
+        "conversation_id": "",
+        "user": "abc-123",
+    }
+    headers = {
+        "Authorization": f"Bearer {gener_api_key}",
+        "Content-Type": "application/json",
+    }
+    attempt = 0
+    accumulated = ""
+    while attempt <= max_retries:
+        try:
+            response = requests.post(base_url, headers=headers, json=data, stream=True, timeout=60)
+            if response.status_code != 200:
+                try:
+                    err = response.content.decode("utf-8")
+                except Exception:
+                    err = str(response.content)
+                yield _sse_line({"event": "error", "message": err, "done": False})
+                attempt += 1
+                time.sleep(0.5)
+                continue
+
+            last_flush = time.time()
+            for chunk in response.iter_lines():
+                if not chunk:
+                    continue
+                chunk_data = chunk.decode("utf-8")
+                if not chunk_data.startswith("data:"):
+                    continue
+                json_data = chunk_data[len("data:"):].strip()
+                try:
+                    parsed = json.loads(json_data)
+                except Exception:
+                    # 非 JSON 数据，跳过但发送心跳
+                    yield ": heartbeat\n\n"
+                    continue
+                if "answer" in parsed:
+                    accumulated += parsed["answer"]
+                    now = time.time()
+                    if (now - last_flush) * 1000 >= interval_ms:
+                        yield _sse_line({"event": "chunk", "code": accumulated, "done": False})
+                        last_flush = now
+                else:
+                    # 保持连接
+                    yield ": keep-alive\n\n"
+
+            cleaned = _clean_code(accumulated)
+            yield _sse_line({"event": "final", "code": cleaned, "done": True})
+            return
+        except requests.exceptions.RequestException as req_err:
+            yield _sse_line({"event": "error", "message": str(req_err), "done": False})
+            attempt += 1
+            time.sleep(0.5)
+        except Exception as e:
+            yield _sse_line({"event": "error", "message": str(e), "done": False})
+            attempt += 1
+            time.sleep(0.5)
+
+    # 最终失败
+    yield _sse_line({"event": "error", "message": "stream_failed", "done": True})
+
+
+def stream_modifier(query, project_id, query_info, base_code, interval_ms: int = 150, max_retries: int = 2):
+    print(f"[SSE] MODIFIER query: {query}")
+    file_name = query_info.get("file_name")
+    data = {
+        "inputs": {
+            "file_name": file_name if file_name else "no_filename",
+            "project_id": project_id,
+            "query": query,
+            "base_code": base_code,
+        },
+        "query": query + ",and the base code is:" + base_code,
+        "response_mode": "streaming",
+        "conversation_id": "",
+        "user": "abc-123",
+    }
+    headers = {
+        "Authorization": f"Bearer {mod_api_key}",
+        "Content-Type": "application/json",
+    }
+    attempt = 0
+    accumulated = ""
+    while attempt <= max_retries:
+        try:
+            response = requests.post(base_url, headers=headers, json=data, stream=True, timeout=60)
+            if response.status_code != 200:
+                try:
+                    err = response.content.decode("utf-8")
+                except Exception:
+                    err = str(response.content)
+                yield _sse_line({"event": "error", "message": err, "done": False})
+                attempt += 1
+                time.sleep(0.5)
+                continue
+
+            last_flush = time.time()
+            for chunk in response.iter_lines():
+                if not chunk:
+                    continue
+                chunk_data = chunk.decode("utf-8")
+                if not chunk_data.startswith("data:"):
+                    continue
+                json_data = chunk_data[len("data:"):].strip()
+                try:
+                    parsed = json.loads(json_data)
+                except Exception:
+                    yield ": heartbeat\n\n"
+                    continue
+                if "answer" in parsed:
+                    accumulated += parsed["answer"]
+                    now = time.time()
+                    if (now - last_flush) * 1000 >= interval_ms:
+                        yield _sse_line({"event": "chunk", "code": accumulated, "done": False})
+                        last_flush = now
+                else:
+                    yield ": keep-alive\n\n"
+
+            cleaned = _clean_code(accumulated)
+            yield _sse_line({"event": "final", "code": cleaned, "done": True})
+            return
+        except requests.exceptions.RequestException as req_err:
+            yield _sse_line({"event": "error", "message": str(req_err), "done": False})
+            attempt += 1
+            time.sleep(0.5)
+        except Exception as e:
+            yield _sse_line({"event": "error", "message": str(e), "done": False})
+            attempt += 1
+            time.sleep(0.5)
+
+    yield _sse_line({"event": "error", "message": "stream_failed", "done": True})
 
 # 测试代码
 if __name__ == "__main__":

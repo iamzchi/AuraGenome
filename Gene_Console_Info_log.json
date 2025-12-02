@@ -1,16 +1,16 @@
 [
   {
-    "id": "interchr_sv_purple",
+    "id": "file3_purple_chords",
     "file": "id_001/file3.csv",
-    "title": "Inter-chromosomal Structural Variants",
-    "explanation": "Displays purple chords representing inter-chromosomal structural variants with a 10Mb span.",
+    "title": "Chromosome Connection Chords",
+    "explanation": "To display connections between different regions of chromosomes using purple chords.",
     "type": "chords",
     "innerRadius": null,
     "outerRadius": null,
     "color": "purple",
     "radiusConfig": {
       "inner": null,
-      "outer": null
+      "outer": 0.48
     }
   }
 ]

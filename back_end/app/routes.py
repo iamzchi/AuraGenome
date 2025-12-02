@@ -1,11 +1,12 @@
-from flask import Blueprint, request, jsonify, send_file
+from flask import Blueprint, request, jsonify, send_file, Response
+from flask import stream_with_context
 from .utils import get_file_path, file_exists,get_discrete_file_path
 import csv
 import pandas as pd
 import json
 import os
 from .agents.Judge import use_judge
-from .agents.Generator import use_generator,use_modifier
+from .agents.Generator import use_generator,use_modifier,stream_generator,stream_modifier
 from .agents.Gene_Console_Info import use_gene_console_info
 from .agents.Deletle_Track import use_delete_track
 from .agents.Snapshot_agent import use_snapshot_agent
@@ -147,6 +148,38 @@ def modify_code():
     # print(f" modify_code返回的内容：{res}")
 
     return jsonify(res)
+
+
+# SSE: 生成代码（流式）
+@bp.route('/generate-code/stream', methods=['POST'])
+def generate_code_stream():
+    data = request.get_json()
+    query = data.get('query')
+    query_info = data.get('query_info')
+    project_id = data.get('project_id')
+    base_code = data.get('base_code')
+
+    def event_stream():
+        for sse in stream_generator(query, project_id, query_info, base_code):
+            yield sse
+
+    return Response(stream_with_context(event_stream()), mimetype='text/event-stream')
+
+
+# SSE: 修改代码（流式）
+@bp.route('/modify-code/stream', methods=['POST'])
+def modify_code_stream():
+    data = request.get_json()
+    query = data.get('query')
+    query_info = data.get('query_info')
+    project_id = data.get('project_id')
+    base_code = data.get('base_code')
+
+    def event_stream():
+        for sse in stream_modifier(query, project_id, query_info, base_code):
+            yield sse
+
+    return Response(stream_with_context(event_stream()), mimetype='text/event-stream')
 
 
 @bp.route('/get-console-info', methods=['POST'])

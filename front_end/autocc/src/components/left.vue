@@ -268,6 +268,35 @@ const isGradientBorder = ref(false);
 const codePanelVisible = ref(false);
 const toggleCodePanel = () => { codePanelVisible.value = !codePanelVisible.value };
 
+import Prism from 'prismjs'
+import 'prismjs/components/prism-markup'
+import 'prismjs/components/prism-markup-templating'
+import 'prismjs/components/prism-javascript'
+import 'prismjs/components/prism-typescript'
+import 'prismjs/components/prism-css'
+import 'prismjs/components/prism-json'
+import 'prismjs/themes/prism-tomorrow.css'
+import prettier from 'prettier/standalone'
+import prettierPluginHtml from 'prettier/parser-html'
+import prettierPluginBabel from 'prettier/parser-babel'
+import prettierPluginPostcss from 'prettier/parser-postcss'
+
+const codeBlock = ref(null)
+const formattedCode = ref('')
+const highlightedCode = ref('')
+const formatCode = () => {
+  try {
+    formattedCode.value = prettier.format(chatStore.currentCode || '', { parser: 'vue', plugins: [prettierPluginHtml, prettierPluginBabel, prettierPluginPostcss] })
+  } catch {
+    formattedCode.value = chatStore.currentCode || ''
+  }
+  highlightedCode.value = Prism.highlight(formattedCode.value, Prism.languages.markup, 'markup')
+}
+watch(() => chatStore.currentCode, () => {
+  formatCode()
+  nextTick(() => { if (codeBlock.value) Prism.highlightElement(codeBlock.value) })
+}, { immediate: true })
+
 // 点击推荐项的 Apply，将描述插入到输入框
 const applyRecommendation = (item) => {
   const schemeText = `I would like to use this scheme: ${item.chart_description}`;
@@ -382,7 +411,8 @@ const applyRecommendation = (item) => {
           <t-icon name="chat-bubble-smile"></t-icon>
           <span>CHAT WITH<span class="gradientText">Aura</span></span>
         </div>
-        <span style="font-size: .8rem; color: var(--td-brand-color-6);cursor: pointer;" @click="toggleCodePanel"><t-icon name="code" />
+        <span style="font-size: .8rem; color: var(--td-brand-color-6);cursor: pointer;" @click="toggleCodePanel"><t-icon
+            name="code" />
           code</span>
       </div>
       <t-loading :loading="loading" :text="loadingText">
@@ -412,12 +442,19 @@ const applyRecommendation = (item) => {
         </div>
       </t-loading>
     </div>
-    <div id="codePanel" :style="{ display: codePanelVisible?'block':'none' }">
+    <div id="codePanel" :style="{ display: codePanelVisible ? 'block' : 'none' }">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         AuraCode
-        <t-icon style="cursor: pointer;" name="close-circle" @click="toggleCodePanel" />
+        <div style="display:flex; align-items:center; gap:8px;">
+          <!-- <t-button size="small" variant="outline" @click="formatCode">Format</t-button> -->
+          <t-icon style="cursor: pointer;" name="close-circle" @click="toggleCodePanel" />
+        </div>
       </div>
-
+      <div id="codes">
+        <pre class="language-markup" style="margin:0;">
+        <code ref="codeBlock" v-html="highlightedCode"></code>
+      </pre>
+      </div>
     </div>
   </div>
 
@@ -627,4 +664,23 @@ const applyRecommendation = (item) => {
   transition: right 0.3s ease;
 
 }
+
+#codePanel pre[class*="language-"],
+#codePanel code[class*="language-"] {
+  background: #1c1c1c !important;
+  font-size: 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+}
+
+#codes {
+  height: calc(100% - 40px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+#codes::-webkit-scrollbar { display: none; }
 </style>

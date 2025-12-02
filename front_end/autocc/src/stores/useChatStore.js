@@ -131,86 +131,153 @@ export const useChatStore = defineStore("chat", () => {
   };
 
   const loading = ref(false);
+  // 流式读取工具（SSE格式）
+  /**
+   * @typedef {{ event: 'chunk'|'final'|'error', code?: string, done: boolean, message?: string }} StreamEvent
+   */
+  const streamFetchSSE = async (url, payload, handlers) => {
+    const { onChunk, onFinal, onError } = handlers || {};
+    const controller = new AbortController();
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      onError && onError(new Error(text || 'Network error'));
+      return;
+    }
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let buffer = '';
+    let lastPushedLen = 0;
+    let lastUpdateTs = 0;
+    const flushIntervalMs = 150;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const parts = buffer.split('\n\n');
+      buffer = parts.pop();
+      for (const part of parts) {
+        if (part.startsWith('data:')) {
+          const jsonStr = part.slice(5).trim();
+          try {
+            /** @type {StreamEvent} */
+            const evt = JSON.parse(jsonStr);
+            if (evt.event === 'chunk' && typeof evt.code === 'string') {
+              const now = Date.now();
+              if (evt.code.length !== lastPushedLen && now - lastUpdateTs >= flushIntervalMs) {
+                lastPushedLen = evt.code.length;
+                lastUpdateTs = now;
+                onChunk && onChunk(evt.code);
+              }
+            } else if (evt.event === 'final' && typeof evt.code === 'string') {
+              onFinal && onFinal(evt.code);
+            } else if (evt.event === 'error') {
+              onError && onError(new Error(evt.message || 'stream error'));
+            }
+          } catch (err) {
+            // 跳过非 JSON 块
+          }
+        }
+      }
+    }
+    // 尾部缓冲区可能包含最后的 data
+    if (buffer && buffer.startsWith('data:')) {
+      try {
+        const evt = JSON.parse(buffer.slice(5).trim());
+        if (evt.event === 'final' && typeof evt.code === 'string') {
+          onFinal && onFinal(evt.code);
+        }
+      } catch {}
+    }
+  };
+
+  // 打字机效果：通过更新最后一条 AI 消息的内容来呈现
   const generateCode = async (query, query_info) => {
     loading.value = true;
-    console.log("开始生成代码");
+    const base = allCodes.value[allCodes.value.length - 1] || '';
+    const typingIndex = messages.value.length;
+    messages.value.push({ role: 'ai', content: '' });
     try {
-      const res = await getGenerateCode(
+      await streamFetchSSE('http://127.0.0.1:5000/generate-code/stream', {
         query,
         project_id,
         query_info,
-        allCodes.value[allCodes.value.length - 1]
-      );
-      if (res.code === 200) {
-        allCodes.value.push(res.generated_code);
-        currentCode.value = res.generated_code;
-        addMessage("ai", "Done. what else?✌️");
-        loading.value = false;
-        try {
-          const consoleInfo = await getConsoleInfo(res.generated_code);
-          if (Array.isArray(consoleInfo)) {
-            trackInfo.value = consoleInfo;
-          } else if (consoleInfo && Array.isArray(consoleInfo.data)) {
-            trackInfo.value = consoleInfo.data;
+        base_code: base,
+      }, {
+        onChunk: (code) => {
+          // 流控与缓存：仅在长度变化时更新
+          messages.value[typingIndex].content = code.slice(-800);
+        },
+        onFinal: async (finalCode) => {
+          allCodes.value.push(finalCode);
+          currentCode.value = finalCode;
+          messages.value[typingIndex].content = 'Done. what else?✌️';
+          try {
+            const consoleInfo = await getConsoleInfo(finalCode);
+            if (Array.isArray(consoleInfo)) {
+              trackInfo.value = consoleInfo;
+            } else if (consoleInfo && Array.isArray(consoleInfo.data)) {
+              trackInfo.value = consoleInfo.data;
+            }
+          } catch (e) {
+            console.error('Get console info failed:', e);
           }
-        } catch (e) {
-          console.error("Get console info failed:", e);
+        },
+        onError: (err) => {
+          console.error('Generate stream error:', err);
+          messages.value[typingIndex].content = 'A problem has occurred at the model end. Please retry the operation.';
         }
-      } else if (res.code === 500) {
-        addMessage(
-          "ai",
-          "A problem has occurred at the model end. Please retry the operation."
-        );
-      }
+      });
     } catch (e) {
       console.error('Generate code failed:', e);
-      if (e && (e.code === 'ECONNABORTED' || (typeof e.message === 'string' && e.message.toLowerCase().includes('timeout')) || e.isTimeout)) {
-        addMessage('ai', '🕙The response timed out. Don’t worry, this isn’t your fault—please try again.');
-      } else {
-        addMessage('ai', 'A problem has occurred at the model end. Please retry the operation.');
-      }
+      addMessage('ai', 'A problem has occurred at the model end. Please retry the operation.');
     } finally {
       loading.value = false;
     }
   };
   const modifyCode = async (query, query_info) => {
     loading.value = true;
-    console.log("开始修改代码");
+    const base = allCodes.value[allCodes.value.length - 1] || '';
+    const typingIndex = messages.value.length;
+    messages.value.push({ role: 'ai', content: '' });
     try {
-      const res = await getModifyCode(
+      await streamFetchSSE('http://127.0.0.1:5000/modify-code/stream', {
         query,
         project_id,
         query_info,
-        allCodes.value[allCodes.value.length - 1]
-      );
-      if (res.code === 200) {
-        allCodes.value.push(res.generated_code);
-        currentCode.value = res.generated_code;
-        addMessage("ai", "Modify Done. what else? 😎");
-        loading.value = false;
-        try {
-          const consoleInfo = await getConsoleInfo(res.generated_code);
-          if (Array.isArray(consoleInfo)) {
-            trackInfo.value = consoleInfo;
-          } else if (consoleInfo && Array.isArray(consoleInfo.data)) {
-            trackInfo.value = consoleInfo.data;
+        base_code: base,
+      }, {
+        onChunk: (code) => {
+          messages.value[typingIndex].content = code.slice(-800);
+        },
+        onFinal: async (finalCode) => {
+          allCodes.value.push(finalCode);
+          currentCode.value = finalCode;
+          messages.value[typingIndex].content = 'Modify Done. what else? 😎';
+          try {
+            const consoleInfo = await getConsoleInfo(finalCode);
+            if (Array.isArray(consoleInfo)) {
+              trackInfo.value = consoleInfo;
+            } else if (consoleInfo && Array.isArray(consoleInfo.data)) {
+              trackInfo.value = consoleInfo.data;
+            }
+          } catch (e) {
+            console.error('Get console info failed:', e);
           }
-        } catch (e) {
-          console.error("Get console info failed:", e);
+        },
+        onError: (err) => {
+          console.error('Modify stream error:', err);
+          messages.value[typingIndex].content = 'A problem has occurred at the model end. Please retry the operation.';
         }
-      } else if (res.code === 500) {
-        addMessage(
-          "ai",
-          "A problem has occurred at the model end. Please retry the operation."
-        );
-      }
+      });
     } catch (e) {
       console.error('Modify code failed:', e);
-      if (e && (e.code === 'ECONNABORTED' || (typeof e.message === 'string' && e.message.toLowerCase().includes('timeout')) || e.isTimeout)) {
-        addMessage('ai', '🕙The response timed out. Don’t worry, this isn’t your fault—please try again.');
-      } else {
-        addMessage('ai', 'A problem has occurred at the model end. Please retry the operation.');
-      }
+      addMessage('ai', 'A problem has occurred at the model end. Please retry the operation.');
     } finally {
       loading.value = false;
     }
