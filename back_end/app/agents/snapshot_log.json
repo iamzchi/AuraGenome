@@ -1,1 +1,1 @@
-{"title": "更新 Circos 图表配置", "description": "在 Vue 组件中，新增了多个数据轨道，包括深绿色柱状图、紫色连接线和浅橙色柱状图，分别用于展示插入型变异、不同染色体间的连接以及 Zygosity 为 het 的数据。同时，优化了数据读取和处理逻辑，确保图表的准确性和可视化效果。"}
+{"title":"Updated Visualization Features","description":"Enhanced the visualization with new data tracks including Zygosity mutation density bars, insertion and deletion histograms, and chromosomal rearrangement chords, while maintaining existing features like mutation types and loss of heterozygosity."}

@@ -1,14 +1,16 @@
 // axios.js
-import axios from 'axios';
+import axios from 'axios'
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5001'
 
 // 创建 axios 实例
 const instance = axios.create({
-    baseURL: 'http://127.0.0.1:5000', // 后端服务的基础 URL
-    timeout: 100000, // 请求超时时间（毫秒）
+    baseURL: API_BASE_URL, // 后端服务的基础 URL
+    timeout: 100000,
     headers: {
-        'Content-Type': 'application/json', // 默认请求头
+        'Content-Type': 'application/json',
     },
-});
+})
 
 // 请求拦截器
 instance.interceptors.request.use(
@@ -40,4 +42,5 @@ instance.interceptors.response.use(
     }
 );
 
-export default instance;
+export default instance
+export { API_BASE_URL }

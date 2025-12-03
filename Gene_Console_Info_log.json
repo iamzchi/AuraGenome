@@ -1,58 +1,38 @@
 [
   {
-    "id": "file3_green_chords",
+    "id": "file3_chords_diff",
     "file": "id_001/file3.csv",
-    "title": "Green Chords",
-    "explanation": "To display connections between chromosomes that are the same.",
+    "title": "Chromosome Chords",
+    "explanation": "To display chords between different chromosomes.",
     "type": "chords",
-    "innerRadius": null,
-    "outerRadius": null,
-    "color": "green",
+    "color": "#800080",
     "radiusConfig": {
       "inner": null,
       "outer": 0.48
     }
   },
   {
-    "id": "file2_darkgreen_insertion_hist",
+    "id": "file2_insertion_bar",
     "file": "id_001/file2.csv",
-    "title": "Dark Green Insertion Histogram",
-    "explanation": "To show the distribution of insertion type mutations that have been validated.",
+    "title": "Insertion Histogram",
+    "explanation": "To display histogram for Insertion type with non-empty validation status.",
     "type": "histogram",
-    "innerRadius": null,
-    "outerRadius": null,
-    "color": "#007c2f",
+    "color": "#006400",
     "radiusConfig": {
-      "inner": 0.94,
-      "outer": 0.96
+      "inner": 0.68,
+      "outer": 0.78
     }
   },
   {
-    "id": "file3_purple_chords",
-    "file": "id_001/file3.csv",
-    "title": "Purple Chords",
-    "explanation": "To display connections between chromosomes that are different.",
-    "type": "chords",
-    "innerRadius": null,
-    "outerRadius": null,
-    "color": "#8e24aa",
-    "radiusConfig": {
-      "inner": null,
-      "outer": 0.44
-    }
-  },
-  {
-    "id": "file1_lightorange_het_hist",
+    "id": "file1_het_bar",
     "file": "id_001/file1.csv",
-    "title": "Light Orange Heterozygous Histogram",
-    "explanation": "To show the distribution of heterozygous mutations aggregated by 10Mb.",
+    "title": "Zygosity Het Density Bar",
+    "explanation": "To display density histogram for heterozygous mutations.",
     "type": "histogram",
-    "innerRadius": null,
-    "outerRadius": null,
-    "color": "#ffb74d",
+    "color": "#FFD580",
     "radiusConfig": {
-      "inner": 0.9,
-      "outer": 0.99
+      "inner": 0.8,
+      "outer": 0.95
     }
   }
 ]

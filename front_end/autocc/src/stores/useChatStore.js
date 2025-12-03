@@ -7,6 +7,7 @@ import {
   getConsoleInfo,
   getSnapshotInfo,
 } from "@/utils/server";
+import { API_BASE_URL } from "@/utils/axios"
 // 全局变量
 const project_id = "id_001";
 
@@ -203,7 +204,7 @@ export const useChatStore = defineStore("chat", () => {
     messages.value.push({ role: 'ai', content: '' });
     streamingCode.value = '';
     try {
-      await streamFetchSSE('http://127.0.0.1:5000/generate-code/stream', {
+      await streamFetchSSE(`${API_BASE_URL}/generate-code/stream`, {
         query,
         project_id,
         query_info,
@@ -255,7 +256,7 @@ export const useChatStore = defineStore("chat", () => {
     messages.value.push({ role: 'ai', content: '' });
     streamingCode.value = '';
     try {
-      await streamFetchSSE('http://127.0.0.1:5000/modify-code/stream', {
+      await streamFetchSSE(`${API_BASE_URL}/modify-code/stream`, {
         query,
         project_id,
         query_info,

@@ -51,7 +51,7 @@ npm run dev
 
 ## Development Notes
 
-- Backend service runs on `http://localhost:5000` by default
+- Backend service runs on `http://localhost:5001` by default
 - Frontend development server runs on `http://localhost:5173` by default
 - Frontend uses Vue 3 + Vite as development framework
 - Backend uses Flask framework to provide API services
