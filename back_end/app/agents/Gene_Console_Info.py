@@ -29,8 +29,6 @@ prompt = """
   "title": "",
   "explanation": "",
   "type": "",
-  "innerRadius": null,
-  "outerRadius": null,
   "color": "",
   "radiusConfig": {
     "inner": null,

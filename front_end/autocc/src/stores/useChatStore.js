@@ -71,15 +71,11 @@ export const useChatStore = defineStore("chat", () => {
 
   const handleMessage = async (query) => {
     if (query === "d" || query === "D") {
-      setTimeout(() => {
-        addMessage(
-          "ai",
-          "OK, I will use the default aggregation distance of 10Mb."
-        );
-      }, 1000);
-      setTimeout(() => {
-        addMessage("ai", "Generating, please wait a moment...");
-      }, 2000);
+      addMessage(
+        "ai",
+        "OK, I will use the default aggregation distance of 10Mb."
+      );
+      addMessage("ai", "Generating, please wait a moment...");
       await generateCode(lastQuery.value, queryInfo.value);
       lastQuery.value = "";
     } else if (lastQuery.value === "") {
@@ -197,11 +193,15 @@ export const useChatStore = defineStore("chat", () => {
   };
 
   // 打字机效果：通过更新最后一条 AI 消息的内容来呈现
+  const streamingCode = ref('');
+  const codePanelVisible = ref(false);
+  const setCodePanelVisible = (v) => { codePanelVisible.value = !!v; };
   const generateCode = async (query, query_info) => {
     loading.value = true;
     const base = allCodes.value[allCodes.value.length - 1] || '';
     const typingIndex = messages.value.length;
     messages.value.push({ role: 'ai', content: '' });
+    streamingCode.value = '';
     try {
       await streamFetchSSE('http://127.0.0.1:5000/generate-code/stream', {
         query,
@@ -212,11 +212,17 @@ export const useChatStore = defineStore("chat", () => {
         onChunk: (code) => {
           // 流控与缓存：仅在长度变化时更新
           messages.value[typingIndex].content = code.slice(-800);
+          streamingCode.value = code;
+          if (!codePanelVisible.value) {
+            codePanelVisible.value = true;
+          }
         },
         onFinal: async (finalCode) => {
           allCodes.value.push(finalCode);
           currentCode.value = finalCode;
           messages.value[typingIndex].content = 'Done. what else?✌️';
+          streamingCode.value = '';
+          codePanelVisible.value = false;
           try {
             const consoleInfo = await getConsoleInfo(finalCode);
             if (Array.isArray(consoleInfo)) {
@@ -231,6 +237,8 @@ export const useChatStore = defineStore("chat", () => {
         onError: (err) => {
           console.error('Generate stream error:', err);
           messages.value[typingIndex].content = 'A problem has occurred at the model end. Please retry the operation.';
+          streamingCode.value = '';
+          codePanelVisible.value = false;
         }
       });
     } catch (e) {
@@ -245,6 +253,7 @@ export const useChatStore = defineStore("chat", () => {
     const base = allCodes.value[allCodes.value.length - 1] || '';
     const typingIndex = messages.value.length;
     messages.value.push({ role: 'ai', content: '' });
+    streamingCode.value = '';
     try {
       await streamFetchSSE('http://127.0.0.1:5000/modify-code/stream', {
         query,
@@ -254,11 +263,17 @@ export const useChatStore = defineStore("chat", () => {
       }, {
         onChunk: (code) => {
           messages.value[typingIndex].content = code.slice(-800);
+          streamingCode.value = code;
+          if (!codePanelVisible.value) {
+            codePanelVisible.value = true;
+          }
         },
         onFinal: async (finalCode) => {
           allCodes.value.push(finalCode);
           currentCode.value = finalCode;
           messages.value[typingIndex].content = 'Modify Done. what else? 😎';
+           streamingCode.value = '';
+           codePanelVisible.value = false;
           try {
             const consoleInfo = await getConsoleInfo(finalCode);
             if (Array.isArray(consoleInfo)) {
@@ -273,6 +288,8 @@ export const useChatStore = defineStore("chat", () => {
         onError: (err) => {
           console.error('Modify stream error:', err);
           messages.value[typingIndex].content = 'A problem has occurred at the model end. Please retry the operation.';
+          streamingCode.value = '';
+          codePanelVisible.value = false;
         }
       });
     } catch (e) {
@@ -1051,7 +1068,10 @@ let circos;
     setNowTrackInfo,
     allCodes,
     currentCode,
+    streamingCode,
     loading,
+    codePanelVisible,
+    setCodePanelVisible,
     selectedReferenceVersion,
     setReferenceVersion,
     setHg19,

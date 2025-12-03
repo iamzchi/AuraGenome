@@ -265,8 +265,8 @@ import svgIcon from './Left/svgIcon.vue'
 
 // 控制聊天框边框样式（仅由发送/响应和loading驱动）
 const isGradientBorder = ref(false);
-const codePanelVisible = ref(false);
-const toggleCodePanel = () => { codePanelVisible.value = !codePanelVisible.value };
+const codePanelVisible = computed(() => chatStore.codePanelVisible);
+const toggleCodePanel = () => { chatStore.setCodePanelVisible(!chatStore.codePanelVisible) };
 
 import Prism from 'prismjs'
 import 'prismjs/components/prism-markup'
@@ -282,20 +282,34 @@ import prettierPluginBabel from 'prettier/parser-babel'
 import prettierPluginPostcss from 'prettier/parser-postcss'
 
 const codeBlock = ref(null)
+const codesWrap = ref(null)
 const formattedCode = ref('')
 const highlightedCode = ref('')
 const formatCode = () => {
   try {
-    formattedCode.value = prettier.format(chatStore.currentCode || '', { parser: 'vue', plugins: [prettierPluginHtml, prettierPluginBabel, prettierPluginPostcss] })
+    const source = chatStore.streamingCode || chatStore.currentCode || ''
+    formattedCode.value = prettier.format(source, { parser: 'vue', plugins: [prettierPluginHtml, prettierPluginBabel, prettierPluginPostcss] })
   } catch {
-    formattedCode.value = chatStore.currentCode || ''
+    formattedCode.value = chatStore.streamingCode || chatStore.currentCode || ''
   }
   highlightedCode.value = Prism.highlight(formattedCode.value, Prism.languages.markup, 'markup')
 }
 watch(() => chatStore.currentCode, () => {
   formatCode()
-  nextTick(() => { if (codeBlock.value) Prism.highlightElement(codeBlock.value) })
+  nextTick(() => {
+    if (codeBlock.value) Prism.highlightElement(codeBlock.value)
+    const el = codesWrap.value
+    if (el) el.scrollTop = el.scrollHeight
+  })
 }, { immediate: true })
+watch(() => chatStore.streamingCode, () => {
+  formatCode()
+  nextTick(() => {
+    if (codeBlock.value) Prism.highlightElement(codeBlock.value)
+    const el = codesWrap.value
+    if (el) el.scrollTop = el.scrollHeight
+  })
+})
 
 // 点击推荐项的 Apply，将描述插入到输入框
 const applyRecommendation = (item) => {
@@ -450,7 +464,7 @@ const applyRecommendation = (item) => {
           <t-icon style="cursor: pointer;" name="close-circle" @click="toggleCodePanel" />
         </div>
       </div>
-      <div id="codes">
+      <div id="codes" ref="codesWrap">
         <pre class="language-markup" style="margin:0;">
         <code ref="codeBlock" v-html="highlightedCode"></code>
       </pre>

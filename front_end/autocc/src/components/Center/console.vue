@@ -37,7 +37,7 @@ const change = (val) => {
   if (el) el.style.opacity = String(opacity);
 };
 
-const fillColor = ref('#FFA500'); // 橙色
+const fillColor = ref('#purple'); // 橙色
 const strokeColor = ref('#808080'); // 灰色
 
 // 添加下载功能
@@ -127,6 +127,12 @@ import { computed, watch } from 'vue';
 const store = useChatStore();
 const trackInfo = computed(() => store.nowTrackInfo);
 console.log("console面板当前点击的track信息", trackInfo);
+
+watch(trackInfo, (newInfo) => {
+  if (newInfo && newInfo.color) {
+    fillColor.value = newInfo.color;
+  }
+}, { immediate: true });
 
 const handleDeleteTrack = async () => {
   try {

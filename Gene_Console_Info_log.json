@@ -1,16 +1,58 @@
 [
   {
-    "id": "file3_purple_chords",
+    "id": "file3_green_chords",
     "file": "id_001/file3.csv",
-    "title": "Chromosome Connection Chords",
-    "explanation": "To display connections between different regions of chromosomes using purple chords.",
+    "title": "Green Chords",
+    "explanation": "To display connections between chromosomes that are the same.",
     "type": "chords",
     "innerRadius": null,
     "outerRadius": null,
-    "color": "purple",
+    "color": "green",
     "radiusConfig": {
       "inner": null,
       "outer": 0.48
+    }
+  },
+  {
+    "id": "file2_darkgreen_insertion_hist",
+    "file": "id_001/file2.csv",
+    "title": "Dark Green Insertion Histogram",
+    "explanation": "To show the distribution of insertion type mutations that have been validated.",
+    "type": "histogram",
+    "innerRadius": null,
+    "outerRadius": null,
+    "color": "#007c2f",
+    "radiusConfig": {
+      "inner": 0.94,
+      "outer": 0.96
+    }
+  },
+  {
+    "id": "file3_purple_chords",
+    "file": "id_001/file3.csv",
+    "title": "Purple Chords",
+    "explanation": "To display connections between chromosomes that are different.",
+    "type": "chords",
+    "innerRadius": null,
+    "outerRadius": null,
+    "color": "#8e24aa",
+    "radiusConfig": {
+      "inner": null,
+      "outer": 0.44
+    }
+  },
+  {
+    "id": "file1_lightorange_het_hist",
+    "file": "id_001/file1.csv",
+    "title": "Light Orange Heterozygous Histogram",
+    "explanation": "To show the distribution of heterozygous mutations aggregated by 10Mb.",
+    "type": "histogram",
+    "innerRadius": null,
+    "outerRadius": null,
+    "color": "#ffb74d",
+    "radiusConfig": {
+      "inner": 0.9,
+      "outer": 0.99
     }
   }
 ]

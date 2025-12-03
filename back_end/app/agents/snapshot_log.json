@@ -1,1 +1,1 @@
-{"title": "Circos Visualization Update", "description": "Enhanced the Circos visualization by adding multiple histogram tracks for insertion validation and heterozygosity, as well as chord and line tracks for chromosome data. Integrated data fetching and processing with error handling, and included hover effects for interactivity."}
+{"title": "更新 Circos 图表配置", "description": "在 Vue 组件中，新增了多个数据轨道，包括深绿色柱状图、紫色连接线和浅橙色柱状图，分别用于展示插入型变异、不同染色体间的连接以及 Zygosity 为 het 的数据。同时，优化了数据读取和处理逻辑，确保图表的准确性和可视化效果。"}
