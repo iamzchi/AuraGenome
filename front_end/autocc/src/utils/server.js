@@ -43,7 +43,14 @@ export const getConsoleInfo = async (current_code, model = 'openai/gpt-4o-mini')
 };
 
 export const getSnapshotInfo = async (current_code, former_steps, model = 'openai/gpt-4o-mini') => {
-    const response = await axios.post('/get-snapshot', { current_code, former_steps, model });
+    const payload = { current_code, model };
+    if (typeof former_steps === 'string') {
+        const fs = former_steps.trim();
+        if (fs) payload.former_steps = fs;
+    } else if (former_steps != null) {
+        payload.former_steps = former_steps;
+    }
+    const response = await axios.post('/get-snapshot', payload);
     return response.data;
 };
 

@@ -1,57 +1,13 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import * as d3 from 'd3';
-import { useChatStore } from '../../stores/useChatStore';
+import { useChatStore } from '@/stores/useChatStore.js';
+import { storeToRefs } from 'pinia';
 // 树结构数据
 
-// const data = useChatStore().log; //正式开发的时候用这个代码，下面的代码为演示用
-let data0 = [
-      { id: "0",  text: "", parent: null, status: 0, type: "root" },
-      { id: "1",  text: "", parent: "0", status: 1, type: "chord" },
-      { id: "2",  text: "", parent: "0", status: 1, type: "chord" },
-      { id: "3",  text: "", parent: "2", status: 2, type: "radial" },
-      { id: "4",  text: "", parent: "3", status: 3, type: "radial" },
-      { id: "5",  text: "", parent: "4", status: 2, type: "chord" },
-      { id: "6",  text: "", parent: "5", status: 2, type: "chord" },
-      { id: "7",  text: "", parent: "6", status: 2, type: "chord" },
-      { id: "8",  text: "", parent: "7", status: 3, type: "chord" },]
-let data = [
-      { id: "0",  text: "", parent: null, status: 0, type: "root" },
-      { id: "1",  text: "", parent: "0", status: 1, type: "chord" },
-      { id: "2",  text: "", parent: "1", status: 1, type: "chord" },
-      { id: "3",  text: "", parent: "2", status: 2, type: "radial" },
-      { id: "4",  text: "", parent: "3", status: 3, type: "radial" },
-      { id: "5",  text: "", parent: "10", status: 2, type: "chord" },
-      { id: "6",  text: "", parent: "5", status: 2, type: "chord" },
-      { id: "7",  text: "", parent: "6", status: 1, type: "radial" },
-      { id: "8",  text: "", parent: "7", status: 3, type: "radial" },
-      { id: "9",  text: "", parent: "0", status: 1, type: "radial" },
-      { id: "10", text: "", parent: "9", status: 1, type: "radial" },
-    ]
-
-
-let data1 = [
-      { id: "0",  text: "", parent: null, status: 0, type: "root" },
-      { id: "1",  text: "", parent: "0", status: 3, type: "radial" },
-      { id: "2",  text: "", parent: "0", status: 3, type: "circular" },
-      { id: "3",  text: "", parent: "1", status: 2, type: "radial" },
-      { id: "4",  text: "", parent: "2", status: 2, type: "circular" },
-      { id: "5",  text: "", parent: "4", status: 1, type: "circular" },
-      { id: "6",  text: "", parent: "5", status: 1, type: "radial" },
-      { id: "7",  text: "", parent: "6", status: 3, type: "circular" },
-      { id: "8",  text: "", parent: "7", status: 2, type: "circular" },
-      { id: "9",  text: "", parent: "8", status: 1, type: "circular" },
-      { id: "10", text: "", parent: "9", status: 3, type: "radial" },
-      { id: "11", text: "", parent: "10", status: 2, type: "radial" },
-      { id: "12", text: "", parent: "11", status: 1, type: "radial" },
-      { id: "13", text: "", parent: "10", status: 1, type: "circular" },
-      { id: "14", text: "", parent: "13", status: 1, type: "chord" },
-      { id: "15", text: "", parent: "14", status: 2, type: "chord" },
-      { id: "16", text: "", parent: "15", status: 2, type: "chord" },
-      { id: "17", text: "", parent: "15", status: 2, type: "chord" },
-      { id: "18", text: "", parent: "16", status: 2, type: "chord" },
-      { id: "19", text: "", parent: "18", status: 3, type: "chord" },
-]
+const store = useChatStore();
+const { sequence_log, current_clicked_node_info } = storeToRefs(store);
+const data = sequence_log.value; //正式开发的时候用这个代码，下面的代码为演示用
 
 onMounted(() => {
 
@@ -704,21 +660,6 @@ onMounted(() => {
         .attr("fill", d => runColorPanel[d.status])
         .attr("stroke", linkColorPanel[0])
         .attr("stroke-width", 0.5);
-    // nodes.append("circle")
-    //     .attr("r", circleRadius * 3 / 4)
-    //     .attr("fill", d => {
-    //         if (d.parent === null) {  // 根节点
-    //             return "none";  // 透明填充
-    //         }
-    //         return runColorPanel[d.status];  // 其他节点保持不变
-    //     })
-    //     .attr("stroke", d => {
-    //         if (d.parent === null) {  // 如果是根节点
-    //             return "#6da9ff";  // 设置蓝色描边
-    //         }
-    //         return "none";  // 其他节点无描边
-    //     })
-    //     .attr("stroke-width", d => d.parent === null ? 5 : 0); // 根节点描边宽度为5
     nodes.append("circle")
         .attr("id", 'circle-padding')
         .attr("r", circleRadius * 3 / 4 - defaultMargin)
@@ -775,13 +716,15 @@ onMounted(() => {
 
     // 修改 nodes 的点击事件
     nodes.on("click", function(event, d) {
-        // 先重置所有高亮圈为隐藏
+        //初次渲染出来的节点选
         nodeLayer.selectAll(".highlight-circle")
             .style("display", "none");
-        
-        // 显示当前点击节点的高亮圈
         d3.select(this).select(".highlight-circle")
             .style("display", "block");
+        const info = { id: d.id, text: d.text, parent: d.parent ?? null, status: d.status, type: d.type };
+        console.log('click_sequence info:', info);
+        current_clicked_node_info.value = info;
+        console.log('初次渲染current_clicked_node_info:', current_clicked_node_info.value);
     });
 
     // 在 svg 空白处点击时取消高亮
@@ -791,6 +734,15 @@ onMounted(() => {
                 .style("display", "none");
         }
     });
+
+    watch(current_clicked_node_info, (info) => {
+        if (!info || !info.id) return;
+        nodeLayer.selectAll(".highlight-circle").style("display", "none");
+        nodeLayer.selectAll("g.node")
+            .filter(d => d.id === info.id)
+            .select(".highlight-circle")
+            .style("display", "block");
+    }, { immediate: true });
 
     /***********************************************
      * 文本框功能
@@ -957,7 +909,188 @@ onMounted(() => {
             linkSource = null;
         }
     });
+    
 
+    watch(sequence_log, (newList) => {
+        const root = stratify(newList);
+        const tree = d3.tree().size([height - 200, width - 200]);
+        tree(root);
+
+        if (root.children && root.children.length > 0) {
+            const firstChild = root.children[0];
+            firstChild.x = root.x;
+            if (firstChild.children && firstChild.children.length > 0) {
+                const firstGrandChild = firstChild.children[0];
+                firstGrandChild.x = firstChild.x;
+            }
+        }
+
+        const depthMap2 = new Map();
+        root.descendants().forEach(node => {
+            if (!depthMap2.has(node.depth)) depthMap2.set(node.depth, []);
+            depthMap2.get(node.depth).push(node);
+        });
+        depthMap2.forEach(nodesArr => {
+            nodesArr.sort((a, b) => d3.ascending(a.parent ? a.parent.id : a.id, b.parent ? b.parent.id : b.id));
+            let branchMap2 = new Map();
+            nodesArr.forEach(node => {
+                let parentId = node.parent ? node.parent.id : "root";
+                if (!branchMap2.has(parentId)) branchMap2.set(parentId, []);
+                branchMap2.get(parentId).push(node);
+            });
+            let startX = nodesArr[0].x;
+            let branchSpacing = spacingX * 0.5;
+            let localSpacing = spacingX * 0.8;
+            let currentX = startX;
+            branchMap2.forEach((branchNodes) => {
+                branchNodes.forEach((node, i) => { node.x = currentX + i * localSpacing; });
+                currentX += branchNodes.length * localSpacing + branchSpacing;
+            });
+        });
+
+        root.descendants().forEach(node => {
+            const d = node.data;
+            d.x = 100 + node.y;
+            d.y = 50 + node.x;
+        });
+
+        nodeMap.clear();
+        newList.forEach(d => nodeMap.set(d.id, d));
+
+        customIdMap = generateCustomDataId(newList);
+
+        const nodesSel = nodeLayer.selectAll("g.node").data(newList, d => d.id);
+        nodesSel.exit().remove();
+        const nodesEnter = nodesSel.enter()
+            .append("g")
+            .attr("class", "node")
+            .attr("data-id", d => customIdMap.get(d.id))
+            .attr("transform", d => `translate(${d.x},${d.y})`)
+            .call(drag);
+
+        nodesEnter.append("circle")
+            .attr("r", circleRadius * 3/4)
+            .attr("fill", d => runColorPanel[d.status])
+            .attr("stroke", linkColorPanel[0])
+            .attr("stroke-width", 0.5);
+        nodesEnter.append("circle")
+            .attr("id", 'circle-padding')
+            .attr("r", circleRadius * 3 / 4 - defaultMargin)
+            .attr("fill", colorPanel[0]);
+        nodesEnter.append("circle")
+            .attr("r", circleRadius * 3 / 4 - defaultMargin)
+            .attr("stroke", linkColorPanel[1])
+            .attr("fill", colorPanel[0]);
+        nodesEnter.filter(d => d.type === "root")
+            .append("path")
+            .attr("fill", linkColorPanel[0])
+            .attr("stroke", linkColorPanel[0]);
+        nodesEnter.filter(d => d.type === "circular")
+            .append("path")
+            .attr("d", arrowClockwisePath)
+            .attr("fill", linkColorPanel[0])
+            .attr("stroke", linkColorPanel[0])
+            .attr("stroke-width", 0.5)
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round")
+            .attr("transform", `translate(${-circleRadius / 2 + 2}, ${-circleRadius / 2 + 2} ) scale(1.3)`);
+        nodesEnter.filter(d => d.type === "radial")
+            .append("path")
+            .attr("d", arrowRadialPath)
+            .attr("fill", linkColorPanel[0])
+            .attr("stroke", linkColorPanel[0])
+            .attr("stroke-width", 0.1)
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round")
+            .attr("transform", `translate(${-circleRadius / 2 + 2}, ${-circleRadius / 2 + 2}) scale(1.3)`);
+        nodesEnter.filter(d => d.type === "chord")
+            .append("path")
+            .attr("d", arrowChordPath)
+            .attr("fill", linkColorPanel[0])
+            .attr("stroke", linkColorPanel[0])
+            .attr("stroke-width", 0.5)
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round")
+            .attr("transform", `translate(${-circleRadius / 2 + 2}, ${-circleRadius / 2 + 2}) scale(1.3)`);
+        nodesEnter.append("circle")
+            .attr("class", "highlight-circle")
+            .attr("r", circleRadius * 3/4 + 3)
+            .attr("fill", "none")
+            .attr("stroke", "#ff4d4f")
+            .attr("stroke-width", 2)
+            .style("display", "none");
+
+        //后续变化的
+        nodesEnter.on("click", function(event, d) {
+            nodeLayer.selectAll(".highlight-circle").style("display", "none");
+            d3.select(this).select(".highlight-circle").style("display", "block");
+            const info = { id: d.id, text: d.text, parent: d.parent ?? null, status: d.status, type: d.type };
+            console.log('click_sequence info:', info);
+            current_clicked_node_info.value = info;
+            console.log('后续变化的-已经更新-current_clicked_node_info:', current_clicked_node_info.value);
+        });
+        nodesEnter.on("dblclick", function (event, d) {
+            event.stopPropagation();
+            if (!isLinking) {
+                isLinking = true;
+                linkSource = d;
+                tempLine = linkLayer.append("path")
+                    .attr("class", "tempLink")
+                    .style("stroke-dasharray", "5,2")
+                    .style("stroke", linkColorPanel[0])
+                    .style("fill", "none")
+                    .attr("d", `M${d.x},${d.y} L${d.x},${d.y}`);
+                svg.on("mousemove.linkMode", (evt) => {
+                    const [sx, sy] = d3.pointer(evt, svg.node());
+                    const tr = d3.zoomTransform(container.node());
+                    const mx = (sx - tr.x) / tr.k, my = (sy - tr.y) / tr.k;
+                    tempLine.attr("d", `M${linkSource.x},${linkSource.y} L${mx},${my}`);
+                });
+            } else {
+                isLinking = false;
+                svg.on("mousemove.linkMode", null);
+                if (d === linkSource) {
+                    tempLine.remove();
+                } else {
+                    const linkId = `L_${linkSource.id}_${d.id}`;
+                    customLinks.push({ id: linkId, sourceId: linkSource.id, targetId: d.id });
+                    tempLine.remove();
+                    const customLinkGroups = linkLayer.selectAll("g.customLink").data(customLinks, l => l.id);
+                    const linkEnter = customLinkGroups.enter().append("g").attr("class", "customLink");
+                    linkEnter.append("path").attr("class", "finalLink").attr("stroke-dasharray", "5,2").attr("fill", "none");
+                    linkEnter.append("polygon").attr("class", "arrowHead").attr("points", "0,-5 10,0 0,5 3,0").attr("fill", "url(#linkGradient)");
+                    updateLinks();
+                }
+                tempLine = null;
+                linkSource = null;
+            }
+        });
+
+        nodesSel.merge(nodesEnter)
+            .attr("data-id", d => customIdMap.get(d.id))
+            .attr("transform", d => `translate(${d.x},${d.y})`);
+
+        const guideSel = guideLineLayer.selectAll("line.node-guideline").data(newList, d => d.id);
+        guideSel.exit().remove();
+        const guideEnter = guideSel.enter().append("line")
+            .attr("class", "node-guideline")
+            .attr("stroke", "#cccccc")
+            .attr("stroke-width", 1)
+            .attr("stroke-dasharray", "3,3");
+        guideSel.merge(guideEnter)
+            .attr("x1", d => d.x)
+            .attr("x2", d => d.x)
+            .attr("y1", 0)
+            .attr("y2", height * 3);
+
+        const linkGroups = linkLayer.selectAll("g.treeLinkGroup").data(newList.filter(d => d.parent), d => d.id);
+        linkGroups.exit().remove();
+        const linksEnter = linkGroups.enter().append("g").attr("class", "treeLinkGroup");
+        linksEnter.append("path").attr("class", "treeLink").attr("fill", "none");
+        linksEnter.append("polygon").attr("class", "treeArrow").attr("points", "0,-5 10,0 0,5 3,0").attr("stroke", "url(#linkGradient)");
+
+        updateLinks();
+    }, { deep: true });
     // 修改添加垂直参考线的函数实现
     const addVerticalGuideLines = () => {
         const xPositions = [...new Set(data.map(d => d.x))].sort((a, b) => a - b);

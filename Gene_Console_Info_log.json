@@ -1,38 +1,38 @@
 [
   {
-    "id": "file3_chords_diff",
-    "file": "id_001/file3.csv",
-    "title": "Chromosome Chords",
-    "explanation": "To display chords between different chromosomes.",
+    "id": "file3_chords_diff_chr",
+    "file": "file3.csv",
+    "title": "Chords between different chromosomes",
+    "explanation": "To visualize connections between different chromosomes based on filtered data.",
     "type": "chords",
     "color": "#800080",
     "radiusConfig": {
       "inner": null,
-      "outer": 0.48
+      "outer": null
     }
   },
   {
-    "id": "file2_insertion_bar",
-    "file": "id_001/file2.csv",
-    "title": "Insertion Histogram",
-    "explanation": "To display histogram for Insertion type with non-empty validation status.",
+    "id": "file2_insertion_valid_barchart",
+    "file": "file2.csv",
+    "title": "Insertion Density Bar Chart",
+    "explanation": "To display the density of valid insertions as a histogram.",
     "type": "histogram",
     "color": "#006400",
     "radiusConfig": {
-      "inner": 0.68,
-      "outer": 0.78
+      "inner": 0.8,
+      "outer": 0.95
     }
   },
   {
-    "id": "file1_het_bar",
-    "file": "id_001/file1.csv",
-    "title": "Zygosity Het Density Bar",
-    "explanation": "To display density histogram for heterozygous mutations.",
+    "id": "file1_het_light_orange_barchart",
+    "file": "file1.csv",
+    "title": "Zygosity Mutation Bar",
+    "explanation": "To display heterozygous mutations with light orange bars.",
     "type": "histogram",
-    "color": "#FFD580",
+    "color": "#ffcc99",
     "radiusConfig": {
-      "inner": 0.8,
-      "outer": 0.95
+      "inner": 0.65,
+      "outer": 0.78
     }
   }
 ]

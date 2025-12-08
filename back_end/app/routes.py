@@ -211,12 +211,16 @@ def delete_track():
 def get_snapshot():
     data = request.get_json()
     current_code = data.get('current_code')
-    former_steps = data.get('former_steps','there is no former steps')
+    raw_former_steps = data.get('former_steps')
+    if raw_former_steps is None:
+        former_steps = 'there is no former steps'
+    elif isinstance(raw_former_steps, str):
+        former_steps = raw_former_steps.strip() or 'there is no former steps'
+    else:
+        former_steps = raw_former_steps
     model = data.get('model', 'openai/gpt-4o-mini')
     if not current_code:
         return jsonify({"error": "Missing 'current_code' parameter"}), 400
-    if not former_steps:
-        return jsonify({"error": "Missing 'former_steps' parameter"}), 400
     res = use_snapshot_agent(current_code, former_steps, model)
     if res is None:
         return jsonify({"error": "Failed to generate snapshot"}), 500

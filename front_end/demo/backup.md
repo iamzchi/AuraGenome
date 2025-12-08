@@ -227,3 +227,53 @@
   //     },
   //   },
   // ]);
+
+
+  # sequence_log里面的一些信息
+  let data0 = [
+      { id: "0",  text: "", parent: null, status: 0, type: "root" },
+      { id: "1",  text: "", parent: "0", status: 1, type: "chord" },
+      { id: "2",  text: "", parent: "0", status: 1, type: "chord" },
+      { id: "3",  text: "", parent: "2", status: 2, type: "radial" },
+      { id: "4",  text: "", parent: "3", status: 3, type: "radial" },
+      { id: "5",  text: "", parent: "4", status: 2, type: "chord" },
+      { id: "6",  text: "", parent: "5", status: 2, type: "chord" },
+      { id: "7",  text: "", parent: "6", status: 2, type: "chord" },
+      { id: "8",  text: "", parent: "7", status: 3, type: "chord" },]
+let data2 = [
+      { id: "0",  text: "", parent: null, status: 0, type: "root" },
+      { id: "1",  text: "", parent: "0", status: 1, type: "chord" },
+      { id: "2",  text: "", parent: "1", status: 1, type: "chord" },
+      { id: "3",  text: "", parent: "2", status: 2, type: "radial" },
+      { id: "4",  text: "", parent: "3", status: 3, type: "radial" },
+      { id: "5",  text: "", parent: "10", status: 2, type: "chord" },
+      { id: "6",  text: "", parent: "5", status: 2, type: "chord" },
+      { id: "7",  text: "", parent: "6", status: 1, type: "radial" },
+      { id: "8",  text: "", parent: "7", status: 3, type: "radial" },
+      { id: "9",  text: "", parent: "0", status: 1, type: "radial" },
+      { id: "10", text: "", parent: "9", status: 1, type: "radial" },
+    ]
+
+
+let data1 = [
+      { id: "0",  text: "", parent: null, status: 0, type: "root" },
+      { id: "1",  text: "", parent: "0", status: 3, type: "radial" },
+      { id: "2",  text: "", parent: "0", status: 3, type: "circular" },
+      { id: "3",  text: "", parent: "1", status: 2, type: "radial" },
+      { id: "4",  text: "", parent: "2", status: 2, type: "circular" },
+      { id: "5",  text: "", parent: "4", status: 1, type: "circular" },
+      { id: "6",  text: "", parent: "5", status: 1, type: "radial" },
+      { id: "7",  text: "", parent: "6", status: 3, type: "circular" },
+      { id: "8",  text: "", parent: "7", status: 2, type: "circular" },
+      { id: "9",  text: "", parent: "8", status: 1, type: "circular" },
+      { id: "10", text: "", parent: "9", status: 3, type: "radial" },
+      { id: "11", text: "", parent: "10", status: 2, type: "radial" },
+      { id: "12", text: "", parent: "11", status: 1, type: "radial" },
+      { id: "13", text: "", parent: "10", status: 1, type: "circular" },
+      { id: "14", text: "", parent: "13", status: 1, type: "chord" },
+      { id: "15", text: "", parent: "14", status: 2, type: "chord" },
+      { id: "16", text: "", parent: "15", status: 2, type: "chord" },
+      { id: "17", text: "", parent: "15", status: 2, type: "chord" },
+      { id: "18", text: "", parent: "16", status: 2, type: "chord" },
+      { id: "19", text: "", parent: "18", status: 3, type: "chord" },
+]

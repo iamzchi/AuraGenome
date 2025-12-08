@@ -28,7 +28,7 @@ Please return a JSON like this:
     "track_id": "",
     "reply":"",
     "column_name":"",
-    "next":[]
+    "next":[],
 }}
 If it is a "chart generation request," set `query_type` to "a",
 If it is a "chart modification request," set `query_type` to "b". 

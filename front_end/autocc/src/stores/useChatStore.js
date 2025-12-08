@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import {
   getQueryResult,
   getGenerateCode,
@@ -84,6 +84,17 @@ export const useChatStore = defineStore("chat", () => {
       queryResult = queryResult.query_info;
       queryInfo.value = queryResult;
       console.log("11111", queryInfo.value);
+      //获取queryInfo.value.chart_type
+      //按照映射关系写chart_category
+      //chord: chords
+      // circular: histogram, heatmap, highlight
+      // radial: scatter, line, stack
+      const t = queryInfo.value?.chart_type;
+      const chart_category = t === 'chords' ? 'chord'
+        : ['histogram','heatmap','highlight'].includes(t) ? 'circular'
+        : ['scatter','line','stack'].includes(t) ? 'radial'
+        : '';
+
       if (Array.isArray(queryResult.next)) {
         updateInputRecommendItems(queryResult.next);
       }
@@ -96,6 +107,7 @@ export const useChatStore = defineStore("chat", () => {
         addMessage("ai", queryResult.reply);
       }
       if (queryResult.query_type === "a") {
+        addLog('',1,chart_category)
         if (
           queryResult.chart_type === "histogram" ||
           queryResult.chart_type === "highlight" ||
@@ -117,6 +129,7 @@ export const useChatStore = defineStore("chat", () => {
         }
       }
       if (queryResult.query_type === "b") {
+        addLog('',2,chart_category)
         //修改模式
         addMessage(
           "ai",
@@ -199,7 +212,7 @@ export const useChatStore = defineStore("chat", () => {
   const setCodePanelVisible = (v) => { codePanelVisible.value = !!v; };
   const generateCode = async (query, query_info) => {
     loading.value = true;
-    const base = allCodes.value[allCodes.value.length - 1] || '';
+    const base = allCodes.value[allCodes.value.length - 1]?.code || '';
     const typingIndex = messages.value.length;
     messages.value.push({ role: 'ai', content: '' });
     streamingCode.value = '';
@@ -219,7 +232,7 @@ export const useChatStore = defineStore("chat", () => {
           }
         },
         onFinal: async (finalCode) => {
-          allCodes.value.push(finalCode);
+          allCodes.value.push({ id: lastLogId.value, code: finalCode });
           currentCode.value = finalCode;
           messages.value[typingIndex].content = 'Done. what else?✌️';
           streamingCode.value = '';
@@ -251,7 +264,7 @@ export const useChatStore = defineStore("chat", () => {
   };
   const modifyCode = async (query, query_info) => {
     loading.value = true;
-    const base = allCodes.value[allCodes.value.length - 1] || '';
+    const base = allCodes.value[allCodes.value.length - 1]?.code || '';
     const typingIndex = messages.value.length;
     messages.value.push({ role: 'ai', content: '' });
     streamingCode.value = '';
@@ -270,7 +283,7 @@ export const useChatStore = defineStore("chat", () => {
           }
         },
         onFinal: async (finalCode) => {
-          allCodes.value.push(finalCode);
+          allCodes.value.push({ id: lastLogId.value, code: finalCode });
           currentCode.value = finalCode;
           messages.value[typingIndex].content = 'Modify Done. what else? 😎';
            streamingCode.value = '';
@@ -303,28 +316,48 @@ export const useChatStore = defineStore("chat", () => {
 
   /**
    * @description Log窗口
-   *
+   *逻辑
+   - modify修改的：保存一个lastStep_type，直接复用上一次的type，status为2
+   - 正常生成的，
+
+   0:生成，1：修改，2：保存
    */
-  const log = ref([
+  const sequence_log = ref([
     { id: "0", text: "", parent: null, status: 0, type: "root" },
-    { id: "1", text: "", parent: "0", status: 1, type: "chord" },
-    { id: "2", text: "", parent: "0", status: 1, type: "chord" },
-    { id: "3", text: "", parent: "2", status: 2, type: "radial" },
-    { id: "4", text: "", parent: "3", status: 3, type: "radial" },
-    { id: "5", text: "", parent: "4", status: 2, type: "chord" },
-    { id: "6", text: "", parent: "5", status: 2, type: "chord" },
-    { id: "7", text: "", parent: "6", status: 2, type: "chord" },
-    { id: "8", text: "", parent: "7", status: 3, type: "chord" },
+    // { id: "1", text: "", parent: "0", status: 1, type: "chord" },
+    // { id: "2", text: "", parent: "0", status: 1, type: "chord" },
+    // { id: "3", text: "", parent: "2", status: 2, type: "radial" },
+    // { id: "4", text: "", parent: "3", status: 3, type: "radial" },
+    // { id: "5", text: "", parent: "4", status: 2, type: "chord" },
+    // { id: "6", text: "", parent: "5", status: 2, type: "chord" },
+    // { id: "7", text: "", parent: "6", status: 2, type: "chord" },
+    // { id: "8", text: "", parent: "7", status: 3, type: "circular" },
   ]);
 
-  const addLog = (id, text, parent, status, type) => {
-    log.value.push({
+  //生成操作 addLog(,1,??)
+  //修改 addLog(,2,??)
+  //save addLog(,3,)
+  const lastLogId = ref(null);
+  const addLog = (text="", status,type) => {
+    console.log("ADDLOG中的：current_clicked_node_info",current_clicked_node_info)
+    if(status == 3){ //如果是保存操作，type就用当前点击的点的type
+      type = current_clicked_node_info.value.type;
+    }
+    const parent = current_clicked_node_info.value.id;//当前点击的点是父亲节点
+    const id = sequence_log.value.length.toString();//新的id是当前log的长度
+    const temp = { 
       id: id,
       text: text,
       parent: parent,
       status: status,
       type: type,
-    });
+    }
+    console.log('add this log:' ,temp)
+    sequence_log.value.push(temp);
+    //然后把current_clicked_node_info设为新的节点
+    current_clicked_node_info.value = temp;
+    lastLogId.value = id;
+    //新节点会自动高亮（逻辑写在了sequenceLog里面）
   };
 
   /**
@@ -388,6 +421,8 @@ export const useChatStore = defineStore("chat", () => {
   ]);
   const snapshotsLoading = ref(false);
   const addSnapshot = async() => {
+    console.log('current_clicked_node_info----addSnapshot',current_clicked_node_info.value)
+    addLog('',3,'')
     addMessage('ai', '⌛️Saving snapshot, please wait a moment...');
     snapshotsLoading.value = true;
     //开始loading
@@ -1037,8 +1072,14 @@ let circos;
   `;
 
   
-
+// 所有的id历史
+// allCodes与log共同组成了步骤树状图
+// [{
+//   id:"",
+//   code:""
+// },...]
   const allCodes = ref([]);
+  const current_clicked_node_info = ref({ id: "0", text: "", parent: null, status: 0, type: "root" });
   const currentCode = ref(codeTestForSfcLoader);
   const selectedReferenceVersion = ref("");
   const setReferenceVersion = (ver) => {
@@ -1046,15 +1087,23 @@ let circos;
   };
   const setHg19 = () => {
     currentCode.value = code_base_track_hg19;
-    allCodes.value.push(code_base_track_hg19);
+    allCodes.value.push({ id: current_clicked_node_info.value.id, code: code_base_track_hg19 });
   };
+
+  watch(current_clicked_node_info, (info) => {
+    if (!info || !info.id) return;
+    const found = allCodes.value.find((c) => c.id === info.id);
+    if (found && typeof found.code === 'string') {
+      currentCode.value = found.code;
+    }
+  });
 
   return {
     messages,
     inputRecommendItems,
     addMessage,
     updateInputRecommendItems,
-    log,
+    sequence_log,
     addLog,
     snapshots,
     snapshotsLoading,
@@ -1076,5 +1125,6 @@ let circos;
     selectedReferenceVersion,
     setReferenceVersion,
     setHg19,
+    current_clicked_node_info,
   };
 });
