@@ -166,6 +166,14 @@ const handleDeleteTrack = async () => {
     store.addMessage('ai', '🗑Delete failed. Not your fault, please retry.');
   }
 };
+const handleReuseTrack = ()=>{
+    //如果当前的trackInfo为空，就不允许复用
+    if (!trackInfo.value.id) {
+        store.addMessage('ai', '🚫No track selected. Please select a track to reuse.');
+        return;
+    }
+    store.TrackIsReusing = true;
+}
 </script>
 <template>
     <t-config-provider :global-config="enConfig">
@@ -304,11 +312,11 @@ const handleDeleteTrack = async () => {
             </div>
 
             <div id="btns">
-                <t-button theme="primary" variant="text" size="small">
+                <t-button theme="primary" variant="text" size="small" @click="handleReuseTrack">
                     <template #icon>
                         <t-icon name="lightbulb-circle" />
                     </template>
-                    Regenerate this track</t-button>
+                    Reuse this track</t-button>
                 <t-button theme="primary" variant="text" size="small" @click="handleDeleteTrack">
                     <template #icon>
                         <t-icon name="delete" />

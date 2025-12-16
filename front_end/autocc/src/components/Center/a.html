@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AntV G6 Step Graph Demo</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #container {
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+    }
+  </style>
+
+  <!-- ✅ 引入 G6（必须） -->
+  <script src="https://gw.alipayobjects.com/os/lib/antv/g6/4.8.21/dist/g6.min.js"></script>
+</head>
+<body>
+  <div id="container"></div>
+
+  <script>
+    /**************** 数据 ****************/
+    const sequence_log = [
+      { id: "0", text: "", parent: null, status: 0, type: "root" },
+      { id: "1", text: "", parent: "0", status: 1, type: "chord" },
+      { id: "2", text: "", parent: "0", status: 1, type: "chord" },
+      { id: "3", text: "", parent: "2", status: 2, type: "radial" },
+      { id: "4", text: "", parent: "3", status: 3, type: "radial" },
+      { id: "5", text: "", parent: "4", status: 2, type: "chord" },
+      { id: "6", text: "", parent: "5", status: 2, type: "chord" },
+      { id: "7", text: "", parent: "6", status: 2, type: "chord" },
+      { id: "8", text: "", parent: "7", status: 3, type: "circular" },
+    ];
+
+    const colorPanel = ["#ffffff", "#8ea0cb", "#66c2a4", "#fc8d62"];
+
+    /**************** SVG ICON PATH ****************/
+    const arrowClockwisePath = `
+      M 8 3
+      A 5 5 0 1 0 12.546 5.914
+      A 0.5 0.5 0 0 1 13.454 5.497
+      A 6 6 0 1 1 8 2
+      M 8 4.466
+      V 0.534
+      A 0.25 0.25 0 0 1 8.41 0.342
+      L 10.77 2.308
+      C 10.89 2.408 10.89 2.592 10.77 2.692
+      L 8.41 4.658
+      A 0.25 0.25 0 0 1 8 4.466
+    `;
+
+    const arrowRadialPath =
+      "M8.0394 9.54416L6.60772 8.87655L5.10561 12.0978L2.78424 11.0154L4.52703 15.2075L8.85867 13.8479L6.5373 12.7654L8.0394 9.54416ZM9.26871 7.70887L8.59252 9.15897L11.9877 10.7421L10.8768 13.1244L15.2505 11.3809L13.7361 6.99262L12.6638 9.29205L9.26871 7.70887ZM6.54725 8.20524L7.22344 6.75515L6.67122 6.49764L3.8283 5.17197C4.89894 2.87599 5.00496 2.70649 4.90055 2.87254L0.749553 4.61903L2.04123 9.00436L3.15211 6.62206L6.54725 8.20524ZM7.77656 6.36996L9.20824 7.03757L10.7104 3.81629L13.0317 4.89876L11.2889 0.706594L6.95729 2.06621L9.27866 3.14868L7.77656 6.36996Z";
+
+    const arrowChordPath = `
+      M 8.75 0.997 Q 8.754 2.238 8.661 3.851
+      Q 8.474 7.105 7.976 9.037
+      Q 7.463 11.03 6.452 12.472
+      Q 6.127 12.936 5.784 13.291
+      Q 5.598 13.484 5.465 13.588
+      L 4.535 12.412
+      Q 4.588 12.369 4.704 12.249
+      Q 4.966 11.978 5.224 11.611
+      Q 6.079 10.392 6.524 8.663
+      Q 6.985 6.873 7.164 3.765
+      Q 7.254 2.198 7.25 1.003
+      L 8.75 0.997 Z
+    `;
+
+    /**************** 工具：parent → tree ****************/
+    function buildTree(list) {
+      const map = new Map(list.map(n => [n.id, { ...n, children: [] }]));
+      let root = null;
+      map.forEach(n => {
+        if (n.parent == null) root = n;
+        else map.get(n.parent)?.children.push(n);
+      });
+      return root;
+    }
+
+    /**************** 自定义节点 ****************/
+    const iconByType = {
+      circular: arrowClockwisePath,
+      radial: arrowRadialPath,
+      chord: arrowChordPath,
+    };
+
+    G6.registerNode("step-node", {
+      draw(cfg, group) {
+        const R = 22;
+        const status = cfg.status ?? 0;
+
+        group.addShape("circle", {
+          attrs: {
+            r: R,
+            fill: colorPanel[status],
+            stroke: status === 0 ? "#ffffff" : "#2d2736",
+            lineWidth: 2,
+          },
+        });
+
+        group.addShape("circle", {
+          attrs: {
+            r: R - 5,
+            fill: "#ffffff",
+            stroke: "#d0cece",
+          },
+        });
+
+        if (iconByType[cfg.type]) {
+          group.addShape("path", {
+            attrs: {
+              path: iconByType[cfg.type],
+              fill: "#2d2736",
+              stroke: "#2d2736",
+              transform: [["t", -8, -8], ["s", 1.2, 1.2]],
+            },
+          });
+        }
+
+        return group.get("children")[0];
+      }
+    });
+
+    /**************** Graph ****************/
+    const graph = new G6.TreeGraph({
+      container: "container",
+      width: window.innerWidth,
+      height: window.innerHeight,
+      defaultNode: { type: "step-node" },
+      defaultEdge: {
+        type: "cubic-horizontal",
+        style: { stroke: "#999", lineWidth: 2 }
+      },
+      modes: { default: ["drag-canvas", "zoom-canvas"] },
+      layout: {
+        type: "compactBox",
+        direction: "LR",
+        getId: d => d.id,
+        getHeight: () => 60,
+        getWidth: () => 90,
+        getHGap: () => 60,
+        getVGap: () => 20,
+      },
+    });
+
+    graph.data(buildTree(sequence_log));
+    graph.render();
+    graph.fitView();
+  </script>
+</body>
+</html>

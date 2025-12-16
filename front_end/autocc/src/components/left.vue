@@ -317,8 +317,20 @@ const applyRecommendation = (item) => {
   inputText.value = schemeText;
 };
 
-
-
+// 监听 TrackIsReusing 状态，如果为 true，则将 track 信息填入输入框
+watch(() => chatStore.TrackIsReusing, (isReusing) => {
+  if (isReusing) {
+    const trackId = chatStore.nowTrackInfo?.id || 'unknown';
+    const reuseText = `Generate a track with the same characteristics (visualization type, color, etc.) as that of track ${trackId}, using the data file: `;
+    inputText.value = reuseText;
+    
+    // chatStore.TrackIsReusing = false;
+    
+    // 聚焦输入框 (可选，如果 t-textarea 支持 focus 方法)
+    // const inputEl = document.querySelector('textarea');
+    // if (inputEl) inputEl.focus();
+  }
+});
 
 </script>
 <template>

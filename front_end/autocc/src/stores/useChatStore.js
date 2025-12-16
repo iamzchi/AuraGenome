@@ -70,6 +70,35 @@ export const useChatStore = defineStore("chat", () => {
     }
   };
 
+  const customLinks = ref([]);
+
+  const reuseNode = () => {
+    // Logic from handleReuseNode
+    const clickedNode = current_clicked_node_info.value;
+    if (!clickedNode || !clickedNode.parent) return;
+
+    const maxId = sequence_log.value.reduce((max, node) => Math.max(max, Number(node.id)), 0);
+    const newId = String(maxId + 1);
+
+    const temp = {
+        id: newId,
+        text: "Reuse Node",
+        parent: clickedNode.parent,
+        status: 2,
+        type: clickedNode.type,
+    };
+    sequence_log.value.push(temp);
+    
+    current_clicked_node_info.value = temp;
+    lastLogId.value = newId;
+
+    customLinks.value.push({
+        id: `L_${clickedNode.id}_${newId}`,
+        sourceId: clickedNode.id,
+        targetId: newId,
+    });
+  };
+
   const handleMessage = async (query) => {
     if (query === "d" || query === "D") {
       addMessage(
@@ -107,7 +136,12 @@ export const useChatStore = defineStore("chat", () => {
         addMessage("ai", queryResult.reply);
       }
       if (queryResult.query_type === "a") {
-        addLog('',1,chart_category)
+        if (TrackIsReusing.value) {
+           reuseNode();
+        } else {
+           addLog('',1,chart_category)
+        }
+        
         if (
           queryResult.chart_type === "histogram" ||
           queryResult.chart_type === "highlight" ||
@@ -129,13 +163,21 @@ export const useChatStore = defineStore("chat", () => {
         }
       }
       if (queryResult.query_type === "b") {
-        addLog('',2,chart_category)
+        if (TrackIsReusing.value) {
+           reuseNode();
+        } else {
+           addLog('',2,chart_category)
+        }
         //修改模式
         addMessage(
           "ai",
           `${queryResult.reply},Modifying ${queryResult.chart_type} using ${queryResult.file_name}, please wait a moment...`
         );
         await modifyCode(query, queryInfo.value); //修改代码
+      }
+      
+      if (TrackIsReusing.value) {
+        TrackIsReusing.value = false;
       }
     }
   };
@@ -1098,6 +1140,14 @@ let circos;
     }
   });
 
+
+  /**
+   * 处理复用track的请求
+   * @param {*} trackInfo 复用的track信息
+   */
+  const TrackIsReusing = ref(false);
+
+
   return {
     messages,
     inputRecommendItems,
@@ -1125,6 +1175,10 @@ let circos;
     selectedReferenceVersion,
     setReferenceVersion,
     setHg19,
-    current_clicked_node_info,
+    current_clicked_node_info,  
+    TrackIsReusing,
+    project_id,
+    customLinks,
+    reuseNode
   };
 });
